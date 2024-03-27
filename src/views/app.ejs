@@ -1,0 +1,3757 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrf_token %>">
+    <title>Mimos tia Pi</title>
+    <link rel="icon" href="public/img/logo.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        /***
+        laranja : rgb(255,178,91)
+        */
+        body {
+            background: linear-gradient(to bootom, rgb(216, 216, 214) 5%, rgb(133, 133, 124), rgb(106, 106, 104) 10%);
+            margin: 0px !important;
+            padding: 0px !important;
+            height: 100%;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            padding: 5px;
+            color: black;
+            background: linear-gradient(rgb(201, 155, 102), rgb(255,178,91), rgb(61, 43, 22));
+            text-align: center;
+            height: 35px;
+            font-family: monospace;
+            border-radius: 0px !important;
+        }
+        .mainNavi { 
+            margin-left: -10px;
+            padding: 0px !important;
+            position: absolute;
+            left: 0px;
+            height: calc(100% + 90px);
+            /*width: 300px;*/
+            background: linear-gradient(rgb(161, 0, 108), rgb(130, 58, 106), rgb(210, 75, 167),  rgb(161, 0, 108));
+            display: block;
+            width: 23%;
+            z-index: 1;
+            display: block;
+            clear: both;
+        }
+        .mainNavi ul { list-style: none; }
+        .mainNavi ul li { margin-left: 20px; }
+        .mainNavi .mainNaviHeader {
+            padding: 10px;
+            font-size: 25px;
+            font-weight: bold;
+        }
+        .btn-custom { background: rgb(217,217,217); border : 1px solid white !important; width: 80%; }
+        .btn-custom::hover { background: rgba(0,0,0,.5); color: white !important; }
+        .bnt-custom:visited { color : white !important }
+        .container-fluid { height: 100% !important; }
+        .dashboard { margin-left: 20%; height: 100%; width: 80%; }
+        .app-window {  }
+        #app-container {
+            position: absolute;
+            left: 5%;
+            width: 70% !important;
+            height: 90%;
+        }
+        .clientes-table {
+            position: relative;
+            overflow: auto;
+            max-height: 280px;
+            width: 100%;
+            padding: 0px;
+            text-align: center;
+        }
+        
+        .clientes-table thead th { position: sticky; top: 0; z-index: 1 !important; }
+        table { border-collapse: collapse; width: 100%; }
+        tr { cursor: pointer !important; }
+        th, td { padding: 8px 16px; cursor: pointer; z-index: 1; }
+        .btn-search { margin-left: -60%; margin-top: 0%; padding: 10px; background: rgb(130, 58, 106); border : 1px solid white !important; border-end-end-radius: 4px; border-top-right-radius: 4px; color: white}
+        thead th { background-color: rgb(130, 58, 106) !important; }
+        thead th:hover { background-color: rgb(33,37,41);}
+        th:hover, td:hover { font-weight: bold; background-color: rgba(0,0,0,.5); color:azure }
+
+        thead,tbody { text-align: center; }
+
+        /*.btn-abrir-caixa { position: absolute; width: 100%; height: 80%; }*/
+        #form-abrir-caixa {position: absolute; top: 20%; left: 25%; }
+        .select2-container--open {
+            z-index: 9999999
+        }
+        /*.select2-container--bootstrap {
+            width: auto;
+            flex: 1 1 auto;
+        }
+        .select2-container--bootstrap .select2-selection--single {
+            height: 100%;
+            line-height: inherit;
+            padding: 0.5rem 1rem;
+        }*/
+    </style>
+    
+    <!-- APP CONTAINER MAIN -->
+    <section class="container-fluid">
+        <div class="row">
+            
+            <!-- MENU -->
+            <aside class="mainNavi" id="mainNavi">
+        
+                <!-- HEADER -->
+                <div class="mainNaviHeader text-center">
+                    <span class="text-white">Menu</span>
+                </div>
+        
+                <!-- BUTTONS -->
+                <ul class="list-style-none mt-4">
+                    
+                    <li>
+                        <div class="dropdown">
+                            <button class="btn btn-custom dropdown-toggle" type="button" id="dropDownCadastros" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span><i class="fa fa-plus"></i> Cadastros</span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropDownCadastros">
+                                <li class="btn-menu" target-window="clientes"><a class="dropdown-item" href="#"><i class="fa fa-user"></i> Clientes</a></li>
+                                <li class="btn-menu" target-window="fornecedores"><a class="dropdown-item" href="#"><i class="fa fa-building"></i> Fornecedores</a></li>
+                                <li class="btn-menu" target-window="vendedores"><a class="dropdown-item" href="#"><i class="fa fa-user"></i> Vendedores</a></li>
+                                <li class="btn-menu" target-window="prestadores_servicos"><a class="dropdown-item" href="#"><i class="fa fa-user"></i> Prestadores de serviços</a></li>
+                                <li class="btn-menu" target-window="funcionarios"><a class="dropdown-item" href="#"><i class="fa fa-user"></i> Funcionários</a></li>
+                                <li class="btn-menu" target-window="produtos"><a class="dropdown-item" href="#"><i class="fa fa-plus"></i> Produtos</a></li>
+                            </ul>
+                        </div>
+                    </li>
+        
+                    <li class="mt-4">
+                        
+                        <div class="dropdown">
+                            <button class="btn btn-custom dropdown-toggle" type="button" id="dropDownEstoque" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span><i class="fa fa-box"></i> Estoque</span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropDownEstoque">
+                                <li class="btn-menu" target-window="estoque_material_producao"><a class="dropdown-item" href="#"><i class="fa fa-box"></i> Estoque do material de produção</a></li>
+                                <li class="btn-menu" target-window="estoque_produto_final"><a class="dropdown-item" href="#"><i class="fa fa-box-open"></i> Estoque de produto final</a></li>
+                            </ul>
+                        </div>
+                    </li>
+        
+                    <li class="mt-4 btn-menu" target-window="caixa">
+                        <button class="btn btn-custom" type="button" id="dropDownCadastros">
+                            <span><i class="fa fa-dollar-sign"></i> Caixa</span>
+                        </button>
+                    </li>
+
+                    <li class="mt-4">
+                        <div class="dropdown">
+                            <button class="btn btn-custom dropdown-toggle" type="button" id="dropDownFinanceiro" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span><i class="fa fa-dollar-sign"></i> Financeiro</span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropDownFinanceiro">
+                                <li class="btn-menu" target-window="contas_pagar"><a class="dropdown-item" href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Contas as pagar</a></li>
+                                <li class="btn-menu" target-window="contas_receber"><a class="dropdown-item" href="#"><i class="fa-solid fa-hand-holding-dollar"></i> Contas as receber</a></li>
+                            </ul>
+                        </div>
+                    </li>
+        
+                    <li class="mt-4">
+                        <div class="dropdown">
+                            <button class="btn btn-custom dropdown-toggle" type="button" id="dropDownRelatorios" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span><i class="fa fa-edit"></i> Relatórios</span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropDownRelatorios">
+                                <li class="btn-menu" target-window="relatorios-vendas"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Caixa</a></li>
+                                <li class="btn-menu" target-window="relatorios-contas_pagar"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Contas as pagar</a></li>
+                                <li class="btn-menu" target-window="relatorios-contas_receber"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Contas as receber</a></li>
+                                <li class="btn-menu" target-window="relatorios-ordem_servico"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Ordem de serviço</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="mt-4" id="btn-logout">
+                        <button class="btn btn-custom" type="button">
+                            <span><i class="fa fa-sign-out"></i> Sair do sistema</span>
+                        </button>
+                    </li>
+
+                    <!-- <li class="mt-4 btn-menu" target-window="recibos">
+                        <button class="btn btn-custom" type="button" id="dropDownCadastros">
+                            <span><i class="fa fa-newspaper"></i> Recibos</span>
+                        </button>
+                    </li> -->
+
+                </ul>
+                
+                <!-- LOGO -->
+                <div class="text-center">
+                    <img src="public/img/logo.png" alt="Mimos tia pi" class="img-responsive" style="margin-top: 10%;width: 40%;opacity:60%;">
+                </div>
+        
+            </aside>
+            
+            <!-- TABLES AND FORMS -->
+            <aside class="col-8 dashboard mt-4" id="app-container">
+
+                <!-- LOADING DIV BEFORE LOADING WINDOWS -->
+                <div class="load-window">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <p>Carregando o sistema...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CADASTROS -->
+                
+                <!-- CLIENTES -->
+                <div class="app-window" id="clientes">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Clientes cadastrados</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="clientes-search" data-bs-endpoint="clientes" data-bs-itemId="cliente" class="form-control w-100 inpt-search" placeholder="Procurar cliente(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="clientes-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">CPF/CNPJ</th>
+                                        <th scope="col">Endereço</th>
+                                        <th scope="col">Telefone</th>
+                                        <th scope="col">Whatsapp</th>
+                                        <th scope="col">Instagram</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientes-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Cadastrar ou alterar cliente</h2>
+                        
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <input type="hidden" id="cliente-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente-nome" class="form-label">Nome do cliente</label>
+                                <input type="text" class="form-control" placeholder="Nome" id="cliente-nome">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente-cpf_cnpj" class="form-label">CPF/CNPJ</label>
+                                <input type="text" class="form-control" placeholder="CPF/CNPJ" id="cliente-cpf_cnpj">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente-endereco" class="form-label">Endereço</label>
+                                <input type="text" class="form-control" placeholder="Endereço" id="cliente-endereco">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente-ponto_referencia" class="form-label">Ponto de referência</label>
+                                <input type="text" class="form-control" placeholder="Ponto de referência" id="cliente-ponto_referencia">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente-telefone" class="form-label">Telefone fixo ou celular</label>
+                                <input type="text" class="form-control" placeholder="Telefone fixo ou celular" id="cliente-telefone">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente-whatsapp" class="form-label">Whatsapp</label>
+                                <input type="text" class="form-control" placeholder="Whatsapp" id="cliente-whatsapp">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="cliente-instagram" class="form-label">Instagram</label>
+                                <input type="text" class="form-control" placeholder="Instagram" id="cliente-instagram">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-cliente"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-cliente" disabled><i class="fa fa-trash"></i> Excluir cliente</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="cliente-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- FORNECEDORES -->
+                <div class="app-window" id="fornecedores">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Fornecedores cadastrados</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="fornecedores-search" data-bs-endpoint="fornecedores" data-bs-itemId="fornecedor" class="form-control w-100 inpt-search" placeholder="Procurar fornecedor(es)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="clientes-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">CPF/CNPJ</th>
+                                        <th scope="col">Endereço</th>
+                                        <th scope="col">Telefone</th>
+                                        <th scope="col">Whatsapp</th>
+                                        <th scope="col">Instagram</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fornecedores-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Cadastrar ou alterar fornecedor</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <input type="hidden" id="fornecedor-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fornecedor-nome" class="form-label">Nome do fornecedor</label>
+                                <input type="text" class="form-control" placeholder="Nome" id="fornecedor-nome">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fornecedor-cpf_cnpj" class="form-label">CPF/CNPJ</label>
+                                <input type="text" class="form-control" placeholder="CPF/CNPJ" id="fornecedor-cpf_cnpj">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fornecedor-endereco" class="form-label">Endereço</label>
+                                <input type="text" class="form-control" placeholder="Endereço" id="fornecedor-endereco">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fornecedor-ponto_referencia" class="form-label">Ponto de referência</label>
+                                <input type="text" class="form-control" placeholder="Ponto de referência" id="fornecedor-ponto_referencia">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fornecedor-telefone" class="form-label">Telefone fixo ou celular</label>
+                                <input type="text" class="form-control" placeholder="Telefone fixo ou celular" id="fornecedor-telefone">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fornecedor-whatsapp" class="form-label">Whatsapp</label>
+                                <input type="text" class="form-control" placeholder="Whatsapp" id="fornecedor-whatsapp">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="fornecedor-instagram" class="form-label"></label>
+                                <input type="text" class="form-control" placeholder="Instagram" id="fornecedor-instagram">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-fornecedor"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-fornecedor" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="fornecedor-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- VENDEDORES -->
+                <div class="app-window" id="vendedores">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Vendedores cadastrados</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="vendedores-search" data-bs-endpoint="vendedores" data-bs-itemId="vendedor" class="form-control w-100 inpt-search" placeholder="Procurar vendedor(es)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="vendedores-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">CPF/CNPJ</th>
+                                        <th scope="col">Endereço</th>
+                                        <th scope="col">Telefone</th>
+                                        <th scope="col">Whatsapp</th>
+                                        <th scope="col">Instagram</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vendedores-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Cadastrar ou alterar vendedor</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <input type="hidden" id="vendedor-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendedor-nome" class="form-label">Nome do vendedor</label>
+                                <input type="text" class="form-control" placeholder="Nome" id="vendedor-nome">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendedor-cpf_cnpj" class="form-label">CPF/CNPJ</label>
+                                <input type="text" class="form-control" placeholder="CPF/CNPJ" id="vendedor-cpf_cnpj">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendedor-endereco" class="form-label">Endereço</label>
+                                <input type="text" class="form-control" placeholder="Endereço" id="vendedor-endereco">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendedor-ponto_referencia" class="form-label">Ponto de referência</label>
+                                <input type="text" class="form-control" placeholder="Ponto de referência" id="vendedor-ponto_referencia">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendedor-telefone" class="form-label">Telefone fixo ou celular</label>
+                                <input type="text" class="form-control" placeholder="Telefone fixo ou celular" id="vendedor-telefone">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendedor-whatsapp" class="form-label">Whatsapp</label>
+                                <input type="text" class="form-control" placeholder="Whatsapp" id="vendedor-whatsapp">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="vendedor-instagram" class="form-label">Instagram</label>
+                                <input type="text" class="form-control" placeholder="Instagram" id="vendedor-instagram">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-vendedor"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-vendedor" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="vendedor-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- PRESTADOR DE SERVICO -->
+                <div class="app-window" id="prestadores_servicos">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Prestadores de serviços cadastrados</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="prestadores_servicos-search" data-bs-endpoint="prestadores_servicos" data-bs-itemId="prestador_servico" class="form-control w-100 inpt-search" placeholder="Procurar prestador(s) de serviço(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="prestadores_servicos-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">CPF/CNPJ</th>
+                                        <th scope="col">Endereço</th>
+                                        <th scope="col">Telefone</th>
+                                        <th scope="col">Whatsapp</th>
+                                        <th scope="col">Instagram</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prestadores_servicos-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Cadastrar ou alterar prestador de serviço</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <input type="hidden" id="prestador_servico-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="prestador_servico-nome" class="form-label">Nome do prestador de serviço</label>
+                                <input type="text" class="form-control" placeholder="Nome" id="prestador_servico-nome">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="prestador_servico-cpf_cnpj" class="form-label">CPF/CNPJ</label>
+                                <input type="text" class="form-control" placeholder="CPF/CNPJ" id="prestador_servico-cpf_cnpj">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="prestador_servico-endereco" class="form-label">Endereço</label>
+                                <input type="text" class="form-control" placeholder="Endereço" id="prestador_servico-endereco">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="prestador_servico-ponto_referencia" class="form-label"></label>
+                                <input type="text" class="form-control" placeholder="Ponto de referência" id="prestador_servico-ponto_referencia">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="prestador_servico-telefone" class="form-label">Telefone</label>
+                                <input type="text" class="form-control" placeholder="Telefone fixo ou celular" id="prestador_servico-telefone">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="prestador_servico-whatsapp" class="form-label">Whatsapp</label>
+                                <input type="text" class="form-control" placeholder="Whatsapp" id="prestador_servico-whatsapp">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="prestador_servico-instagram" class="form-label">Instagram</label>
+                                <input type="text" class="form-control" placeholder="Instagram" id="prestador_servico-instagram">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-prestador_servico"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-prestador_servico" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="prestador_servico-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- FUNCIONARIOS -->
+                <div class="app-window" id="funcionarios">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Funcionários cadastrados</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="funcionarios-search" data-bs-endpoint="funcionarios" data-bs-itemId="funcionario" class="form-control w-100 inpt-search" placeholder="Procurar funcionario(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="vendedores-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">CPF</th>
+                                        <th scope="col">Endereço</th>
+                                        <th scope="col">Telefone</th>
+                                        <th scope="col">Whatsapp</th>
+                                        <th scope="col">Função</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="funcionarios-table" class="text-center">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Cadastrar ou alterar funcionário</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <input type="hidden" id="funcionario-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="funcionario-nome" class="form-label">Nome do funcionário</label>
+                                <input type="text" class="form-control" placeholder="Nome" id="funcionario-nome">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="funcionario-cpf" class="form-label">CPF</label>
+                                <input type="text" class="form-control" placeholder="CPF" id="funcionario-cpf">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="funcionario-endereco" class="form-label">Endereço</label>
+                                <input type="text" class="form-control" placeholder="Endereço" id="funcionario-endereco">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="funcionario-ponto_referencia" class="form-label">Ponto de referência</label>
+                                <input type="text" class="form-control" placeholder="Ponto de referência" id="funcionario-ponto_referencia">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="funcionario-telefone" class="form-label">Telefone fixo ou celular</label>
+                                <input type="text" class="form-control" placeholder="Telefone fixo ou celular" id="funcionario-telefone">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="funcionario-whatsapp" class="form-label">Whatsapp</label>
+                                <input type="text" class="form-control" placeholder="Whatsapp" id="funcionario-whatsapp">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="funcionario-funcao" class="form-label">Função ou cargo</label>
+                                <input type="text" class="form-control" placeholder="Função ou cargo" id="funcionario-funcao">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-funcionario"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-funcionario" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="funcionario-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- PRODUTOS -->
+                <div class="app-window" id="produtos">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Produtos cadastrados</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="produtos-search" data-bs-endpoint="produtos" data-bs-itemId="produto" class="form-control w-100 inpt-search" placeholder="Procurar produto(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="produtos-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">Seção</th>
+                                        <!-- <th scope="col">Categoria</th> -->
+                                        <th scope="col">Preço</th>
+                                        <th scope="col">Desconto</th>
+                                        <th scope="col">Descrição</th>
+                                        <th scope="col">Cor</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="produtos-table" class="text-center">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Cadastrar ou alterar produtos</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <input type="hidden" id="produto-id">
+                        <div class="col text-left">
+                            <div class="form-group">
+                                <label for="produto-nome" class="form-label">Nome do produto</label>
+                                <input type="text" class="form-control" placeholder="Nome do produto" id="produto-nome" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-6 mr-0">
+                                    <div class="form-group">
+                                        <label for="produto-secao" class="form-label">Seção</label>
+                                        <select id="produto-secao" class="form-select" aria-label="Secao" required>
+                                            <option selected disabled>-- escolha a seção do produto --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="btn-group mt-4" role="group" aria-label="Section buttons">
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_secao"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-secao" data-bs-target="#modal_secao" disabled><i class="fa fa-edit"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-6 mr-0">
+                                    <div class="form-group">
+                                        <label for="produto-cor" class="form-label">Cor ou estampa</label>
+                                        <select id="produto-cor" class="form-select" aria-label="Cor" required>
+                                            <option selected disabled>-- escolha a cor do produto --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="btn-group mt-4" role="group" aria-label="Colors buttons">
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_cor"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-cor" data-bs-target="#modal_cor" disabled><i class="fa fa-edit"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="col">
+                            <div class="row">
+                                <div class="col-7 mr-0">
+                                    <div class="form-group">
+                                        <label for="produto-categoria" class="form-label">Categoria</label>
+                                        <select id="produto-categoria" class="form-select" aria-label="Categoria" required>
+                                            <option selected disabled>-- escolha a categoria do produto --</option>
+                                            <option value="1">categoria teste</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <div class="btn-group mt-4" role="group" aria-label="Categorias buttons">
+                                        <button class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#modal_categoria"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-categoria" data-bs-target="#modal_categoria" disabled><i class="fa fa-edit"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="produto-preco" class="form-label">Preço do produto R$</label>
+                                <input type="number" class="form-control" min="1" placeholder="Preço do produto" id="produto-preco" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="produto-desconto" class="form-label">Desconto do produto % <span class="fw-bold" id="desconto-produto"></span></label>
+                                <input type="number" class="form-control" min="1" placeholder="Desconto do produto" id="produto-desconto">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="produto-quantidade" class="form-label">Quantidade</label>
+                                <input type="number" class="form-control" min="1" placeholder="Qtd. do produto" id="produto-quantidade">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="produto-descricao" class="form-label">Descrição</label>
+                                <input type="text" class="form-control" placeholder="Descrição do produto" id="produto-descricao" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="produto-codigo_barras" class="form-label">Codigo de barras</label>
+                                <input type="text" class="form-control" placeholder="Use o leitor ou digite manualmente" id="produto-codigo_barras" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-produto"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-produto" disabled><i class="fa fa-trash"></i> Excluir item</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="produto-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- ESTOQUE MATERIAL DE PRODUÇÃO -->
+                <div class="app-window" id="estoque_material_producao">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Estoque de material para produção</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="estoque_material_producao-search" data-bs-endpoint="estoque_material_producao" data-bs-itemId="estoque_material_producao" class="form-control w-100 inpt-search" placeholder="Procurar funcionario(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="estoque_material_producao-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Especificação</th>
+                                        <th scope="col">Cor</th>
+                                        <th scope="col">Unidade</th>
+                                        <th scope="col">Entrada</th>
+                                        <th scope="col">Saída</th>
+                                        <th scope="col">Data do registro</th>
+                                        <th scope="col">Estoque</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="estoque_material_producao-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Alterar estoque</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <input type="hidden" id="estoque_material_producao-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_material_producao-especificacao" class="form-label">Especificação</label>
+                                <input type="text" class="form-control" placeholder="Especificação" id="estoque_material_producao-especificacao">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-8 mr-0">
+                                    <div class="form-group">
+                                        <label for="estoque_material_producao-cor" class="form-label">Cor</label>
+                                        <select id="estoque_material_producao-cor" class="form-select" aria-label="Cor" required>
+                                            <option selected disabled>-- escolha a cor do produto --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="btn-group mt-4" role="group" aria-label="Colors buttons">
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_cor"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-cor" data-bs-target="#modal_cor" disabled><i class="fa fa-edit"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_material_producao-unidade" class="form-label">Unidade em metros</label>
+                                <input type="number" class="form-control" placeholder="Unidade" id="estoque_material_producao-unidade">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_material_producao-entrada" class="form-label">Entrada</label>
+                                <input type="number" class="form-control" placeholder="Entrada" id="estoque_material_producao-entrada">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_material_producao-saida" class="form-label">Saída</label>
+                                <input type="number" class="form-control" placeholder="Saída" id="estoque_material_producao-saida">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-estoque_material_producao"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-estoque_material_producao" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="estoque_material_producao-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- ESTOQUE PRODUTO FINAL -->
+                <div class="app-window" id="estoque_produto_final">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Estoque de produto final</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="estoque_produto_final_search" data-bs-endpoint="estoque_produto_final" data-bs-itemId="estoque_produto_final" class="form-control w-100 inpt-search" placeholder="Procurar no estoque">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="estoque_produto_final-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Produto</th>
+                                        <th scope="col">Especificação</th>
+                                        <th scope="col">Entrada</th>
+                                        <th scope="col">Saída</th>
+                                        <th scope="col">Data do registro</th>
+                                        <th scope="col">Estoque</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="estoque_produto_final-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Alterar estoque</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <input type="hidden" id="estoque_produto_final-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_produto_final-produto" class="form-label">Produto</label>
+                                <select id="estoque_produto_final-produto" class="form-select" aria-label="Produto" required>
+                                    <option selected disabled>-- escolha o produto --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_produto_final-especificacao" class="form-label">Especificação</label>
+                                <input type="text" class="form-control" placeholder="Especificação" id="estoque_produto_final-especificacao">
+                            </div>
+                        </div>
+                        <!-- <div class="col">
+                            <div class="row d-none">
+                                <div class="col-0 mr-0">
+                                    <div class="form-group">
+                                        <label for="estoque_produto_final-cor" class="form-label">Cor</label>
+                                        <select id="estoque_produto_final-cor" class="form-select" aria-label="Cor" required>
+                                            <option value="0" selected disabled>-- escolha a cor do produto --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="btn-group mt-4" role="group" aria-label="Colors buttons">
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_cor"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-cor" data-bs-target="#modal_cor" disabled><i class="fa fa-edit"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_produto_final-entrada" class="form-label">Entrada</label>
+                                <input type="number" class="form-control" placeholder="Entrada" id="estoque_produto_final-entrada">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_produto_final-saida" class="form-label">Saída</label>
+                                <input type="number" class="form-control" placeholder="Saída" id="estoque_produto_final-saida">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-estoque_produto_final"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-estoque_produto_final" disabled><i class="fa fa-trash"></i> Excluir item</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="estoque_produto_final-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- CAIXA -->
+                <div class="app-window" id="caixa">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Caixa</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <!-- <input type="search" id="" data-bs-endpoint="estoque_produto_final" data-bs-itemId="estoque_produto_final" class="form-control w-100 inpt-search" placeholder="Procurar funcionario(s)"> -->
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 w-50 card" id="form-abrir-caixa">
+                        <div class="card-body">
+                            <div class="col-12">
+                                <label for="caixa-id" class="mb-2">Caixa</label>
+                                <select class="form-select" id="caixa-id">
+                                    <option selected disabled>-- selecione o caixa --</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <div class="btn-group w-100">
+                                    <button class="btn btn-primary" type="button" id="btn-abrir-caixa" disabled><i class="fa fa-dollar-sign"></i> Abrir caixa</button>
+                                    <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_caixa" id="edit-caixa" type="button" disabled><i class="fa fa-edit"></i> Editar caixa</button>
+                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_add_caixa" type="button"><i class="fa fa-plus"></i> Criar caixa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAIXA APPS -->
+                    <div class="row mt-4 d-none caixa-window">
+                        <div class="caixa-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Caixa</th>
+                                        <th scope="col">Produto</th>
+                                        <th scope="col">Forma de pagamento</th>
+                                        <th scope="col">Qtd.</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="caixa-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 caixa-window d-none">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Alterar caixa</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 caixa-window d-none">
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="caixa-entrada" class="form-label">Entrada</label>
+                                <input type="text" class="form-control" value="0" id="caixa-entrada" disabled>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="caixa-saida" class="form-label">Saída</label>
+                                <input type="text" class="form-control" value="0" id="caixa-saida" disabled>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="caixa-saldo" class="form-label">Saldo</label>
+                                <input type="text" class="form-control" value="0" id="caixa-saldo" disabled>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-4 caixa-window d-none">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control" data-bs-toggle="modal" data-bs-target="#modal_lancar_caixa" type="button" id="lancar-caixa"><i class="fa fa-dollar-sign"></i> Vender produto</button>
+                            <!-- <button class="btn btn-success form-control" data-bs-toggle="modal" data-bs-target="#modal_caixa_add" type="button" id="save-caixa"><i class="fa fa-plus"></i> Incluir</button> -->
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-warning form-control" type="button" id="lancar-saida-caixa" data-bs-toggle="modal" data-bs-target="#modal_saida_caixa"><i class="fa fa-minus"></i> Lançar saída</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-primary form-control" type="button" id="fechar-caixa"><i class="fa fa-xmark"></i> Fechar caixa</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="caixa-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- CONTAS A PAGAR -->
+                <div class="app-window" id="contas_pagar">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Contas a pagar</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="clientes-search" data-bs-endpoint="clientes" data-bs-itemId="cliente" class="form-control w-100 inpt-search" placeholder="Procurar cliente(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="contas_pagar-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Fornecedor</th>
+                                        <!-- <th scope="col">CPF/CNPJ</th> -->
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Forma de pagamento</th>
+                                        <th scope="col">Desconto</th>
+                                        <th scope="col">Descrição</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contas_pagar-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Lançar conta a pagar</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <input type="hidden" id="contas_pagar-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="contas_pagar-fornecedor_id" class="form-label">Fornecedor</label>
+                                <select id="contas_pagar-fornecedor_id" class="form-select" required></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="contas_pagar-valor" class="form-label">Valor a pagar R$</label>
+                                <input type="number" id="contas_pagar-valor" class="form-control" placeholder="Valor">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="contas_pagar-desconto" class="form-label">Desconto do pagamento % <span class="fw-bold" id="desconto-contas_pagar"></span></label>
+                                <input type="number" class="form-control" placeholder="Desconto" id="contas_pagar-desconto">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group mt-4">
+                                <label for="contas_pagar-forma_pagamento" class="mb-2">Forma de pagamento</label>
+                                <select id="contas_pagar-forma_pagamento" class="form-select"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group mt-4">
+                                <label for="contas_pagar-descricao" class="form-label">Descrição</label>
+                                <input type="text" class="form-control" placeholder="Descrição" id="contas_pagar-descricao">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-contas_pagar"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-contas_pagar" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="contas_pagar-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- CONTAS RECEBER -->
+                <div class="app-window" id="contas_receber">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Contas a receber</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="clientes-search" data-bs-endpoint="clientes" data-bs-itemId="cliente" class="form-control w-100 inpt-search" placeholder="Procurar cliente(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="contas_receber-table">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Cliente</th>
+                                        <!-- <th scope="col">CPF/CNPJ</th> -->
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Forma de pagamento</th>
+                                        <th scope="col">Desconto</th>
+                                        <th scope="col">Descrição</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contas_receber-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Lançar conta a receber</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <input type="hidden" id="contas_receber-id">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="contas_receber-cliente_id" class="form-label">Cliente</label>
+                                <select id="contas_receber-cliente_id" class="form-select"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="contas_receber-valor" class="form-label">Valor a receber R$</label>
+                                <input type="number" id="contas_receber-valor" class="form-control" placeholder="Valor">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="contas_receber-desconto" class="form-label">Desconto % <span class="fw-bold" id="desconto-contas_receber"></span></label>
+                                <input type="number" class="form-control" placeholder="Desconto" id="contas_receber-desconto">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group mt-4">
+                                <label for="contas_receber-forma_pagamento" class="mb-2">Forma de pagamento</label>
+                                <select id="contas_receber-forma_pagamento" class="form-select"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group mt-4">
+                                <label for="contas_receber-descricao" class="form-label">Descrição</label>
+                                <input type="text" class="form-control" placeholder="Descrição" id="contas_receber-descricao">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col mt-4">
+                            <button class="btn btn-success form-control form-btn" type="button" id="save-contas_receber"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col mt-4">
+                            <button class="btn btn-danger form-control" type="button" id="del-contas_receber" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="contas_receber-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- RELATORIO DO CAIXA -->
+                <div class="app-window" id="relatorios-vendas">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Relatório do caixa</h2>
+                            </div>
+                            <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
+                                <aside>
+                                    <div class="row">
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-vendas-periodo_inicial" class="form-label"><i class="fa fa-calendar"></i> Data inicial</label>
+                                                <input type="date" id="relatorio-vendas-periodo_inicial" class="form-control" placeholder="Data inicial">
+                                            </div>
+                                        </div>
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-vendas-periodo_final" class="form-label"><i class="fa fa-calendar"></i> Data final</label>
+                                                <input type="date" id="relatorio-vendas-periodo_final" class="form-control" placeholder="Data final">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-5">
+                                            <button class="btn btn-success form-control" id="relatorio-vendas-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório do caixa</button>
+                                            <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-vendas-error"></div>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RELATORIO CONTAS PAGAR -->
+                <div class="app-window" id="relatorios-contas_pagar">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Relatório de contas a pagar</h2>
+                            </div>
+                            <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
+                                <aside>
+                                    <div class="row">
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-contas_pagar-periodo_inicial" class="form-label"><i class="fa fa-calendar"></i> Data inicial</label>
+                                                <input type="date" id="relatorio-contas_pagar-periodo_inicial" class="form-control" placeholder="Data inicial">
+                                            </div>
+                                        </div>
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-contas_pagar-periodo_final" class="form-label"><i class="fa fa-calendar"></i> Data final</label>
+                                                <input type="date" id="relatorio-contas_pagar-periodo_final" class="form-control" placeholder="Data final">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-5">
+                                            <button class="btn btn-success form-control" id="relatorio-contas_pagar-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de contas a pagar</button>
+                                            <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-contas_pagar-error"></div>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RELATORIO CONTAS RECEBER -->
+                <div class="app-window" id="relatorios-contas_receber">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Relatório de contas a receber</h2>
+                            </div>
+                            <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
+                                <aside>
+                                    <div class="row">
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-contas_receber-periodo_inicial" class="form-label"><i class="fa fa-calendar"></i> Data inicial</label>
+                                                <input type="date" id="relatorio-contas_receber-periodo_inicial" class="form-control" placeholder="Data inicial">
+                                            </div>
+                                        </div>
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-contas_receber-periodo_final" class="form-label"><i class="fa fa-calendar"></i> Data final</label>
+                                                <input type="date" id="relatorio-contas_receber-periodo_final" class="form-control" placeholder="Data final">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-5">
+                                            <button class="btn btn-success form-control" id="relatorio-contas_receber-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de contas a receber</button>
+                                            <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-contas_receber-error"></div>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RELATORIO ORDEM DE SERVICO -->
+                <div class="app-window" id="relatorios-ordem_servico">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Relatório ordem de serviço</h2>
+                            </div>
+                            <div class="col-5 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
+                                <aside>
+                                    <div class="row">
+                                        <input type="hidden" id="relatorio-ordem_servico-produtos">
+                                        <div class="col-9 mr-0">
+                                            <div class="form-group">
+                                                <label for="relatorio-ordem_servico-produto" class="form-label">Produto</label>
+                                                <select id="relatorio-ordem_servico-produto" class="form-select" aria-label="Produto" style="width: 100%;">
+                                                    <option selected disabled>-- escolha o produto --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-1 mt-1">
+                                            <div class="btn-group mt-4" role="group" aria-label="Section buttons">
+                                                <button class="btn btn-success" id="btn-add-produto-ordem_servico"><i class="fa fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-4">
+                                        <div class="form-group">
+                                            <label for="relatorio-ordem_servico-quantidade" class="form-label">Quantidade para produção</label>
+                                            <input type="number" id="relatorio-ordem_servico-quantidade" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-4">
+                                        <div class="col ml-5 mt-2">
+                                            <span class="text-success" id="ordem_servico-span">0 produtos selecionados</span>
+                                        </div>
+                                        <div class="col-6" style="margin-left:10%;text-align:right !important">
+                                            <button class="btn btn-success" id="relatorio-ordem_servico-btn"><i class="fa fa-file-pdf"></i> Imprimir ordem</button>
+                                            <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-ordem_servico-error"></div>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+            </aside>
+
+        </div>
+    </section>
+
+    <!-- MODALS -->
+
+    <!-- MODAL SECOES -->
+    <div class="modal" tabindex="-1" id="modal_secao">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Adicionar seção</div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modal_secao-id">
+                    <div class="form-group">
+                        <label for="modal_secao-nome" class="form-label">Seção</label>
+                        <input type="text" id="modal_secao-nome" class="form-control" placeholder="Seção">
+                    </div>
+                    <div class="alert alert-danger mt-3 text-center p-1 d-none" id="modal_secao-error"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-trash"></i> Fechar</button>
+                    <button class="btn btn-success" id="btn-add-secao"><i class="fa fa-save"></i> Salvar</button>
+                    <div class="d-none alert alert-danger" id="modal_secao-error"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CATEGORIAS -->
+    <!-- <div class="modal" tabindex="-1" id="modal_categoria">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Adicionar categoria</div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modal_categoria-id">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="modal_categoria-secao-select" class="form-label">Seção</label>
+                            <select id="modal_categoria-secao-select" class="form-control js-example-basic-single js-states" style="width: 100%;"></select>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="modal_categoria-nome" class="form-label">Categoria</label>
+                            <input type="text" id="modal_categoria-nome" class="form-control" placeholder="Categoria">
+                        </div>
+                        <div class="alert alert-danger mt-4 text-center p-1 d-none" id="modal_categoria-error"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-trash"></i> Fechar</button>
+                    <button class="btn btn-success" id="btn-add-categoria"><i class="fa fa-save"></i> Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- MODAL CORES -->
+    <div class="modal" tabindex="-1" id="modal_cor">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Adicionar cor</div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modal_cor-id">
+                    <div class="form-group">
+                        <label for="modal_cor-nome" class="form-label">Cor</label>
+                        <input type="text" id="modal_cor-nome" class="form-control" placeholder="Cor de produto">
+                    </div>
+                    <div class="alert alert-danger mt-3 text-center p-1 d-none" id="modal_cor-error"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-trash"></i> Fechar</button>
+                    <button class="btn btn-success" id="btn-add-cor"><i class="fa fa-save"></i> Salvar</button>
+                    <div class="d-none alert alert-danger" id="modal_cor-error"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CRIAR CAIXA -->
+    <div class="modal" tabindex="-1" id="modal_add_caixa">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="fa fa-edit"></i> Adicionar ou alterar caixa</div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modal_add_caixa-id">
+                    <div class="form-group">
+                        <label for="modal_add_caixa-nome" class="mb-2">Nome do caixa</label>
+                        <input type="text" class="form-control" id="modal_add_caixa-nome" placeholder="Nome">
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="modal_add_caixa-descricao" class="mb-2">Descrição</label>
+                        <input type="text" class="form-control" id="modal_add_caixa-descricao" placeholder="Descrição">
+                    </div>
+                    <input type="hidden" id="modal_add_caixa-entrada" value="0">
+                    <input type="hidden" id="modal_add_caixa-saida" value="0">
+                    <input type="hidden" id="modal_add_caixa-saldo" value="0">
+                </div>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-12 m-0 p-0">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-xmark"></i> Fechar</button>
+                            <button class="btn btn-success form-btn mr-0 pr-0" type="button" id="save-modal_add_caixa"><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <div class="col-12">
+                            <div class="alert alert-danger d-none mt-2 text-center" id="modal_add_caixa-error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE VENDA DE PRODUTOS -->
+    <div class="modal" tabindex="-1" id="modal_lancar_caixa">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Venda de produto</div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modal_lancar_caixa-id">
+                    <div class="form-group">
+                        <label for="caixa_produto_search" class="mb-2"><i class="fa fa-search"></i> Pesquisar produto</label>
+                        <input type="search" id="caixa_produto_search" data-bs-endpoint="produtos" data-bs-itemId="produto" class="form-control inpt-search" placeholder="Procurar produto(s)">
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="modal_lancar_caixa-produto_id" class="mb-2"><i class="fa fa-cart-shopping"></i> Produto</label>
+                        <select id="modal_lancar_caixa-produto_id" style="width: 100%;"></select>
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="modal_lancar_caixa-forma_pagamento_id" class="mb-2"><i class="fa-solid fa-file-invoice-dollar"></i> Forma de pagamento</label>
+                        <select id="modal_lancar_caixa-forma_pagamento_id" style="width: 100%;">
+                            <option disabled selected>-- selecione a forma de pagamento --</option>
+                        </select>
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="modal_lancar_caixa-quantidade" class="mb-2"><i class="fa fa-edit"></i> Quantidade para venda <span id="caixa_produto_view_quantidade"></span></label>
+                        <input type="number" class="form-control" id="modal_lancar_caixa-quantidade" placeholder="Qtd. do produto">
+                    </div>
+                    <div class="mt-4 text-white p-2 rounded" style="text-align: right !important;box-shadow: 1px 1px 1px 2.5px rgba(0,0,0,.12);">
+                        <span class="text-black">Valor com desconto: <span class="fw-bold" id="caixa_valor_view"></span></span>
+                        <input type="hidden" id="modal_lancar_caixa-valor">
+                    </div>
+                    <div class="alert alert-danger mt-2 p-1 text-center d-none" id="modal_lancar_caixa-error"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger mb-3" data-bs-dismiss="modal"><i class="fa fa-xmark"></i> Fechar</button>
+                    <button class="btn btn-success form-btn mb-3" id="save-modal_lancar_caixa" type="button"><i class="fa-solid fa-cart-plus"></i> Vender</button>
+                    <div class="d-none alert alert-danger mt-5 p-1 d-block" id="modal_lancar_caixa-error" style="margin-top: 100px !important;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LANÇAR SAIDA NO CAIXA -->
+    <div class="modal" tabindex="-1" id="modal_saida_caixa">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Lançar saída no caixa</div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modal_saida_caixa-id">
+                    <div class="form-group">
+                        <label for="modal_saida_caixa-saida" class="form-label">Saída R$</label>
+                        <input type="text" id="modal_saida_caixa-saida" class="form-control" placeholder="Saída">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-xmark"></i> Fechar</button>
+                    <button class="btn btn-success" id="btn-lancar-saida"><i class="fa fa-save"></i> Lançar saída</button>
+                    <div class="d-none alert alert-danger" id="modal_saida_caixa-error"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <footer class="footer"><small><span class="bold">Mimos da tia Pi</span> por Daniel Victor Freire Feitosa all rights reserved <i class="fa fa-copyright"></i> 2024-2024</small></footer> -->
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript" src="public/js/maskMoney.min.js"></script>
+    <script type="module">
+        
+        import { Api } from './public/js/Api.class.js'
+
+        window.addEventListener('load', async () => {
+
+            if(document.readyState == 'complete'){
+
+                // CHECK IF ANY STRING IS EMPTY
+                String.prototype.empty = function(){
+
+                    var str = this;
+
+                    if(!str || !str.length) return true;
+
+                    return false;
+
+                }
+
+                // IN ARRAY FUNCTION
+                Array.prototype.in_array = function(needle){
+
+                    var haystack = this;
+
+                    return Object.values(haystack).includes(needle)
+
+                }
+
+                // CHECK LAST WINDOW FROM LOCAL STORAGE
+                if(!localStorage.getItem('current_dashboard')){
+                    localStorage.setItem('current_dashboard', 'clientes');
+                }
+
+                function setDesconto(input_id){
+
+                    let field = getCurrentDashboard().includes('contas') ? 'valor' : 'preco';
+                    let item_id = input_id.split('-')[0]
+                    let span = document.querySelector(`#desconto-${item_id}`);
+
+                    let valor = document.querySelector(`#${item_id}-${field}`).value;
+                    let desconto = document.querySelector(`#${item_id}-desconto`).value;
+                    let desconto_real = 0;
+
+                    if(valor.empty()){
+                        return;
+                    }
+
+                    if(desconto && valor){
+                        if(parseFloat(desconto) == 0){
+                            desconto_real = desconto;
+                        }else{
+                            desconto_real = (parseFloat(valor) * (parseFloat(desconto)/100));
+                        }
+                    }
+
+                    span.innerHTML = `( ${formatMoney(desconto_real)} )`;
+
+                }
+
+                [...document.querySelectorAll('input[type="number"]')].forEach((inpt) => {
+
+                    if(inpt.id.includes('valor') || inpt.id.includes('preco')){
+                    
+                        $(`#${inpt.id}`).change((e) => { setDesconto(inpt.id) })
+
+                        $(inpt).maskMoney();
+                        $(inpt).attr('type', 'text');
+                    
+                    }else if(inpt.id.includes('desconto')){
+                        inpt.addEventListener('input', () => { setDesconto(inpt.id) });
+                    }
+
+                });
+
+                const socket = io(); // SOCKET
+
+                // EVENTO DO LEITOR DE CODIGO DE BARRAS
+                socket.on('codigo_barras', (codigo_barras) => {
+
+                    if(getCurrentDashboard() == 'produtos'){
+                     
+                        document.querySelector('#produto-codigo_barras').value = codigo_barras;
+
+                    }else if(getCurrentDashboard() == 'caixa'){
+
+                        document.querySelector('#caixa_produto_search').value = codigo_barras;
+
+                        let event = document.createEvent('Event');
+                        event.initEvent('input', true, false);
+
+                        document.querySelector('#caixa_produto_search').dispatchEvent(event);
+
+                    }else if(getCurrentDashboard() == 'estoque_produto_final'){
+
+                        document.querySelector('#estoque_produto_final_search').value = codigo_barras;
+
+                        let event = document.createEvent('Event');
+                        event.initEvent('input', true, false);
+
+                        document.querySelector('#caixa_produto_search').dispatchEvent(event);
+
+                    }
+
+                });
+    
+                // DASHBOARD STUFF
+                const dashboardLoadEvent = new CustomEvent('load_dash', { detail : { dashboard_name : null } }); // LOAD APP WINDOW EVENT
+                const currentDashboard = localStorage.getItem('current_dashboard'); // CURRENT APP WINDOW
+
+                const csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // CSRF TOKEN IF REQUIRED
+
+                // API INSTANCE
+                const api = new Api({
+                    csrf_token : csrf_token,
+                    endpoint : '/api/v1'
+                });
+
+                // UTILS FUNCTIONS
+                function setListener(elements, eventName, callback){
+                    elements.forEach(element => {
+                        element.addEventListener(eventName, callback);
+                    })
+                }
+    
+                function showAlertDiv(div_name, text){
+
+                    document.querySelector(`#${div_name}`).innerHTML = text;
+                    $(`#${div_name}`).show();
+
+                    if(div_name.includes('success')){
+                        setTimeout(() => { $(`#${div_name}`).hide(); }, 4000)
+                    }
+
+                }
+
+                function show(element_id, text, timeout = 0){
+
+                    const element = document.querySelector(`#${element_id}`);
+
+                    element.innerHTML = text;
+                    element.classList.remove('d-none');
+
+                    if(timeout){
+                        setTimeout(() => {
+                            hide(element_id)
+                        }, timeout)
+                    }
+
+                }
+
+                function hide(element_id){
+                    document.querySelector(`#${element_id}`).classList.add('d-none');
+                }
+
+                function showElem(elements){
+                    elements.forEach(el => {
+                        $(el).show();
+                        //el.classList.remove('d-none')
+                    })
+                }
+    
+                function hideElem(elements){
+                    elements.forEach(el => {
+                        $(el).hide();
+                        //el.classList.add('d-none')
+                    })
+                }
+    
+                function loadDashboardPage(page_name){
+                    document.querySelector('.load-window').classList.add('d-none');
+                    dashboardLoadEvent.detail.dashboard_name = page_name;
+                    document.dispatchEvent(dashboardLoadEvent);
+                }
+    
+                function showDashboardPage(page_name){
+                    hideElem([...document.querySelectorAll('.app-window')]);
+                    showElem([...document.querySelectorAll('#' + page_name)]);
+                    localStorage.setItem('current_dashboard', page_name);
+                }
+
+                function formatMoney(value){
+                    return `R$ ${parseFloat(value).toFixed(2).replace('.', ',')}`;
+                }
+
+                function formatPercent(value){
+                    let percent = parseFloat(value).toFixed(2).split('.')[1] == '00' ? parseInt(value) : parseFloat(value).toFixed(2);
+                    return `${percent}%`;
+                }
+
+                function formatUnity(value){
+                    return `${value}m`;
+                }
+
+                // LOAD TABLE WITH ANY DATA RESULTS
+                function loadTable(results, params, callback = null){ // { table_name : 'x', table_columns : ['id', 'nome'] }
+
+                    if(!results){
+                        console.warn('not found results to load table', results);
+                        return null;
+                    }
+
+                    if(!params.table_name){
+                        console.error('Not found table_name in params [loadTable] => ', params);
+                        return null;
+                    }
+
+                    if(!params.table_columns){
+                        console.error('Not found table_columns in params [loadTable] => ', params);
+                        return null;
+                    }
+
+                    let data_html = '';
+                    let table_name = params.table_name;
+                    let table_columns = params.table_columns;
+                    let window_name = '';
+                    let item_name = params.item_name;
+
+                    if(table_name.includes('produtos')){
+                        table_columns.push('quantidade')
+                    }else if(table_name.includes('estoque_produto_final') || table_name.includes('estoque_material_producao')){
+                        table_columns.push('estoque')
+                    }
+                    
+                    try{
+                        window_name = params.table_name.split('-')[0];
+                    }catch(err){
+                        throw err;
+                    }
+
+                    if(!results.length){
+
+                        data_html = '<tr>' + '\n';
+                        data_html += `   <td colspan="100%">Nada encontrado</td>` + '\n';
+                        data_html += '</tr>' + '\n';
+
+                        document.querySelector('#' + table_name).innerHTML = data_html;
+                        
+                        return false;
+
+                    }
+
+                    results.forEach((data, i) => {
+
+                        let tds = '';
+
+                        data_html += `<tr class="${item_name}-item" data-bs-id="${data.id}">` + '\n';
+
+                        table_columns.forEach(column  => {
+
+                            switch(column){
+
+                                case 'endereco':
+                                    tds += `<td>${data[column]}${data['ponto_referencia'] ? ',' + data['ponto_referencia'] : ''}</td>` + '\n';
+                                break;
+
+                                case 'instagram':
+                                    tds += `<td><a class="link" target="_blank" href="https://instagram.com/${data[column]}">@${data[column]}</td>` + '\n';
+                                break;
+
+                                /*case 'categoria':
+                                    tds += `<td>${data['produtos_categoria'].nome}</td>` + '\n';
+                                break;*/
+
+                                case 'secao':
+                                    tds += `<td>${data['produtos_seco'].nome}</td>` + '\n';
+                                break;
+                                
+                                case 'cor':
+                                    tds += `<td>${data['produtos_cor'].nome}</td>` + '\n';
+                                break
+
+                                case 'datecreated':
+
+                                    let datecreated = new Date(data[column]).toLocaleString();
+                                    tds += `<td>${datecreated}</td>` + '\n';
+
+                                break;
+
+                                // campos nao usados
+                                case 'codigo_barras':
+                                case 'ponto_referencia':
+
+                                break;
+
+                                case 'produto':
+                                    tds += `<td>${data['produto_nome'].nome}</td>` + '\n';
+                                break;
+
+                                case 'quantidade':
+                                    if(getCurrentDashboard() == 'caixa'){
+                                        tds += `<td>${data[column]}</td>` + '\n';
+                                    }/*else{
+                                        tds += `<td>${data['estoque_produto_final'].estoque}</td>` + '\n';
+                                    }*/
+                                break;
+
+                                case 'estoque':
+                                
+                                    let _estoque = 0;
+
+                                    _estoque = parseInt(data['entrada']) - parseInt(data['saida']);
+
+                                    tds += `<td>${_estoque}</td>` + '\n';
+                                
+                                break;
+
+                                case 'valor':
+                                case 'preco':
+                                    tds += `<td>${formatMoney(data[column])}</td>` + '\n';
+                                break;
+
+                                case 'desconto':
+                                    tds += `<td>${formatPercent(data[column])}</td>` + '\n';
+                                break;
+
+                                case 'produto_id':
+                                    tds += `<td>${data['produto'].nome}</td>` + '\n';
+                                break;
+
+                                case 'caixa_id':
+                                    tds += `<td>${data['caixa'].nome}</td>` + '\n';
+                                break;
+
+                                case 'forma_pagamento_id':
+                                    tds += `<td>${data['formas_pagamento'].nome}</td>` + '\n';
+                                break;
+
+                                case 'fornecedor_id':
+                                    tds += `<td>${data['fornecedore'].nome}</td>` + '\n';
+                                break;
+
+                                case 'forma_pagamento':
+                                    tds += `<td>${data['formas_pagamento'].nome}</td>` + '\n';
+                                break;
+
+                                case 'unidade':
+                                    tds += `<td>${formatUnity(data[column])}</td>` + '\n';
+                                break;
+
+                                case 'cliente_id':
+                                    tds += `<td>${data['cliente'].nome}</td>` + '\n';
+                                break;
+
+                                default:
+                                    tds += `<td>${data[column]}</td>` + '\n';
+                                break;
+
+
+                            }
+
+                        });
+    
+                        data_html += tds;
+    
+                        data_html += `</tr>` + '\n';
+
+                    });
+
+                    document.querySelector('#' + table_name).innerHTML = data_html;
+
+                    console.log(item_name);
+
+                    setListener([...document.querySelectorAll(`.${item_name}-item`)], 'click', e => {
+
+                        let item_id = e.currentTarget.getAttribute('data-bs-id');
+
+                        results.forEach(data => {
+
+                            if(parseInt(data['id']) == parseInt(item_id)){
+
+                                table_columns.forEach(column => {
+
+                                    switch(column){
+                                        case 'produto_nome':
+                                            column = 'produto';
+                                        break;
+                                    }
+
+                                    if(column != 'id' && column != 'datecreated' && column != 'estoque'){
+                                        try{
+                                            
+                                            let field_form = document.querySelector(`#${item_name}-${column}`);
+                                            let field_type = field_form.tagName;
+
+                                            if(column == 'quantidade'){
+                                                field_form.setAttribute('disabled', true);
+                                            }
+
+                                            if(field_type == 'SELECT'){
+                                                field_form.value = [data[column]];
+                                                $(field_form).trigger('change');
+                                            }else{
+                                                if(column.includes('preco') || column.includes('valor')){
+                                                    field_form.value = parseFloat(data[column]).toFixed(2);
+                                                }else{
+                                                    field_form.value = data[column]
+                                                }
+                                            }
+
+                                        }catch(err){
+                                            console.error(err, item_name, column)
+                                        }
+                                    }
+
+                                })
+                                
+                                document.querySelector(`#del-${item_name}`).removeAttribute('disabled');
+                                document.querySelector(`#${item_name}-id`).value = data['id'];
+                            }
+
+                        });
+
+                    });
+
+                    if(callback && typeof callback == 'function'){
+                        callback();
+                    }
+
+                }
+
+                // LOAD SELECT INPUT QUERYING ANY ROUTE
+                function loadSelectOptions(name, params, callback = null){
+
+                    api.getOptions(name)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(!results.error){
+                                
+                                results = results.results;
+
+                                let placeholder = params.placeholder
+                                let selectElementName = params.selectElementName;
+                                let options = getCurrentDashboard() == 'relatorios-ordem_servico' ? `<option value="0" selected disabled>${placeholder}</option>` + '\n' : `<option selected disabled>${placeholder}</option>` + '\n';
+                            
+                                /*if(getCurrentCaixa() == 'caixa'){
+                                    document.querySelector('#caixa_valor_view').innerHTML = '';
+                                }*/
+
+                                results.forEach((data) => {
+                                    options += `<option value="${data.id}">${data.nome}</option>` + '\n'; 
+                                });
+                            
+                                document.querySelector(`#${selectElementName}`).innerHTML = options;
+                            
+                                $(`#${selectElementName}`).select2({
+                                    minimumResultsForSearch: 2,
+                                    width : 'resolve'
+                                });
+                            
+                                $(`#${selectElementName}`).on('select2:select', function (e) {
+                                    
+                                    var data = e.params.data;
+                            
+                                    if(data.selected && data.id && data.text && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio')){
+                                        try{
+                                            document.querySelector(`#edit-${name}`).removeAttribute('disabled');
+                                        }catch(err){
+                                            console.warn('Erro ao tentar remover atributo disabled', '\n', err)
+                                        }
+                                    }else if(getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio')){
+                                        try{
+                                            document.querySelector(`#edit-${name}`).setAttribute('disabled', true);
+                                        }catch(err){
+                                            console.warn('Erro ao adicionar atributo ao campo', '\n', err);
+                                        }
+                                    }
+                            
+                                });
+                            
+                                $(`#${selectElementName}`).on('change', function (e) {
+                            
+                                    let data = e.currentTarget;
+                            
+                                    if(data.value && name != 'caixa' && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio')){
+                                        try{
+                                            document.querySelector(`#edit-${name}`).removeAttribute('disabled');
+                                        }catch(err){
+                                            console.warn('Erro ao tentar remover atributo disabled', '\n', err)
+                                        }
+                                    }else if(data.value && name == 'caixa'){
+                                        try{
+                                            document.querySelector('#btn-abrir-caixa').removeAttribute('disabled');
+                                            document.querySelector('#edit-caixa').removeAttribute('disabled');
+                                            localStorage.setItem('current_caixa', data.value);
+                                            getCaixaTemp(data.value);
+                                        }catch(err){
+                                            console.warn('Erro ao remover atributo de campo', '\n', err);
+                                        }
+                                    }
+                            
+                                });
+
+                                if(typeof callback == 'function'){
+                                    try{
+                                        callback();
+                                    }catch(err){
+                                        console.warn('Erro ao iniciar callback', '\n', err);
+                                    }
+                                }
+
+                            }else{
+                                console.error(results.msg);
+                            }
+
+                        })
+                        .catch(err => {
+                            console.log(name, params)
+                            console.error(err)
+                        })
+
+
+                }
+
+                function prepareOptions(results){
+
+                    let produtos_categorias = [];
+                    let produtos_secoes = [];
+                    let produtos_cores = [];
+                    let index_categorias = 0;
+                    let index_secoes = 0;
+                    let index_cores = 0;
+
+                    results.forEach(result => {
+                        
+                        if(produtos_categorias.length == 0){
+                            produtos_categorias.push(result.produtos_categoria);
+                        }else{
+                            if(produtos_categorias[index_categorias]['id'] != result.produtos_categoria.id){
+                                produtos_categorias.push(result.produtos_categoria);
+                                index_categorias += 1;
+                            }
+                        }
+
+                        if(produtos_secoes.length == 0){
+                            produtos_secoes.push(result.produtos_seco);
+                        }else{
+                            if(produtos_secoes[index_secoes]['id'] != result.produtos_seco.id){
+                                produtos_secoes.push(result.produtos_seco);
+                                index_secoes += 1;
+                            }
+                        }
+
+                        if(produtos_cores.length == 0){
+                            produtos_cores.push(result.produtos_cor);
+                        }else{
+                            if(produtos_cores[index_cores]['id'] != result.produtos_cor.id){
+                                produtos_cores.push(result.produtos_cor);
+                                index_cores += 1;
+                            }
+                        }
+                    
+                    });
+
+                    return { produtos_secoes, produtos_categorias, produtos_cores }
+
+                }
+
+                // CLEAR ALL FORMS
+                function clearForms(){
+
+                    let fields = [...document.querySelectorAll('.form-control')];
+                    let selects = [...document.querySelectorAll('.form-select')];
+                    let hiddenFields = [...document.querySelectorAll('input[type="hidden"]')];
+                    let editButtons = [...document.querySelectorAll('.btn[data-bs-toggle="modal"]')];
+                    
+                    try{
+
+                        fields.forEach(field => { 
+                            !field.classList.contains('btn') && !$(field).attr('disabled') ? field.value = '' : null; 
+                            getCurrentDashboard() == 'relatorios-ordem_servico' ? field.setAttribute('disabled', true) : ''
+                            getCurrentDashboard() == 'produtos' ? field.removeAttribute('disabled') : ''
+                        });
+
+                        hiddenFields.forEach(field => { field.value = null; });
+                        
+                        selects.forEach(select => { 
+                            
+                            select.value = "0";
+                            
+                            let event = document.createEvent('Event');
+                            event.initEvent('change', true, false);
+
+                            select.dispatchEvent(event);
+
+                        });
+
+                        [...document.querySelectorAll('.btn-danger.form-control')].forEach(delButton => { 
+                            try{
+                                if(delButton.id.includes('del')){
+                                    delButton.setAttribute('disabled', true); 
+                                }
+                            }catch(err){
+                                console.warn(err)
+                            }
+                        });
+
+                        editButtons.forEach((btn) => { 
+                            if(btn.id.includes('edit')){ 
+                                try{
+                                    btn.setAttribute('disabled', true)
+                                }catch(err){
+                                    console.warn(err)
+                                }
+                            }
+                        });
+
+                        document.querySelector('#caixa_valor_view').innerHTML = '';
+                        document.querySelector('#desconto-produto').innerHTML = '';
+                        document.querySelector('#desconto-contas_pagar').innerHTML = '';
+                        document.querySelector('#desconto-contas_receber').innerHTML = '';
+
+                    }catch(err){
+                        console.error(err);
+                    }
+
+                }
+
+                // PREPARE DATA TO ADD OR SAVE
+                function prepareData(table_name, endpoint = null){
+
+                    let data = {};
+
+                    if(!endpoint){
+                        endpoint = table_name;
+                    }
+
+                    [...document.querySelectorAll('input,select')].forEach(input =>{
+
+                        if(input.getAttribute('id').includes(`${table_name}-`) && !input.getAttribute('id').includes('table')){
+                        
+                            let column_name = input.getAttribute('id').split('-')[1];
+                            let column_data = input.value;
+
+                            if(column_name == 'id' && endpoint.includes('caixa') && !endpoint.includes('saida')){
+                                column_name = 'caixa_id';
+                            }
+
+                            if(column_name == 'preco' || column_name == 'valor'){
+
+                                if(input.getAttribute('type') == 'hidden'){
+                                    column_data = parseFloat(column_data);
+                                }else{
+                                    column_data = $(input).maskMoney('unmasked')[0];
+                                }
+                            }
+
+                            data[column_name] = column_data;
+                        
+                        }
+
+                    });
+
+                    data.endpoint = endpoint;
+                    data.form_data = data;
+
+                    return data;
+
+                }
+
+                // PREPARE DATA TO DELETE
+                function prepareDelete(params){
+
+                    let data = {};
+
+                    try{
+                     
+                        if(!document.querySelector(`#${params.field_name}-id`).value){
+                            console.error('id empty [prepareDelete()]', params)
+                        }
+
+                        data.endpoint = params.endpoint;
+                        data.id = document.querySelector(`#${params.field_name}-id`).value;
+
+                        return data;
+
+                    }catch(err){
+                        console.warn(err);
+                    }
+
+                }
+                
+                // GET CURRENT DASHBOARD IN LOCAL STORAGE
+                function getCurrentDashboard(){
+                    return localStorage.getItem('current_dashboard');
+                }
+
+                // GET CURRENT CASHIER
+                function getCurrentCaixa(){
+                    return localStorage.getItem('current_caixa');
+                }
+
+                // GET DATA FROM ANY ENDPOINT AND ANY APP WINDOW
+                function getDataTables(item_id = null, item_name = '', load_options = false, item){
+
+                    if(item_name.empty()){
+                        console.error('item_name cannot be empty', item_name);
+                        return;
+                    }
+
+                    api.getData({ endpoint : { path : getCurrentDashboard(), id : item_id } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            let fields = results.fields;
+
+                            if(results.error){
+                                
+                                loadTable([], {
+                                    table_name : `${getCurrentDashboard()}-table`,
+                                    table_columns : fields,
+                                    item_name : item_name
+                                });
+
+                            }else{
+
+                                results = results.results;
+        
+                                loadTable(results, {
+                                    table_name : `${getCurrentDashboard()}-table`,
+                                    table_columns : fields,
+                                    item_name : item_name
+                                });
+
+                                if(getCurrentDashboard() == 'produtos'){
+                                    /*loadSelectOptions('secao', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'modal_categoria-secao-select'
+                                    });*/
+                                }
+
+                                if(getCurrentDashboard() == 'estoque_produto_final' || getCurrentDashboard() == 'produtos'){
+
+                                    console.log('results', results);
+
+                                    results.forEach((data) => {
+
+                                        let estoque = getCurrentDashboard() == 'estoque_produto_final' ? parseInt(data.entrada) - parseInt(data.saida) : parseInt(data.estoque_produto_final.estoque);
+
+                                        console.log(estoque);
+
+                                        if(estoque && estoque < 4){
+                                            alert(`Atenção restam apenas ${estoque} unidades do produto ${getCurrentDashboard() == 'estoque_produto_final' ? data.produto_nome.nome : data.nome}`);
+                                        }
+
+                                    })
+
+                                }
+
+                            }
+
+                            if(load_options){
+
+                                fields.forEach(field => {
+
+                                    switch(field){
+
+                                        case 'produto':
+
+                                            loadSelectOptions('', {
+                                                placeholder : '-- selecione a opção --',
+                                                selectElementName : `${item_name}-${field}`
+                                            });
+
+                                        break;
+
+                                        //case 'categoria':
+                                        case 'secao':
+                                        case 'cor':
+
+                                            loadSelectOptions(field, {
+                                                placeholder : '-- selecione a opção --',
+                                                selectElementName : `${item_name}-${field}`
+                                            });
+
+                                        break;
+
+                                        case 'fornecedor_id':
+
+                                            loadSelectOptions('fornecedores', {
+                                                placeholder : '-- selecione a opção --',
+                                                selectElementName : `${item_name}-${field}`
+                                            });
+
+                                        break;
+
+                                        case 'cliente_id':
+
+                                            loadSelectOptions('clientes', {
+                                                placeholder : '-- selecione a opção --',
+                                                selectElementName : `${item_name}-${field}`
+                                            });
+
+                                        break;
+
+                                        case 'forma_pagamento':
+
+                                            loadSelectOptions('formas_pagamentos', {
+                                                placeholder : '-- selecione a opção --',
+                                                selectElementName : `${item_name}-${field}`
+                                            });
+
+                                        break;
+
+                                    }
+
+
+                                });
+
+                            }
+    
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        })
+
+                }
+
+                // GET CAIXA
+                function getCaixa(caixa_id = null){
+
+                    api.getData({ endpoint : { path : 'caixa', id : caixa_id } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                console.error(results.msg);
+                            }else{
+
+                                loadSelectOptions('caixa', {
+                                    placeholder : '-- selecione o caixa --',
+                                    selectElementName : 'caixa-id'
+                                }, function() { // gambiarra
+                                    
+                                    if(getCurrentCaixa()){
+                                        
+                                        document.querySelector('#caixa-id').value = getCurrentCaixa();
+                                        
+                                        let change_event = document.createEvent('Event');
+                                        change_event.initEvent('change', true, false);
+                                        
+                                        document.querySelector('#caixa-id').dispatchEvent(change_event);
+                                        
+                                        hide('form-abrir-caixa');
+                    
+                                        [...document.querySelectorAll('.caixa-window')].forEach(el => {
+                                            el.classList.remove('d-none');
+                                        });
+
+                                        getCaixaForm();
+
+                                    }
+
+                                });
+
+                                loadSelectOptions('', {
+                                    placeholder : '-- selecione o produto --',
+                                    selectElementName : 'modal_lancar_caixa-produto_id'
+                                });
+
+                                loadSelectOptions('formas_pagamentos', {
+                                    placeholder : '-- selecione a forma de pagamento --',
+                                    selectElementName : 'modal_lancar_caixa-forma_pagamento_id'
+                                });
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        });
+
+                }
+
+                function getCaixaTemp(caixa_id){
+
+                    api.getData({ endpoint : { path : 'caixa/temp', id : caixa_id } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                console.error(results.msg);
+                            }else{
+
+                                let fields = results.fields;
+                                results = results.results;
+    
+                                loadTable(results, {
+                                    table_name : 'caixa-table',
+                                    table_columns : fields,
+                                    item_name : 'caixa'
+                                });
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        });
+
+                }
+
+                function getCaixaForm(){
+
+                    api.getData({ endpoint : { path : 'caixa', id : getCurrentCaixa() } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(!results.error){
+
+                                results = results.results;
+
+                                document.querySelector('#caixa-entrada').value = formatMoney(results.entrada);
+                                document.querySelector('#caixa-saida').value = formatMoney(results.saida);
+                                document.querySelector('#caixa-saldo').value = formatMoney(results.saldo);
+
+                            }else{
+                                console.error(results.msg)
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err)
+                        });
+
+                }
+
+                const app_window = [...document.querySelectorAll('.app-window')]; // APP WINDOWS
+                const btn_menu = [...document.querySelectorAll('.btn-menu')]; // MENU BUTTONS
+                const btn_logout = document.querySelector('#btn-logout');
+
+                const btn_edit_secao = document.querySelector('#edit-secao'); // EDIT SECTION BUTTON
+                //const btn_edit_categoria = document.querySelector('#edit-categoria'); // EDIT CATEGORIA BUTTON
+                const btn_edit_cor = document.querySelector('#edit-cor'); // EDIT COLOR BUTTON
+                const btn_edit_caixa = document.querySelector('#edit-caixa'); // EDIT CAIXA
+
+                // ALL ADD OR SAVE BUTTONS
+                let btns_add_save_item = [...document.querySelectorAll('.btn.btn-success.form-btn[type="button"]')].map(btn => {
+                    if(btn.id.includes('save-')){
+                        if(btn !== undefined){
+                            return btn;
+                        }else{
+                            return 'aqui'
+                        }
+                    }
+                });
+
+                // GAMBIARRA
+                btns_add_save_item.forEach((btn, i) => {
+                    if(btn == undefined){
+                        btns_add_save_item.splice(i, 1);
+                    }
+                });
+
+                const btns_del_item = [...document.querySelectorAll('.btn.btn-danger')]; // DELETE BUTTONS
+
+                //console.log(btns_del_item);
+
+                // MODAL BUTTONS
+                const btn_save_secao = document.querySelector('#btn-add-secao');
+                //const btn_save_categoria = document.querySelector('#btn-add-categoria');
+                const btn_save_cor = document.querySelector('#btn-add-cor');
+                const btn_saida_caixa = document.querySelector('#btn-lancar-saida');
+                
+                // CAIXA BUTTONS
+                const btn_abrir_caixa = document.querySelector('#btn-abrir-caixa');
+                const btn_lancar_caixa = document.querySelector('#lancar-caixa');
+                const btn_lancar_saida_caixa = document.querySelector('#lancar-saida-caixa');
+                const btn_fechar_caixa = document.querySelector('#fechar-caixa');
+
+                // RELATORIOS BUTTONS
+                const btn_relatorio_vendas = document.querySelector('#relatorio-vendas-btn');
+                const btn_relatorio_contas_pagar = document.querySelector('#relatorio-contas_pagar-btn');
+                const btn_relatorio_contas_receber = document.querySelector('#relatorio-contas_receber-btn');
+                const btn_relatorio_ordem_servico = document.querySelector('#relatorio-ordem_servico-btn');
+                const btn_relatorio_ordem_servico_add_item = document.querySelector('#btn-add-produto-ordem_servico');                
+
+                //let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                //window.open(file_url, 'Imprimir pedido', "width=800,height=600");
+
+                const search_inputs = [...document.querySelectorAll('.inpt-search[type="search"]')]; // SEARCH INPUTS
+
+                btn_logout.addEventListener('click', (e) => {
+
+                    api.logout()
+                        .then(resp => { document.location.reload() })
+                        .catch(err => {
+                            console.error(err)
+                        })
+
+                });
+
+                // LISTENER TO LOAD APP WINDOW
+                document.addEventListener('load_dash', (e) => {
+
+                    const { dashboard_name } = e.detail;
+                    showDashboardPage(dashboard_name)
+    
+                    switch(dashboard_name){
+    
+                        case 'clientes':
+                            getDataTables(null, 'cliente');
+                        break;
+    
+                        case 'fornecedores':
+                            getDataTables(null, 'fornecedor');
+                        break;
+
+                        case 'vendedores':
+                            getDataTables(null, 'vendedor');
+                        break;
+
+                        case 'prestadores_servicos':
+                            getDataTables(null, 'prestador_servico');
+                        break;
+
+                        case 'produtos':
+                            getDataTables(null, 'produto', true);
+                        break;
+
+                        case 'funcionarios':
+                            getDataTables(null, 'funcionario');
+                        break;
+    
+                        case 'estoque_material_producao':
+                            getDataTables(null, 'estoque_material_producao', true);
+                        break;
+
+                        case 'estoque_produto_final':
+                            getDataTables(null, 'estoque_produto_final', true);
+                        break;
+
+                        case 'contas_pagar':
+                            getDataTables(null, 'contas_pagar', true);
+                        break;
+
+                        case 'contas_receber':
+                            getDataTables(null, 'contas_receber', true);
+                        break;
+
+                        case 'relatorios-ordem_servico':
+
+                            loadSelectOptions('', {
+                                placeholder : '-- selecione o produto --',
+                                selectElementName : 'relatorio-ordem_servico-produto'
+                            });
+
+                        break;
+                        
+                        case 'caixa':
+                            getCaixa(getCurrentCaixa());
+                        break;
+    
+                    }
+    
+                });
+    
+                loadDashboardPage(currentDashboard); // LOAD LAST STORAGE DASHBOARD
+
+                $('#modal_saida_caixa-saida').maskMoney();
+
+                document.querySelector('#btn-add-secao').addEventListener('click', (e) => {
+
+                    let secao_id = document.querySelector('#modal_secao-id').value;
+                    let secao_nome = document.querySelector('#modal_secao-nome').value;
+
+                    let data = {};
+
+                    if(!secao_nome){
+                        show('modal_secao-error', 'Preencha o nome da seção');
+                        return;
+                    }
+
+                    data.nome = secao_nome;
+                    data.endpoint = 'produtos/secao';
+                    data.form_data = data;
+
+                    if(secao_id){
+
+                        data.id = secao_id;
+
+                        api.saveData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_secao-error', results.msg, 4000);
+                                }else{
+
+                                    loadSelectOptions('secao', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'produto-secao'
+                                    });
+
+                                    /*loadSelectOptions('secao', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'modal_categoria-secao-select'
+                                    });*/
+                                    
+                                    $('#modal_secao').val('');
+                                    $('#modal_secao').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+
+                    }else{
+
+                        api.createData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_secao-error', results.msg, 4000);
+                                }else{
+                                    
+                                    loadSelectOptions('secao', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'produto-secao'
+                                    });
+
+                                    /*loadSelectOptions('secao', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'modal_categoria-secao-select'
+                                    });*/
+
+                                    $('#modal_secao').val('');
+                                    $('#modal_secao').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+
+                    }
+
+                });
+
+                /*document.querySelector('#btn-add-categoria').addEventListener('click', (e) => {
+
+                    let categoria_id = document.querySelector('#modal_categoria-id').value;
+                    let categoria_secao = document.querySelector('#modal_categoria-secao-select').value;
+                    let categoria_nome = document.querySelector('#modal_categoria-nome').value;
+
+                    let data = {};
+
+                    if(!categoria_nome || !categoria_secao){
+                        show('modal_categoria-error', 'Preencha todos os campos');
+                        return;
+                    }
+
+                    data.nome = categoria_nome;
+                    data.secao = categoria_secao;
+                    data.endpoint = 'produtos/categoria';
+                    data.form_data = data;
+
+                    if(categoria_id){
+
+                        data.id = secao_id;
+
+                        api.saveData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_categoria-error', results.msg, 4000);
+                                }else{
+
+                                    loadSelectOptions('categoria', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'produto-categoria'
+                                    });
+                                    
+                                    $('#modal_categoria').val('');
+                                    $('#modal_categoria').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+
+                    }else{
+
+                        api.createData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_categoria-error', results.msg, 4000);
+                                }else{
+                                    
+                                    loadSelectOptions('categoria', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'produto-categoria'
+                                    });
+
+                                    $('#modal_categoria').val('');
+                                    $('#modal_categoria').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+
+                    }
+
+                });*/
+
+                document.querySelector('#btn-add-cor').addEventListener('click', (e) => {
+
+                    let cor_id = document.querySelector('#modal_cor-id').value;
+                    let cor_nome = document.querySelector('#modal_cor-nome').value;
+
+                    let data = {};
+
+                    if(!cor_nome){
+                        show('modal_cor-error', 'Preencha os campos');
+                        return;
+                    }
+
+                    data.nome = cor_nome;
+                    data.endpoint = 'produtos/cor';
+                    data.form_data = data;
+
+                    if(cor_id){
+
+                        data.id = secao_id;
+
+                        api.saveData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_cor-error', results.msg, 4000);
+                                }else{
+
+                                    loadSelectOptions('cor', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'produto-cor'
+                                    });
+                                    
+                                    $('#modal_cor').val('');
+                                    $('#modal_cor').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+
+                    }else{
+
+                        api.createData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_cor-error', results.msg, 4000);
+                                }else{
+                                    
+                                    loadSelectOptions('cor', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : 'produto-cor'
+                                    });
+
+                                    $('#modal_cor').val('');
+                                    $('#modal_cor').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+
+                    }
+
+                });
+
+                // BUTTON ABRIR CAIXA
+                btn_abrir_caixa.addEventListener('click', (e) => {
+
+                    api.caixa('abrir', getCurrentCaixa())
+                        .then(resp => resp.json())
+                        .then(results => {
+                            
+                            if(results.error){
+                                console.error(results.msg);
+                            }else{
+
+                                hide('form-abrir-caixa');
+                    
+                                [...document.querySelectorAll('.caixa-window')].forEach(el => {
+                                    el.classList.remove('d-none');
+                                });
+
+                                getCaixaForm();
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        });
+
+                });
+
+                // MODALS BUTTONS EDIT
+                btn_edit_caixa.addEventListener('click', (e) => {
+
+                    let caixa_id = document.querySelector('#caixa-id').value;
+
+                    api.getData({ endpoint : { id : caixa_id, path : 'caixa' } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                console.error(results.error);
+                            }else{
+
+                                results = results.results;
+
+                                document.querySelector('#modal_add_caixa-id').value = results.id;
+                                document.querySelector('#modal_add_caixa-nome').value = results.nome;
+                                document.querySelector('#modal_add_caixa-descricao').value = results.descricao;
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err)
+                        })
+
+                });
+
+                btn_edit_secao.addEventListener('click', (e) => {
+
+                    let secao_id = document.querySelector('#produto-secao').value;
+
+                    api.getData({ endpoint : { id : secao_id, path : 'produtos/secao' } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('modal_secao-error', results.msg, 4500);
+                            }else{
+
+                                results = results.results;
+
+                                document.querySelector('#modal_secao-id').value = results.id;
+                                document.querySelector('#modal_secao-nome').value = results.nome;
+                                
+                            }
+
+                        })
+                        .catch(err => {
+
+                        })
+
+                });
+
+                /*btn_edit_categoria.addEventListener('click', (e) => {
+
+                    let secao_id = document.querySelector('#produto-secao').value;
+                    let categoria_id = document.querySelector('#produto-categoria').value;
+
+                    api.getData({ endpoint : { id : categoria_id, path : 'produtos/categoria' } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('modal_categoria-error', results.msg, 4500);
+                            }else{
+
+                                results = results.results;
+
+                                document.querySelector('#modal_categoria-id').value = results.id;
+                                document.querySelector('#modal_categoria-nome').value = results.nome;
+                                document.querySelector('#modal_categoria-secao-select').value = results.secao;
+                                
+                                $('#modal_categoria-secao-select').trigger('change');
+
+                                $('#modal_categoria-secao-select').select2({
+                                    dropdownParent: $('#modal_categoria'),
+                                    width : '100%'
+                                });
+
+                            }
+
+                        })
+                        .catch(err => {
+
+                        })
+
+                });*/
+
+                btn_edit_cor.addEventListener('click', (e) => {
+
+                    let cor_id = document.querySelector('#produto-cor').value;
+
+                    api.getData({ endpoint : { id : cor_id, path : 'produtos/cor' } })
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('modal_cor-error', results.msg, 4500);
+                            }else{
+
+                                results = results.results;
+
+                                console.log(results);
+
+                                document.querySelector('#modal_cor-id').value = results.id;
+                                document.querySelector('#modal_cor-nome').value = results.nome;
+                            }
+
+                        })
+                        .catch(err => {
+
+                        })
+
+                });
+
+                // LISTENERS CAIXA
+                btn_lancar_caixa.addEventListener('click', (e) => { 
+                    
+                    document.querySelector('#modal_lancar_caixa-id').value = getCurrentCaixa();
+
+                    $('#modal_lancar_caixa-produto_id').select2({
+                        dropdownParent: $('#modal_lancar_caixa'),
+                        width : 'style'
+                    });
+
+                    $('#modal_lancar_caixa-forma_pagamento_id').select2({
+                        dropdownParent: $('#modal_lancar_caixa'),
+                        width : 'style'
+                    });
+
+
+                    $('#modal_lancar_caixa-quantidade').on('change', (e) => {
+                        $('#modal_lancar_caixa-produto_id').trigger('change')
+                    });
+
+                    $('#modal_lancar_caixa-produto_id').on('change', (e) => {
+
+                        let produto_id = document.querySelector('#modal_lancar_caixa-produto_id').value;
+                        let produto_quantidade = document.querySelector('#modal_lancar_caixa-quantidade').value;
+                    
+                        if(produto_id){
+                    
+                            api.getData({ endpoint : { path : 'produtos', id : produto_id } })
+                                .then(resp => resp.json())
+                                .then(results => {
+                                    
+                                    if(results.error){
+                                        show('modal_lancar_caixa-error', results.msg, 4000);
+                                    }else{
+                                        
+                                        results = results.results;
+
+                                        let valor_venda = 0;
+                                        let preco_produto = results.preco;
+                                        let desconto_produto = results.desconto;
+                                        let quantidade_produto = results.estoque_produto_final.estoque;
+
+                                        document.querySelector('#caixa_produto_view_quantidade').innerHTML = `( ${quantidade_produto} unidades restantes )`;
+
+                                        if(desconto_produto != 0){
+                                            
+                                            let desconto_real = (preco_produto * (desconto_produto/100));
+                                            valor_venda = preco_produto - desconto_real;
+                                            
+                                        }else{
+                                            valor_venda = preco_produto;
+                                        }
+
+                                        if(produto_quantidade){
+                                            valor_venda *= produto_quantidade;
+                                        }
+
+                                        document.querySelector('#caixa_valor_view').innerHTML = formatMoney(valor_venda);
+                                        document.querySelector('#modal_lancar_caixa-valor').value = valor_venda;
+                    
+                                    }
+                    
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                });
+                    
+                        }
+                    });
+
+                });
+
+                btn_lancar_saida_caixa.addEventListener('click', (e) => { document.querySelector('#modal_saida_caixa-id').value = getCurrentCaixa(); });
+                
+                btn_fechar_caixa.addEventListener('click', (e) => { 
+
+                    api.caixa('fechar', getCurrentCaixa())
+                        .then(resp => resp.json())
+                        .then(results => {
+                            
+                            if(results.error){
+                                console.error(results.msg);
+                            }else{
+                                localStorage.removeItem('current_caixa');
+                                document.location.reload();
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        });
+
+                });
+
+                btn_saida_caixa.addEventListener('click', (e) => {
+
+                    let caixa_id = document.querySelector('#modal_saida_caixa-id').value;
+                    let saida = $('#modal_saida_caixa-saida').maskMoney('unmasked')[0];
+
+                    if(!saida){
+                        return;
+                    }
+
+                    let data = {};
+
+                    data.id = caixa_id;
+                    data.saida = parseFloat(saida);
+
+                    data.endpoint = 'caixa/saida';
+                    data.form_data = data;
+
+                    api.createData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('modal_saida_caixa-error', results.msg, 4000);
+                            }else{
+                                getCaixa();
+                                $('#modal_saida_caixa').modal('hide')
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        });
+                    
+                    clearForms();
+
+                });
+
+                // RELATORIOS LISTENERS
+                btn_relatorio_vendas.addEventListener('click', (e) => {
+
+                    const periodo_inicial = document.querySelector('#relatorio-vendas-periodo_inicial').value;
+                    const periodo_final = document.querySelector('#relatorio-vendas-periodo_final').value;
+
+                    let data = { periodo_inicial, periodo_final };
+
+                    data.endpoint = 'vendas';
+                    data.form_data = data;
+
+                    api.printData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('relatorio-vendas-error', results.msg, 5000)
+                            }else{
+
+                                let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                                setTimeout(() => {
+                                    window.open(file_url, 'Imprimir relatório', "width=800,height=600");
+                                }, 2300);
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        })
+
+                });
+
+                btn_relatorio_contas_pagar.addEventListener('click', (e) => {
+
+                    const periodo_inicial = document.querySelector('#relatorio-contas_pagar-periodo_inicial').value;
+                    const periodo_final = document.querySelector('#relatorio-contas_pagar-periodo_final').value;
+
+                    let data = { periodo_inicial, periodo_final, type : 'pagar' };
+
+                    data.endpoint = 'contas';
+                    data.form_data = data;
+
+                    api.printData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('relatorio-contas_pagar-error', results.msg, 5000)
+                            }else{
+
+                                let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                                setTimeout(() => {
+                                    window.open(file_url, 'Imprimir relatório', "width=800,height=600");
+                                }, 2300);
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        })
+
+                });
+
+                btn_relatorio_contas_receber.addEventListener('click', (e) => {
+
+                    const periodo_inicial = document.querySelector('#relatorio-contas_receber-periodo_inicial').value;
+                    const periodo_final = document.querySelector('#relatorio-contas_receber-periodo_final').value;
+
+                    let data = { periodo_inicial, periodo_final, type : 'receber' };
+
+                    data.endpoint = 'contas';
+                    data.form_data = data;
+
+                    api.printData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('relatorio-contas_receber-error', results.msg, 5000)
+                            }else{
+                                
+                                let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                                setTimeout(() => {
+                                    window.open(file_url, 'Imprimir relatório', "width=800,height=600");
+                                }, 2300);
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        })
+
+                });
+
+                document.querySelector('#relatorio-ordem_servico-quantidade').addEventListener('change', (e) => {
+
+                    let produto = document.querySelector('#relatorio-ordem_servico-produto').value;
+                    let span_view = document.querySelector('#ordem_servico-span');
+                    let inpt = e.currentTarget;
+                    let inpt_value = inpt.value;
+
+                    let data = [];
+
+                    if(produto && inpt_value){
+
+                        if(localStorage.getItem('ordem_servico')){
+                            data = JSON.parse(localStorage.getItem('ordem_servico'));
+                        }
+                        
+                        data.push({
+                            id : parseInt(produto),
+                            quantidade : parseInt(inpt_value)
+                        });
+
+                        localStorage.setItem('ordem_servico', JSON.stringify(data))
+                        span_view.innerHTML = `${data.length} produto selcionado`;
+
+                        clearForms();
+
+                    }
+
+                });
+
+                btn_relatorio_ordem_servico_add_item.addEventListener('click', (e) => {
+
+                    let produto_id = document.querySelector('#relatorio-ordem_servico-produto');
+
+                    if(produto_id){
+                        document.querySelector('#relatorio-ordem_servico-quantidade').removeAttribute('disabled');
+                    }else{
+                        document.querySelector('#relatorio-ordem_servico-quantidade').setAttribute('disabled', true);
+                    }
+
+                });
+
+                btn_relatorio_ordem_servico.addEventListener('click', (e) => {
+
+                    if(!localStorage.getItem('ordem_servico')){
+                        return;
+                    }
+
+                    let span_view = document.querySelector('#ordem_servico-span');
+                    const produtos = JSON.parse(localStorage.getItem('ordem_servico'));
+
+                    let data = { produtos };
+
+                    data.endpoint = 'ordem_servico';
+                    data.form_data = data;
+
+                    api.printData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            localStorage.removeItem('ordem_servico');
+
+                            if(results.error){
+                                show('relatorio-ordem_servico-error', results.msg, 5000)
+                            }else{
+
+                                let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+                                span_view.innerHTML = '0 produto selcionado';
+
+                                window.open(file_url, 'Imprimir ordem de serviço', "width=800,height=600");
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        })
+
+                });
+
+                // DELETE LISTENER
+                setListener(btns_del_item, 'click', (e) =>{
+
+                    if(getCurrentDashboard() != 'caixa'){
+
+                        let btn_del = e.currentTarget;
+                        let endpoint = localStorage.getItem('current_dashboard');
+
+                        let params = { field_name : btn_del.getAttribute('id').split('-')[1], endpoint };
+
+                        let data = prepareDelete(params);
+
+                        api.deleteItem(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+
+                                if(results.error){
+                                    console.error(results.msg);
+                                }else{
+                                    loadDashboardPage(endpoint);
+                                }
+
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+
+                        clearForms();
+
+                    }else{
+                        console.log(e.currentTarget);
+                    }
+
+                });
+
+                // LISTENER MENU BUTTONS
+                setListener(btn_menu, 'click', (e) => {
+
+                    let window_id = e.currentTarget.getAttribute('target-window');
+
+                    console.log('window_id', window_id);
+
+                    loadDashboardPage(window_id);
+
+                });
+
+                // LISTENER SEARCH INPUTS
+                setListener(search_inputs, 'input', (e) => {
+
+                    let inpt_id = e.currentTarget.id;
+                    let search_ = document.querySelector(`#${inpt_id}`);
+                    let endpoint = search_.getAttribute('data-bs-endpoint');
+                    let item_name = search_.getAttribute('data-bs-itemId');
+                    let search = search_.value;
+
+                    if(search.empty()){
+                        loadDashboardPage(localStorage.getItem('current_dashboard'));
+                        return;
+                    }
+
+                    api.searchData({ endpoint, search })
+                        .then(resp => resp.json())
+                        .then(results => {
+                            
+                            let fields = results.fields;
+
+                            if(!results.error){
+
+                                results = results.results;
+
+                                if(inpt_id.includes('caixa')){
+
+                                    console.log(results);
+
+                                    if(results.length > 0){
+                                        alert('Existe mais de um produto cadastrado com esse código de barras');
+                                    }
+
+                                    document.querySelector('#modal_lancar_caixa-produto_id').value = results[0].id;
+                                    $('#modal_lancar_caixa-produto_id').trigger('change');
+
+                                }else{
+
+                                    console.log(results, fields);
+
+                                    loadTable(results, {
+                                        table_name : `${endpoint}-table`,
+                                        table_columns : fields,
+                                        item_name : item_name
+                                    });
+
+                                }
+
+                            }else{
+
+                                if(inpt_id.includes('caixa')){
+
+                                }else{
+
+                                    loadTable([], {
+                                        table_name : `${endpoint}-table`,
+                                        table_columns : fields,
+                                        item_name : item_name
+                                    })
+
+                                }
+                                
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err)
+                        })
+
+                });
+
+                // LISTENER SAVE OR ADD DATA
+                setListener(btns_add_save_item, 'click', (e) => {
+
+                    let btn = e.currentTarget;
+                    let btn_id = btn.id.replace('save-', '');
+                    let current_dashboard = getCurrentDashboard();
+
+                    if(current_dashboard == 'caixa'){
+                        current_dashboard = 'caixa/temp';
+                    }
+
+                    let item_id = document.querySelector(`#${btn_id}-id`).value;
+                    let item_data = prepareData(btn_id, current_dashboard);
+
+                    //console.log(item_id, item_data);
+                    //return;
+
+                    console.log(item_id, item_data);
+                    
+                    if(!item_id){
+                        
+                        api.createData(item_data)
+                            .then(resp => resp.json())
+                            .then(results => {
+
+                                if(results.error){
+                                    show(`${btn_id}-error`, results.msg, 4000);
+                                }else{
+                                    clearForms();
+                                    loadDashboardPage(getCurrentDashboard());
+                                }
+        
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            })
+
+                    }else if(item_id && current_dashboard == 'caixa/temp'){
+
+                        api.createData(item_data)
+                            .then(resp => resp.json())
+                            .then(results => {
+
+                                if(results.error){
+                                    show(`${btn_id}-error`, results.msg, 10000);
+                                }else{
+                                    loadDashboardPage(getCurrentDashboard());
+                                    clearForms();
+                                    $('#modal_lancar_caixa').modal('hide');
+                                }
+
+                                return;
+        
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            })
+
+                    }else{
+
+                        api.saveData(item_data)
+                            .then(resp => resp.json())
+                            .then(results => {
+                                
+                                if(!results.error){
+                                    loadDashboardPage(getCurrentDashboard());
+                                    clearForms();
+                                }else{
+                                    show(`${btn_id}-error`, results.msg, 10000);
+                                }
+
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+                    
+                    }
+
+                });
+
+            }
+
+
+        });
+
+    </script>
+</body>
+</html>
