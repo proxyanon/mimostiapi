@@ -20,11 +20,16 @@ module.exports = () => {
 
         const { search } = req.params;
 
+        const db = require('../modules/database');
+        let search_scaped = db.escape(`%${search}%`);
+
         const results = await models.Produtos.findAll({
             where : { 
                 [models.sequelize.Op.or] : [
                     { nome : { [models.sequelize.Op.substring] : search } },
-                    { codigo_barras : { [models.sequelize.Op.substring] : search } }
+                    { codigo_barras : { [models.sequelize.Op.substring] : search } },
+                    models.sequelize.literal(`produtos_seco.nome LIKE ${search_scaped}`),
+                    models.sequelize.literal(`produtos_cor.nome LIKE ${search_scaped}`)
                 ],
             },
             include : [/*{
