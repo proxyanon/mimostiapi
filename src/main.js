@@ -85,7 +85,7 @@ const scanner = new BarcodeScanner({});
             const { stdout, stderr } = await exec('start chrome.exe https://localhost');
         }
 
-        start_chrome();
+        config.server.start_chrome ? start_chrome() : console.log('chrome not started automatily');
 
     })
 

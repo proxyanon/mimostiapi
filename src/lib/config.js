@@ -20,6 +20,7 @@ module.exports = {
         https : {
             cert : path.join(__dirname, '../assets/server.crt'),
             key : path.join(__dirname, '../assets/server.key'),
+            start_chrome : true
         },
 
         level_routes : [{

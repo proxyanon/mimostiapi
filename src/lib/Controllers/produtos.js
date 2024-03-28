@@ -27,27 +27,29 @@ module.exports = () => {
                     { codigo_barras : { [models.sequelize.Op.substring] : search } }
                 ],
             },
-            include : [{
+            include : [/*{
                 model : models.ProdutosCategorias,
                 required : true,
                 attributes : ['id', 'nome']
-            },{
+            },*/{
                 model : models.ProdutosSecoes,
                 required : true,
-                attributes : ['id', 'nome']
+                attributes : ['id', 'nome'],
+                where : { nome : { [models.sequelize.Op.substring] : search  }}
             },{
                 model : models.ProdutosCor,
                 required : false,
-                attributes : ['id', 'nome']
+                attributes : ['id', 'nome'],
+                where : { nome : { [models.sequelize.Op.substring] : search  }}
             },{
                 model : models.EstoqueProdutoFinal,
                 required : false,
                 attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
             }],
-            order : [['produtos_seco', 'id'], ['produtos_categoria', 'nome'], ['produtos_cor', 'nome']] 
+            order : [['produtos_seco', 'id'], /*['produtos_categoria', 'nome'],*/ ['produtos_cor', 'nome']] 
         })
         
-        results.length > 0 ? res.json({ error : false, results, fields : module.fields }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : module.fields });
+        results.length > 0 ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
     }
 
     module.getProdutos = async (req, res, next) => {
