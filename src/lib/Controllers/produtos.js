@@ -34,13 +34,11 @@ module.exports = () => {
             },*/{
                 model : models.ProdutosSecoes,
                 required : true,
-                attributes : ['id', 'nome'],
-                where : { nome : { [models.sequelize.Op.substring] : search  }}
+                attributes : ['id', 'nome']
             },{
                 model : models.ProdutosCor,
                 required : false,
-                attributes : ['id', 'nome'],
-                where : { nome : { [models.sequelize.Op.substring] : search  }}
+                attributes : ['id', 'nome']
             },{
                 model : models.EstoqueProdutoFinal,
                 required : false,
