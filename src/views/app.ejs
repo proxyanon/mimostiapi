@@ -1152,9 +1152,9 @@
                         <div class="col mt-4">
                             <button class="btn btn-success form-control form-btn" type="button" id="save-estoque_produto_final"><i class="fa fa-save"></i> Salvar</button>
                         </div>
-                        <div class="col mt-4">
+                        <!-- <div class="col mt-4">
                             <button class="btn btn-danger form-control" type="button" id="del-estoque_produto_final" disabled><i class="fa fa-trash"></i> Excluir item</button>
-                        </div>
+                        </div> -->
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="estoque_produto_final-error"></div>
                     </div>
 
@@ -2201,6 +2201,8 @@
                                             }else{
                                                 if(column.includes('preco') || column.includes('valor')){
                                                     field_form.value = parseFloat(data[column]).toFixed(2);
+                                                }else if(column.includes('entrada') || column.includes('saida')){
+                                                    field_form.value = 0;
                                                 }else{
                                                     field_form.value = data[column]
                                                 }

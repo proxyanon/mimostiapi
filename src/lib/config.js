@@ -16,11 +16,11 @@ module.exports = {
     server : {
 
         port : 443,
+        start_chrome : true,
 
         https : {
             cert : path.join(__dirname, '../assets/server.crt'),
-            key : path.join(__dirname, '../assets/server.key'),
-            start_chrome : true
+            key : path.join(__dirname, '../assets/server.key')
         },
 
         level_routes : [{

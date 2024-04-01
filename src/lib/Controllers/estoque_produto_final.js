@@ -78,7 +78,7 @@ module.exports = () => {
 
         for(key in module.fields){
             if(key != 'id'){
-                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
+                if((module.module.fields[key].type == 'FLOAT' || module.module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
                     obj_create[key] = req.body[key]
                 }else if(!req.body[key]){
                     return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
@@ -107,25 +107,26 @@ module.exports = () => {
     module.saveEstoqueProdutoFinal = async (req, res, next) => {
 
         const estoque_produto_final = await models.EstoqueProdutoFinal.findByPk(req.params.id)
+        const special_fields = ['id', 'entrada', 'saida'];
+
+        req.body.datecreated = new Date();
 
         if(estoque_produto_final){
-            
-            estoque_produto_final['datecreated'] = new Date();
 
             for(key in module.fields){
-                console.log(key, estoque_produto_final[key]);
-                if(key != 'id' && req.body[key]){
-                    if(module.fields[key].allowNull != false && estoque_produto_final[key].toString().empty()){
-                        return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
+                if(!special_fields.includes(key)){
+                    if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
+                        estoque_produto_final[key] = module.fields[key].type == 'FLOAT' ? parseFloat(req.body[key]) : parseInt(req.body[key]);
+                    }else if(!req.body[key]){
+                        return res.status(401).json({ error : true, msg : `Campos inválido(s) [${key}]` })
                     }else{
                         estoque_produto_final[key] = req.body[key]
                     }
                 }
             }
 
-            if(parseInt(estoque_produto_final['entrada']) < parseInt(estoque_produto_final['saida'])){
-                return res.status(401).json({ error : true, msg : 'A saída não pode ser maior que a entrada' });
-            }
+            estoque_produto_final['entrada'] = parseInt(estoque_produto_final['entrada']) + parseInt(req.body['entrada'])
+            estoque_produto_final['saida'] = parseInt(estoque_produto_final['saida']) + parseInt(req.body['saida'])
 
             estoque_produto_final['estoque'] = parseInt(estoque_produto_final['entrada']) - parseInt(estoque_produto_final['saida']);
 
