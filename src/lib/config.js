@@ -16,7 +16,7 @@ module.exports = {
     server : {
 
         port : 443,
-        start_chrome : true,
+        start_chrome : false,
 
         https : {
             cert : path.join(__dirname, '../assets/server.crt'),

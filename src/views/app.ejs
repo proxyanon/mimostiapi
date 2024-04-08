@@ -36,7 +36,7 @@
             padding: 0px !important;
             position: absolute;
             left: 0px;
-            height: calc(100% + 90px);
+            height: calc(100% + 50%);
             /*width: 300px;*/
             background: linear-gradient(rgb(161, 0, 108), rgb(130, 58, 106), rgb(210, 75, 167),  rgb(161, 0, 108));
             display: block;
@@ -53,7 +53,7 @@
             font-weight: bold;
         }
         .btn-custom { background: rgb(217,217,217); border : 1px solid white !important; width: 80%; }
-        .btn-custom::hover { background: rgba(0,0,0,.5); color: white !important; }
+        .btn-custom:hover { background: rgba(106, 101, 101, 0.5); color: white !important; }
         .bnt-custom:visited { color : white !important }
         .container-fluid { height: 100% !important; }
         .dashboard { margin-left: 20%; height: 100%; width: 80%; }
@@ -64,23 +64,28 @@
             width: 70% !important;
             height: 90%;
         }
+
+        .table-overflow-auto, .table-responsive { 
+            max-height: 200px;
+            overflow: auto;
+        }
+
         .clientes-table {
             position: relative;
             overflow: auto;
-            max-height: 280px;
+            max-height: 200px;
             width: 100%;
             padding: 0px;
             text-align: center;
         }
-        
         .clientes-table thead th { position: sticky; top: 0; z-index: 1 !important; }
-        table { border-collapse: collapse; width: 100%; }
+        table { border-collapse: collapse; width: 100%;}
         tr { cursor: pointer !important; }
         th, td { padding: 8px 16px; cursor: pointer; z-index: 1; }
         .btn-search { margin-left: -60%; margin-top: 0%; padding: 10px; background: rgb(130, 58, 106); border : 1px solid white !important; border-end-end-radius: 4px; border-top-right-radius: 4px; color: white}
         thead th { background-color: rgb(130, 58, 106) !important; }
         thead th:hover { background-color: rgb(33,37,41);}
-        th:hover, td:hover { font-weight: bold; background-color: rgba(0,0,0,.5); color:azure }
+        th:hover, td:hover { background-color: rgba(130, 58, 106, 0.8); color:azure }
 
         thead,tbody { text-align: center; }
 
@@ -98,6 +103,10 @@
             line-height: inherit;
             padding: 0.5rem 1rem;
         }*/
+        #etiquetas-table > td:last-child { padding-bottom: 0px !important; }
+        #etiquetas-table > tr > td:first-child:hover { 
+            background-color: transparent !important;
+        }
     </style>
     
     <!-- APP CONTAINER MAIN -->
@@ -176,6 +185,12 @@
                         </div>
                     </li>
 
+                    <li class="mt-4 btn-menu" target-window="etiquetas">
+                        <button class="btn btn-custom" type="button">
+                            <span><i class="fa fa-barcode"></i> Gerar etiquetas</span>
+                        </button>
+                    </li>
+
                     <li class="mt-4" id="btn-logout">
                         <button class="btn btn-custom" type="button">
                             <span><i class="fa fa-sign-out"></i> Sair do sistema</span>
@@ -235,7 +250,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="clientes-table">
+                        <div class="clientes-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -348,7 +363,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="clientes-table">
+                        <div class="clientes-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -460,7 +475,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="vendedores-table">
+                        <div class="vendedores-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -572,7 +587,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="prestadores_servicos-table">
+                        <div class="prestadores_servicos-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -684,7 +699,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="vendedores-table">
+                        <div class="vendedores-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -795,7 +810,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="produtos-table">
+                        <div class="produtos-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -866,25 +881,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="col">
-                            <div class="row">
-                                <div class="col-7 mr-0">
-                                    <div class="form-group">
-                                        <label for="produto-categoria" class="form-label">Categoria</label>
-                                        <select id="produto-categoria" class="form-select" aria-label="Categoria" required>
-                                            <option selected disabled>-- escolha a categoria do produto --</option>
-                                            <option value="1">categoria teste</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-1">
-                                    <div class="btn-group mt-4" role="group" aria-label="Categorias buttons">
-                                        <button class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#modal_categoria"><i class="fa fa-plus"></i></button>
-                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-categoria" data-bs-target="#modal_categoria" disabled><i class="fa fa-edit"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
                     </div>
 
                     <div class="row mt-4">
@@ -915,12 +911,12 @@
                                 <input type="text" class="form-control" placeholder="Descrição do produto" id="produto-descricao" required>
                             </div>
                         </div>
-                        <div class="col">
+                        <!-- <div class="col">
                             <div class="form-group">
                                 <label for="produto-codigo_barras" class="form-label">Codigo de barras</label>
                                 <input type="text" class="form-control" placeholder="Use o leitor ou digite manualmente" id="produto-codigo_barras" required>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="row mt-4">
@@ -959,7 +955,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="estoque_material_producao-table">
+                        <div class="estoque_material_producao-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -1071,7 +1067,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="estoque_produto_final-table">
+                        <div class="estoque_produto_final-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -1200,7 +1196,7 @@
 
                     <!-- CAIXA APPS -->
                     <div class="row mt-4 d-none caixa-window">
-                        <div class="caixa-table">
+                        <div class="caixa-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -1289,7 +1285,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="contas_pagar-table">
+                        <div class="contas_pagar-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -1388,7 +1384,7 @@
                     </div>
 
                     <div class="row mt-4">
-                        <div class="contas_receber-table">
+                        <div class="contas_receber-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
@@ -1459,6 +1455,86 @@
                             <button class="btn btn-danger form-control" type="button" id="del-contas_receber" disabled><i class="fa fa-trash"></i> Cancelar</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="contas_receber-error"></div>
+                    </div>
+
+                </div>
+
+                <!-- ETIQUETAS -->
+                <div class="app-window" id="etiquetas">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Criar etiquetas</h2>
+                            </div>
+                            <div class="col">
+                                <aside class="flot-right">
+                                    <div class="row">
+                                        <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
+                                            <input type="search" id="etiquetas-search" data-bs-endpoint="etiquetas" data-bs-itemId="etiquetas" class="form-control w-100 inpt-search" placeholder="Procurar etiqueta(s)">
+                                        </div>
+                                        <div class="col">
+                                            <i class="fa fa-search d-aboslute btn-search"></i>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-2 p-2 card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="etiquetas-btn-select-all" id="etiquetas-btn-select-all">
+                                <label class="form-check-label" for="etiquetas-btn-select-all" style="font-size: 16px;cursor:pointer;">Selecionar todos</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 p-0">
+                        <div class="etiquetas-table table-responsive card p-0 m-0" style="padding-bottom: 0px !important;">
+                            <table class="table table-bordered table-striped" style="padding-bottom: 0px !important;">
+                                <thead class="table-dark text-center">
+                                    <tr>
+                                        <th scope="col">Selecionar</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">Seção</th>
+                                        <!-- <th scope="col">Categoria</th> -->
+                                        <th scope="col">Preço</th>
+                                        <th scope="col">Desconto</th>
+                                        <th scope="col">Descrição</th>
+                                        <th scope="col">Cor</th>
+                                        <th scope="col">Data do registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="etiquetas-table" class="text-center" style="padding:0px !important;margin:0px !important;">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-left mt-4" style="text-align:left">
+                            <h2> Etiquetas</h2>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1">
+                        <input type="hidden" id="etiquetas-id">
+                        <div class="col">
+                            <input type="hidden" id="etiquetas-ids">
+                            <div class="form-group">
+                                <label for="etiquetas-produtos" class="form-label">Produtos selecinados</label>
+                                <textarea id="etiquetas-produtos" class="form-control" rows="4" disabled></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1">
+                        <div class="col mt-2">
+                            <button class="btn btn-success form-control" type="button" id="btn-etiquetas"><i class="fa fa-barcode"></i> Gerar etiquetas</button>
+                        </div>
+                        <div class="alert alert-danger col-12 mt-4 text-center d-none" id="etiquetas-error"></div>
                     </div>
 
                 </div>
@@ -2058,6 +2134,16 @@
 
                             switch(column){
 
+                                case 'id':
+
+                                    if(getCurrentDashboard() == 'etiquetas'){
+                                        tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar</label></td>` + '\n';
+                                    }else{
+                                        tds += `<td>${data[column]}</td>` + '\n';
+                                    }
+
+                                break;
+
                                 case 'endereco':
                                     tds += `<td>${data[column]}${data['ponto_referencia'] ? ',' + data['ponto_referencia'] : ''}</td>` + '\n';
                                 break;
@@ -2167,61 +2253,141 @@
 
                     document.querySelector('#' + table_name).innerHTML = data_html;
 
-                    console.log(item_name);
+                    if(getCurrentDashboard() != 'etiquetas'){
 
-                    setListener([...document.querySelectorAll(`.${item_name}-item`)], 'click', e => {
-
-                        let item_id = e.currentTarget.getAttribute('data-bs-id');
-
-                        results.forEach(data => {
-
-                            if(parseInt(data['id']) == parseInt(item_id)){
-
-                                table_columns.forEach(column => {
-
-                                    switch(column){
-                                        case 'produto_nome':
-                                            column = 'produto';
-                                        break;
-                                    }
-
-                                    if(column != 'id' && column != 'datecreated' && column != 'estoque'){
-                                        try{
-                                            
-                                            let field_form = document.querySelector(`#${item_name}-${column}`);
-                                            let field_type = field_form.tagName;
-
-                                            if(column == 'quantidade'){
-                                                field_form.setAttribute('disabled', true);
-                                            }
-
-                                            if(field_type == 'SELECT'){
-                                                field_form.value = [data[column]];
-                                                $(field_form).trigger('change');
-                                            }else{
-                                                if(column.includes('preco') || column.includes('valor')){
-                                                    field_form.value = parseFloat(data[column]).toFixed(2);
-                                                }else if(column.includes('entrada') || column.includes('saida')){
-                                                    field_form.value = 0;
-                                                }else{
-                                                    field_form.value = data[column]
-                                                }
-                                            }
-
-                                        }catch(err){
-                                            console.error(err, item_name, column)
+                        setListener([...document.querySelectorAll(`.${item_name}-item`)], 'click', e => {
+    
+                            let item_id = e.currentTarget.getAttribute('data-bs-id');
+    
+                            results.forEach(data => {
+    
+                                if(parseInt(data['id']) == parseInt(item_id)){
+    
+                                    table_columns.forEach(column => {
+    
+                                        switch(column){
+                                            case 'produto_nome':
+                                                column = 'produto';
+                                            break;
                                         }
-                                    }
+    
+                                        if(column != 'id' && column != 'datecreated' && column != 'estoque'){
+                                            try{
+                                                
+                                                let field_form = document.querySelector(`#${item_name}-${column}`);
+                                                let field_type = field_form.tagName;
+    
+                                                if(column == 'quantidade'){
+                                                    field_form.setAttribute('disabled', true);
+                                                }
+    
+                                                if(field_type == 'SELECT'){
+                                                    field_form.value = [data[column]];
+                                                    $(field_form).trigger('change');
+                                                }else{
+                                                    if(column.includes('preco') || column.includes('valor')){
+                                                        field_form.value = parseFloat(data[column]).toFixed(2);
+                                                    }else if(column.includes('entrada') || column.includes('saida')){
+                                                        field_form.value = 0;
+                                                    }else{
+                                                        field_form.value = data[column]
+                                                    }
+                                                }
+    
+                                            }catch(err){
+                                                console.error(err, item_name, column)
+                                            }
+                                        }
+    
+                                    })
+                                    
+                                    document.querySelector(`#del-${item_name}`).removeAttribute('disabled');
+                                    document.querySelector(`#${item_name}-id`).value = data['id'];
+                                }
+    
+                            });
+    
+                        });
+                    
+                    }else{
 
-                                })
-                                
-                                document.querySelector(`#del-${item_name}`).removeAttribute('disabled');
-                                document.querySelector(`#${item_name}-id`).value = data['id'];
+                        // BOTAO DE SELECIONAR TUDO NAS ETIQUETAS
+                        document.querySelector('#etiquetas-btn-select-all').addEventListener('click', (e) => {
+
+                            let isChecked = e.currentTarget.checked;
+
+                            [...document.querySelectorAll('.btn-check')].forEach(btnCheck => {
+                            
+                                $(btnCheck).click();
+                                btnCheck.checked = isChecked;
+
+                                if(!isChecked){
+                                    document.querySelector('#etiquetas-produtos').value = '';
+                                    document.querySelector('#etiquetas-ids').value = '';
+                                }
+                            
+                            })
+
+                        });
+
+                        [...document.querySelectorAll('.btn-check')].forEach(btnCheck => {
+
+                            let hiddenField = document.querySelector('#etiquetas-ids');
+
+                            //console.log(hiddenField.value.includes(btnCheck.value), hiddenField.value, btnCheck.getAttribute('data-bs-id'))
+
+                            if(hiddenField.value.includes(btnCheck.getAttribute('data-bs-id'))){
+                                $(btnCheck).click();
+                                btnCheck.checked = true;
                             }
 
                         });
 
-                    });
+                        setListener([...document.querySelectorAll('.btn-add-etiquetas')], 'click', e => {
+                            
+                            let produto_id = e.currentTarget.getAttribute('data-bs-id');
+                            let hiddenField = document.querySelector('#etiquetas-ids');
+                            let field = document.querySelector('#etiquetas-produtos');
+                            let isChecked = e.currentTarget.checked;
+                            
+                            api.getData({ endpoint : { path : 'produtos', id : produto_id } })
+                                .then(resp => resp.json())
+                                .then(results => {
+
+                                    if(results.error){
+                                        console.error(results.error)
+                                    }else{
+
+                                        let produto = results.results;
+                                        
+                                        if(isChecked){
+
+                                            if(field.value.empty()){
+                                                hiddenField.value = produto.id;
+                                                field.value = produto.nome;
+                                            }else{
+                                                hiddenField.value = `${hiddenField.value},${produto.id}`;
+                                                field.value =  `${field.value},${produto.nome}`;
+                                                //field.value = !field.value.includes(produto.nome) ? `${field.value},${produto.nome}` : field.value;
+                                            }
+
+                                        }else{
+
+                                            hiddenField.value = `${field.value.includes(',') ? hiddenField.value.replace(','+produto.id, '') : hiddenField.value.replace(produto.id, '')}`;
+                                            field.value = `${field.value.includes(',') ? field.value.replace(','+produto.nome, '') : field.value.replace(produto.nome, '')}`;
+
+                                        }
+                                        
+                                    }
+
+                                    })
+                            .catch(err => {
+                                console.error(err)
+                            })
+
+                        })
+
+                    }
 
                     if(callback && typeof callback == 'function'){
                         callback();
@@ -2526,7 +2692,7 @@
                             }else{
 
                                 results = results.results;
-        
+
                                 loadTable(results, {
                                     table_name : `${getCurrentDashboard()}-table`,
                                     table_columns : fields,
@@ -2784,7 +2950,8 @@
                 const btn_relatorio_contas_pagar = document.querySelector('#relatorio-contas_pagar-btn');
                 const btn_relatorio_contas_receber = document.querySelector('#relatorio-contas_receber-btn');
                 const btn_relatorio_ordem_servico = document.querySelector('#relatorio-ordem_servico-btn');
-                const btn_relatorio_ordem_servico_add_item = document.querySelector('#btn-add-produto-ordem_servico');                
+                const btn_relatorio_ordem_servico_add_item = document.querySelector('#btn-add-produto-ordem_servico');
+                const btn_etiquetas = document.querySelector('#btn-etiquetas');
 
                 //let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
 
@@ -2861,6 +3028,10 @@
                         
                         case 'caixa':
                             getCaixa(getCurrentCaixa());
+                        break;
+
+                        case 'etiquetas':
+                            getDataTables(null, 'etiquetas');
                         break;
     
                     }
@@ -3549,6 +3720,38 @@
                         .catch(err => {
                             console.error(err);
                         })
+
+                });
+
+                btn_etiquetas.addEventListener('click', (e) => {
+
+                    let produtos = document.querySelector('#etiquetas-ids').value;
+                    let etiquetas_alert_error = document.querySelector('#etiquetas-error');
+
+                    if(produtos.empty()){
+                        show('etiquetas-error', 'Você precisa selecionar algum produto');
+                        return;
+                    }else{
+                        api.generateBarcodes(produtos)
+                            .then(resp => resp.json())
+                            .then(results => {
+
+                                if(results.error){
+                                    show('etiquetas-error', results.error);
+                                }else{
+                                    
+                                    let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                                    window.open(file_url, 'Imprimir etiquetas', "width=800,height=600");
+
+                                }
+
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                show('etiquetas-error', err);
+                            })
+                    }
 
                 });
 

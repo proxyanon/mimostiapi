@@ -181,6 +181,7 @@ module.exports = () => {
         delete req.body['quantidade'];
 
         req.body.datecreated = new Date();
+        req.body.codigo_barras = Security.generatebarcode(10);
 
         if(Object.keys(fields).length!=Object.keys(fields).length){
             return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })

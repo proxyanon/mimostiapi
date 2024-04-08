@@ -15,6 +15,7 @@ const express = require('express'),
     routes = require('./lib/modules/routes'),
     compression = require('compression'),
     BarcodeScanner = require('native-barcode-scanner'),
+    PDFDocument = require('pdfkit'),
     util = require('util'),
     { exec } = require('child_process');
 
@@ -76,6 +77,103 @@ const scanner = new BarcodeScanner({});
     app.use('/api/v1/contas_pagar', routes.contas_pagar);
     app.use('/api/v1/contas_receber', routes.contas_receber);
     app.use('/api/v1/relatorios', routes.relatorios);
+    app.use('/api/v1/etiquetas', routes.etiquetas);
+
+    app.get('/api/v1/teste', async (req, res, next) => {
+
+        const filename = path.join(__dirname, 'teste.pdf');
+
+        const doc = new PDFDocument({ margin: 40, size: 'A4' });
+        const data = [{
+            id : 1,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '0123456789'
+        },{
+            id : 2,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '0254567891'
+        },{
+            id : 3,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '1532234542'
+        },{
+            id : 4,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '9234156720'
+        },{
+            id : 5,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '1634445893'
+        },{
+            id : 6,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '1634445893'
+        },{
+            id : 7,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '1634445893'
+        },{
+            id : 8,
+            nome : 'teste',
+            descricao : 'teste',
+            secao : 'teste',
+            quantidade : 10,
+            codigo_barras : '1634445893'
+        }];
+
+        let pos_x = 30;
+        let pos_y = 30;
+        
+        doc.pipe(fs.createWriteStream(filename));
+        doc.font(path.join(__dirname, 'public', 'fonts', 'LibreBarcode39-Regular.ttf'));
+
+        let row_int = 0;
+        
+        data.forEach((row, i) => {
+            
+            doc.fontSize(30).text(row.codigo_barras, pos_x, pos_y);
+            
+            if(row_int == 3){
+                row_int = 0;
+            }
+
+            if(row_int < 2){
+                pos_x += 175;
+            }else{
+                pos_x = 30;
+                pos_y += 30;
+            }
+
+            row_int += 1;
+            
+        });
+        
+        doc.end();
+
+        res.json({ error : false, filename });
+
+    });
 
     https_server.listen(config.server.port, () => {
         
@@ -87,7 +185,7 @@ const scanner = new BarcodeScanner({});
 
         config.server.start_chrome ? start_chrome() : console.log('chrome not started automatily');
 
-    })
+    });
 
     io.on('connection', socket => {
 

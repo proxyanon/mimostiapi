@@ -260,6 +260,21 @@ class Api {
 
     }
 
+    generateBarcodes(produtos){
+
+        this.setDefaultHeaders();
+        this.buildURL('etiquetas/imprimir');
+
+        this.setBody({ produtos : produtos.split(',') });
+        
+        return fetch(this.url, {
+            method : 'POST',
+            headers : this.headers,
+            body : this.body
+        })
+
+    }
+
     logout(){
         
         this.setDefaultHeaders();
