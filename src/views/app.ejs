@@ -1098,7 +1098,7 @@
                         <div class="col">
                             <div class="form-group">
                                 <label for="estoque_produto_final-produto" class="form-label">Produto</label>
-                                <select id="estoque_produto_final-produto" class="form-select" aria-label="Produto" required>
+                                <select id="estoque_produto_final-produto" class="form-select" aria-label="Produto" required disabled>
                                     <option selected disabled>-- escolha o produto --</option>
                                 </select>
                             </div>
@@ -1492,14 +1492,13 @@
                     </div>
 
                     <div class="row mt-4 p-0">
-                        <div class="etiquetas-table table-responsive card p-0 m-0" style="padding-bottom: 0px !important;">
+                        <div class="etiquetas-table table-overflow-auto card p-0 m-0" style="padding-bottom: 0px !important;">
                             <table class="table table-bordered table-striped" style="padding-bottom: 0px !important;">
                                 <thead class="table-dark text-center">
                                     <tr>
                                         <th scope="col">Selecionar</th>
                                         <th scope="col">Nome</th>
                                         <th scope="col">Seção</th>
-                                        <!-- <th scope="col">Categoria</th> -->
                                         <th scope="col">Preço</th>
                                         <th scope="col">Desconto</th>
                                         <th scope="col">Descrição</th>
@@ -2301,7 +2300,9 @@
     
                                     })
                                     
-                                    document.querySelector(`#del-${item_name}`).removeAttribute('disabled');
+                                    if(!getCurrentDashboard().includes('estoque_produto_final')){
+                                        document.querySelector(`#del-${item_name}`).removeAttribute('disabled');
+                                    }
                                     document.querySelector(`#${item_name}-id`).value = data['id'];
                                 }
     
@@ -2429,7 +2430,7 @@
                                     
                                     var data = e.params.data;
                             
-                                    if(data.selected && data.id && data.text && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio')){
+                                    if(data.selected && data.id && data.text && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && getCurrentDashboard() != 'estoque_produto_final' ){
                                         try{
                                             document.querySelector(`#edit-${name}`).removeAttribute('disabled');
                                         }catch(err){
@@ -2449,7 +2450,7 @@
                             
                                     let data = e.currentTarget;
                             
-                                    if(data.value && name != 'caixa' && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio')){
+                                    if(data.value && name != 'caixa' && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && !getCurrentDashboard().includes('estoque_produto_final')){
                                         try{
                                             document.querySelector(`#edit-${name}`).removeAttribute('disabled');
                                         }catch(err){
