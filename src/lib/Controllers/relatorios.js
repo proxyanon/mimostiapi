@@ -38,6 +38,8 @@ module.exports = () => {
 
         const { periodo_inicial, periodo_final } = req.body;
 
+        console.log(req.body);
+
         let filename = path.join(__dirname, '..', '..', 'public', 'pdfs', `${Security.makeid(10)}.pdf`);
         let query = `SELECT contas_${req.params.type}.id,${req.params.type == 'pagar' ? 'fornecedores' : 'clientes'}.nome AS ${req.params.type == 'pagar' ? 'fornecedor' : 'cliente'},formas_pagamentos.nome AS forma_pagamento,contas_${req.params.type}.valor,contas_${req.params.type}.descricao,contas_${req.params.type}.datecreated  FROM contas_${req.params.type} LEFT JOIN formas_pagamentos ON contas_${req.params.type}.forma_pagamento=formas_pagamentos.id LEFT JOIN ${req.params.type == 'pagar' ? 'fornecedores' : 'clientes'} ON contas_${req.params.type}.${req.params.type == 'pagar' ? 'fornecedor_id' : 'cliente_id'}=${req.params.type == 'pagar' ? 'fornecedores' : 'clientes'}.id WHERE contas_${req.params.type}.id IS NOT NULL AND DATE(contas_${req.params.type}.datecreated) BETWEEN :periodo_inicial AND :periodo_final ORDER BY contas_${req.params.type}.id`;
         let valor_total = 0;

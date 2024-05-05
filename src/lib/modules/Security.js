@@ -173,6 +173,8 @@ class Security {
 
             const isApi = req.baseUrl.indexOf('/api/') !== -1;
 
+            console.log(req.session)
+
             if(req.session.isAuthenticated && req.session.token){
 
                 let check_token = await jwt.verify(req.session.token, this.JWT_SECRET);

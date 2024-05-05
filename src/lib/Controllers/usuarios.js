@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 
 
 const Security = require('../modules/Security');
+const config = require('../config');
 
 const sec = new Security();
 const router = express.Router();
@@ -124,6 +125,8 @@ module.exports = () => {
                     try{
                     
                         check = await bcrypt.compare(senha, results[key].senha);
+
+                        console.log(check, senha, results[key].senha);
                     
                         sess_id = check ? results[key].id : false;
                         sess_username = check ? results[key].usuario : false;
@@ -137,7 +140,7 @@ module.exports = () => {
                 if(check){
                     
                     let sess_token = sec.tokens.auth();
-                
+
                     req.session.isAuthenticated = true;
                     req.session.session_username = sess_username;
                     req.session.session_id = sess_id;
@@ -162,16 +165,21 @@ module.exports = () => {
     module.logout = async (req, res, next) => {
         
         if(req.session.isAuthenticated) {
-            try{
+
+            req.session.destroy(err => {
+                err ? console.error(`Error when logout ${err}`) : res.redirect('/');
+            });
+
+            /*try{
                 delete req.session.isAuthenticated;
                 delete req.session.session_id;
                 delete req.session.token;
             }catch(err){
                 console.warn(err.message);
-            }
+            }*/
+        }else{
+            res.redirect('/')
         }
-
-        res.redirect('/')
 
     }
 

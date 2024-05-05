@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const path = require('path');
 
-module.exports = {
+const config = module.exports = {
 
     mysql : {
 
@@ -13,14 +13,37 @@ module.exports = {
 
     },
 
+    colors : {
+        reset : '\x1b[0m',
+        bright : '\x1b[1m',
+        blink : '\x1b[5m',
+        dim : '\x1b[2m',
+        underscore : '\x1b[4m',
+        fg : {
+            yellow : '\x1b[33m',
+            red : '\x1b[31m',
+            cyan : '\x1b[36m',
+            blue : '\x1b[34m',
+            green : '\x1b[32m'
+        },
+        bg : {
+            white : '\x1b[47m',
+            black : '\x1b[40m'
+        }
+    },
+
     server : {
 
+        hostname : 'mimostiapi.io',
         port : 443,
         start_chrome : false,
+        use_https : true,
 
         https : {
-            cert : path.join(__dirname, '../assets/server.crt'),
-            key : path.join(__dirname, '../assets/server.key')
+            cert : path.join(__dirname, '../assets/newcert/test/mimostiapi.io.crt'),
+            key : path.join(__dirname, '../assets/newcert/test/mimostiapi.io.key')
+            //cert : path.join(__dirname, '../assets/server.crt'),
+            //key : path.join(__dirname, '../assets/server.key')
         },
 
         level_routes : [{
@@ -29,7 +52,20 @@ module.exports = {
         },{
             name : '/app/pedidos',
             level : 2
-        }]
+        }],
+
+        trust_proxy : 1,
+        
+        session : {
+            secret : 'session',
+            proxy : true,
+            cookie : {
+                secure : true,
+                maxAge : 60000 * 60 * 24 // 24 horas
+            },
+            resave : false,
+            saveUninitialized : true,
+        }
 
     },
 

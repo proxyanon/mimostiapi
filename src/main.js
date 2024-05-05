@@ -1,12 +1,18 @@
+const { exit } = require('process');
+
 const express = require('express'),
     app = express(),
     config = require('./lib/config'),
     { handleParams } = require('./lib/modules/Security'),
-    { createServer } = require('https'),
+    //{ createServer } = require('https'),
+    //{ createServer } = require('http')
+    http_ = require('http'),
+    https_ = require('https'),
     sequelize = require('sequelize'),
     cookieSession = require('cookie-session'),
     cookieParser = require('cookie-parser'),
-    session = cookieSession(config.session),
+    //session = cookieSession(config.session),
+    session = require('express-session'),
     cors = require('cors'),
     helmet = require('helmet'),
     path = require('path'),
@@ -17,6 +23,7 @@ const express = require('express'),
     BarcodeScanner = require('native-barcode-scanner'),
     PDFDocument = require('pdfkit'),
     util = require('util'),
+    { xss } = require('express-xss-sanitizer'),
     { exec } = require('child_process');
 
 app.set('view engine', 'ejs');
@@ -26,6 +33,7 @@ app.use(helmet({
     contentSecurityPolicy : false
 }));
 app.use(cors());
+app.use(xss())
 app.use(compression());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended : true }));
@@ -33,13 +41,15 @@ app.use(express.json());
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-const https_server = createServer({
-    cert : fs.readFileSync(config.server.https.cert),
-    key : fs.readFileSync(config.server.https.key),
-    rejectUnauthorized : true
-}, app);
+let server;
 
-const io = new Server(https_server);
+try{
+    server = config.server.use_https ? https_.createServer({ cert : fs.readFileSync(config.server.https.cert), key : fs.readFileSync(config.server.https.key), rejectUnauthorized : true }, app) : http_.createServer(app);
+}catch(err){
+    throw err;
+}
+
+const io = new Server(server);
 const scanner = new BarcodeScanner({});
 
 (async () => {
@@ -52,11 +62,12 @@ const scanner = new BarcodeScanner({});
         throw err;
     }
 
+    config.server.session.cookie.secure = config.server.port == 443 ? true : false;
+    
     app.use(handleParams);
-
+    app.set('trust proxy', config.server.trust_proxy);
+    app.use(session(config.server.session));
     app.set('socket-io', io);
-    app.set('trust proxy', 1);
-    app.use(session);
 
     // views routes
     app.use('/', routes.index);
@@ -175,15 +186,22 @@ const scanner = new BarcodeScanner({});
 
     });
 
-    https_server.listen(config.server.port, () => {
-        
-        config.isDev || config.verbose ? console.log('[+] Server listening on', config.server.port) : '';
+    server.listen(config.server.port, () => {
+
+        let app_url = `${config.server.use_https ? 'https://' : 'http://'}${config.server.hostname}:${config.server.port}`;
+
+        config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.green}[+] Server listening on${config.colors.reset}`, `${config.colors.underscore}${config.colors.fg.yellow}${config.colors.bright}${app_url}${config.colors.reset}`) : '';
 
         async function start_chrome(){
-            const { stdout, stderr } = await exec('start chrome.exe https://localhost');
+            console.log(`${config.colors.bright}${config.colors.fg.green}[+] Starting chrome on ${config.colors.underscore}${config.colors.fg.yellow}${app_url}${config.colors.reset}`)
+            const { stdout, stderr } = await exec(`start chrome.exe ${app_url}`);
+
+            if(stderr.read()){
+                throw new Error(`Ocorreu um erro ao iniciar o chrome ${stderr.read()}`)
+            }
         }
 
-        config.server.start_chrome ? start_chrome() : console.log('chrome not started automatily');
+        config.server.start_chrome ? start_chrome() : console.log(`${config.colors.bright}${config.colors.fg.red}[-] Chrome not started automatily`, config.colors.reset);
 
     });
 

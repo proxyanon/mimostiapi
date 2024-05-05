@@ -7,6 +7,8 @@ const Sequelize = require('../modules/database');
 const sec = new Security();
 const router = express.Router();
 
+const { xss, sanitize } = require('express-xss-sanitizer');
+
 module.exports = () => {
 
     var module = {};
@@ -45,7 +47,7 @@ module.exports = () => {
         
         req.body.datecreated = new Date();
 
-        console.log(req.body);
+        req.body = sanitize(req.body);
 
         for(key in module.fields){
             if(key != 'id'){
@@ -82,6 +84,8 @@ module.exports = () => {
         if(cliente){
             
             cliente['datecreated'] = new Date();
+
+            req.body = sanitize(req.body);
 
             for(key in module.fields){
                 console.log(key, cliente[key]);
@@ -128,8 +132,8 @@ module.exports = () => {
         .use(sec.responses.setResponses)
         .get('/search/:search', sec.middlewares.csrf_check, module.searchClientes)
         .get('/:id?', sec.middlewares.csrf_check, module.getClientes)
-        .post('/add', sec.middlewares.csrf_check, module.addCliente)
-        .put('/save/:id', sec.middlewares.csrf_check, module.saveCliente)
+        .post('/add', xss(), sec.middlewares.csrf_check, module.addCliente)
+        .put('/save/:id', xss(), sec.middlewares.csrf_check, module.saveCliente)
         .delete('/del/:id', sec.middlewares.csrf_check, module.deleteCliente);
 
     return router;
