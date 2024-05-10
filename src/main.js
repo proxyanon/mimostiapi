@@ -186,14 +186,14 @@ const scanner = new BarcodeScanner({});
 
     });
 
-    server.listen(config.server.port, () => {
+    server.listen(config.server.port, config.server.hostname, () => {
 
         let app_url = `${config.server.use_https ? 'https://' : 'http://'}${config.server.hostname}:${config.server.port}`;
 
         config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.green}[+] Server listening on${config.colors.reset}`, `${config.colors.underscore}${config.colors.fg.yellow}${config.colors.bright}${app_url}${config.colors.reset}`) : '';
 
         async function start_chrome(){
-            console.log(`${config.colors.bright}${config.colors.fg.green}[+] Starting chrome on ${config.colors.underscore}${config.colors.fg.yellow}${app_url}${config.colors.reset}`)
+            config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.green}[+] Starting chrome on ${config.colors.underscore}${config.colors.fg.yellow}${app_url}${config.colors.reset}`) : '';
             const { stdout, stderr } = await exec(`start chrome.exe ${app_url}`);
 
             if(stderr.read()){
@@ -201,7 +201,7 @@ const scanner = new BarcodeScanner({});
             }
         }
 
-        config.server.start_chrome ? start_chrome() : console.log(`${config.colors.bright}${config.colors.fg.red}[-] Chrome not started automatily`, config.colors.reset);
+        config.server.start_chrome ? start_chrome() : (config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.red}[-] Chrome not started automatily`, config.colors.reset) : '');
 
     });
 
