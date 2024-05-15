@@ -1882,6 +1882,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>    
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script type="text/javascript" src="public/js/maskMoney.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
     <script type="module">
         
         import { Api } from './public/js/Api.class.js'
@@ -1986,7 +1987,8 @@
                     }
 
                 });
-    
+
+
                 // DASHBOARD STUFF
                 const dashboardLoadEvent = new CustomEvent('load_dash', { detail : { dashboard_name : null } }); // LOAD APP WINDOW EVENT
                 const currentDashboard = localStorage.getItem('current_dashboard'); // CURRENT APP WINDOW
@@ -2000,6 +2002,41 @@
                 });
 
                 // UTILS FUNCTIONS
+                function initFieldsMasks(){
+
+                    // MASK FOR CNPJ AND CPF FIEDLS
+                    [...document.querySelectorAll('input[placeholder="CPF/CNPJ"]')].forEach(el => {
+                                        
+                        let item_id = el.id
+
+                        var options = {
+                            onKeyPress: function (cpf, ev, el, op) {
+                                var masks = ['000.000.000-000', '00.000.000/0000-00'];
+                                $('#' + item_id).mask((cpf.length > 14) ? masks[1] : masks[0], op);
+                            }
+                        }
+
+                        $('#' + item_id).length > 11 ? $('#' + item_id).mask('00.000.000/0000-00', options) : $('#' + item_id).mask('000.000.000-00#', options);
+
+                    });
+
+                    // MAS FOR CELLPHONE
+                    [...document.querySelectorAll('input[placeholder="Telefone fixo ou celular"]')].forEach(el => {
+                        
+                        let item_id = el.id
+
+                        var options = {
+                            onKeyPress: function (cpf, ev, el, op) {
+                                var masks = ['(00) 0 0000-0000'];
+                                $('#' + item_id).mask(masks[0], op);
+                            }
+                        }
+
+                        $('#' + item_id).mask('(00) 0 0000-0000', options);
+
+                    });
+                }
+
                 function setListener(elements, eventName, callback){
                     elements.forEach(element => {
                         element.addEventListener(eventName, callback);
@@ -2129,7 +2166,9 @@
 
                         data_html += `<tr class="${item_name}-item" data-bs-id="${data.id}">` + '\n';
 
-                        table_columns.forEach(column  => {
+                        table_columns.forEach((column, c_index)  => {
+
+                            console.log(column, c_index)
 
                             switch(column){
 
@@ -2138,7 +2177,7 @@
                                     if(getCurrentDashboard() == 'etiquetas'){
                                         tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar</label></td>` + '\n';
                                     }else{
-                                        tds += `<td>${data[column]}</td>` + '\n';
+                                        tds += `<td>${i+1}</td>` + '\n';
                                     }
 
                                 break;
@@ -2709,8 +2748,6 @@
 
                                 if(getCurrentDashboard() == 'estoque_produto_final' || getCurrentDashboard() == 'produtos'){
 
-                                    console.log('results', results);
-
                                     results.forEach((data) => {
 
                                         let estoque = getCurrentDashboard() == 'estoque_produto_final' ? parseInt(data.entrada) - parseInt(data.saida) : parseInt(data.estoque_produto_final.estoque);
@@ -3040,6 +3077,7 @@
                 });
     
                 loadDashboardPage(currentDashboard); // LOAD LAST STORAGE DASHBOARD
+                initFieldsMasks()
 
                 $('#modal_saida_caixa-saida').maskMoney();
 

@@ -232,8 +232,9 @@ module.exports = () => {
         
         results.forEach((row, i) => {
             
-            doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y);
             doc.font('Helvetica').fontSize(10).text(row.nome, pos_x, pos_y + 25, { width : 140, align : 'center' });
+            doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y + 50);
+            doc.font('Helvetica').fontSize(10).text(row.codigo_barras, pos_x, pos_y + 75, { width : 140, align : 'center' });
             
             //doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y);
             

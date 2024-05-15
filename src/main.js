@@ -4,12 +4,9 @@ const express = require('express'),
     app = express(),
     config = require('./lib/config'),
     { handleParams } = require('./lib/modules/Security'),
-    //{ createServer } = require('https'),
-    //{ createServer } = require('http')
     http_ = require('http'),
     https_ = require('https'),
     sequelize = require('sequelize'),
-    cookieSession = require('cookie-session'),
     cookieParser = require('cookie-parser'),
     //session = cookieSession(config.session),
     session = require('express-session'),
@@ -22,7 +19,6 @@ const express = require('express'),
     compression = require('compression'),
     BarcodeScanner = require('native-barcode-scanner'),
     PDFDocument = require('pdfkit'),
-    util = require('util'),
     { xss } = require('express-xss-sanitizer'),
     { exec } = require('child_process');
 
@@ -41,7 +37,7 @@ app.use(express.json());
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-let server;
+let server = null;
 
 try{
     server = config.server.use_https ? https_.createServer({ cert : fs.readFileSync(config.server.https.cert), key : fs.readFileSync(config.server.https.key), rejectUnauthorized : true }, app) : http_.createServer(app);
