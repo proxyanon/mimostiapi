@@ -36,7 +36,7 @@ const config = module.exports = {
 
         hostname : 'mimostiapi.io',
         port : 443,
-        start_chrome : true,
+        start_chrome : false,
         use_https : true,
 
         https : {

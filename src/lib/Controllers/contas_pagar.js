@@ -7,6 +7,8 @@ const Sequelize = require('../modules/database');
 const sec = new Security();
 const router = express.Router();
 
+const { xss, sanitize } = require('express-xss-sanitizer');
+
 module.exports = () => {
 
     var module = {};
@@ -68,8 +70,10 @@ module.exports = () => {
         if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
             return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
         }
-        
+
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
 
         console.log(req.body);
 
@@ -111,6 +115,8 @@ module.exports = () => {
             
             req.body.datecreated = new Date();
 
+            req.body = sanitize(req.body);
+
             for(key in module.fields){
                 if(key != 'id'){
                     if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
@@ -122,8 +128,6 @@ module.exports = () => {
                     }
                 }
             }
-
-            console.log(ContasPagar);
 
             const results = await ContasPagar.save();
 
@@ -164,9 +168,9 @@ module.exports = () => {
         .use(sec.responses.setResponses)
         .get('/search/:search', sec.middlewares.csrf_check, module.searchContasPagar)
         .get('/:id?', sec.middlewares.csrf_check, module.getContasPagar)
-        .post('/add', sec.middlewares.csrf_check, module.addContasPagar)
-        .put('/save/:id', sec.middlewares.csrf_check, module.saveContasPagar)
-        .delete('/del/:id', sec.middlewares.csrf_check, module.deleteContasPagar);
+        .post('/add', xss(), sec.middlewares.sanitize_body, sec.middlewares.csrf_check, module.addContasPagar)
+        .put('/save/:id', xss(), sec.middlewares.sanitize_body, sec.middlewares.csrf_check, module.saveContasPagar)
+        .delete('/del/:id', xss(), sec.middlewares.csrf_check, module.deleteContasPagar);
 
     return router;
 

@@ -66,9 +66,12 @@
         }
 
         .table-overflow-auto, .table-responsive { 
-            max-height: 200px;
+            max-height: 190px;
             overflow: auto;
+            font-size: 13px;
         }
+
+        h2,h3 { font-size: 25px; }
 
         .clientes-table {
             position: relative;
@@ -232,7 +235,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Clientes cadastrados</h2>
+                                <h2><i class="fa fa-user"></i> Clientes cadastrados</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -345,7 +348,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Fornecedores cadastrados</h2>
+                                <h2><i class="fa fa-user"></i> Fornecedores cadastrados</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -457,7 +460,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Vendedores cadastrados</h2>
+                                <h2><i class="fa fa-user"></i> Vendedores cadastrados</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -569,7 +572,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Prestadores de serviços cadastrados</h2>
+                                <h2><i class="fa fa-user"></i> Prestadores de serviços cadastrados</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -681,7 +684,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Funcionários cadastrados</h2>
+                                <h2><i class="fa fa-user"></i> Funcionários cadastrados</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -792,7 +795,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Produtos cadastrados</h2>
+                                <h2><i class="fa fa-box-open"></i> Produtos cadastrados</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -809,20 +812,22 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
+                    <div class="row mt-2">
                         <div class="produtos-table table-overflow-auto">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Nome</th>
+                                        <th scope="col">Produto</th>
                                         <th scope="col">Seção</th>
-                                        <!-- <th scope="col">Categoria</th> -->
+                                        <th scope="col">Categoria</th>
                                         <th scope="col">Preço</th>
                                         <th scope="col">Desconto</th>
+                                        <th scope="col">Cor/Estampa</th>
                                         <th scope="col">Descrição</th>
-                                        <th scope="col">Cor</th>
-                                        <th scope="col">Data do registro</th>
+                                        <th scope="col">Usuário</th>
+                                        <th scope="col">Data</th>
+                                        <th scope="col">Qtd.</th>
                                     </tr>
                                 </thead>
                                 <tbody id="produtos-table" class="text-center">
@@ -831,20 +836,14 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
-                            <h2> Cadastrar ou alterar produtos</h2>
+                    <div class="row mt-1">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
+                            <h3>Cadastrar ou alterar produtos</h3>
                         </div>
                     </div>
 
-                    <div class="row mt-4">
+                    <div class="row mt-2">
                         <input type="hidden" id="produto-id">
-                        <div class="col text-left">
-                            <div class="form-group">
-                                <label for="produto-nome" class="form-label">Nome do produto</label>
-                                <input type="text" class="form-control" placeholder="Nome do produto" id="produto-nome" required>
-                            </div>
-                        </div>
                         <div class="col">
                             <div class="row">
                                 <div class="col-6 mr-0">
@@ -859,6 +858,24 @@
                                     <div class="btn-group mt-4" role="group" aria-label="Section buttons">
                                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_secao"><i class="fa fa-plus"></i></button>
                                         <button class="btn btn-primary" data-bs-toggle="modal" id="edit-secao" data-bs-target="#modal_secao" disabled><i class="fa fa-edit"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-6 mr-0">
+                                    <div class="form-group">
+                                        <label for="produto-categoria" class="form-label">Categoria</label>
+                                        <select id="produto-categoria" class="form-select" aria-label="Categoria" required>
+                                            <option selected disabled>-- escolha a categoria do produto --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="btn-group mt-4" role="group" aria-label="Categoria buttons">
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_categoria"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-categoria" data-bs-target="#modal_categoria" disabled><i class="fa fa-edit"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -884,6 +901,12 @@
                     </div>
 
                     <div class="row mt-4">
+                        <div class="col text-left">
+                            <div class="form-group">
+                                <label for="produto-nome" class="form-label">Nome do produto</label>
+                                <input type="text" class="form-control" placeholder="Nome do produto" id="produto-nome" required>
+                            </div>
+                        </div>
                         <div class="col">
                             <div class="form-group">
                                 <label for="produto-preco" class="form-label">Preço do produto R$</label>
@@ -896,15 +919,15 @@
                                 <input type="number" class="form-control" min="1" placeholder="Desconto do produto" id="produto-desconto">
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="row mt-2">
                         <div class="col">
                             <div class="form-group">
                                 <label for="produto-quantidade" class="form-label">Quantidade</label>
                                 <input type="number" class="form-control" min="1" placeholder="Qtd. do produto" id="produto-quantidade">
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="row mt-4">
                         <div class="col">
                             <div class="form-group">
                                 <label for="produto-descricao" class="form-label">Descrição</label>
@@ -919,11 +942,11 @@
                         </div> -->
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col mt-4">
+                    <div class="row mt-3">
+                        <div class="col mt-1">
                             <button class="btn btn-success form-control form-btn" type="button" id="save-produto"><i class="fa fa-save"></i> Salvar</button>
                         </div>
-                        <div class="col mt-4">
+                        <div class="col mt-1">
                             <button class="btn btn-danger form-control" type="button" id="del-produto" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="produto-error"></div>
@@ -937,13 +960,13 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Estoque de material para produção</h2>
+                                <h2><i class="fa fa-box-open"></i>Estoque de material para produção</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
                                     <div class="row">
                                         <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
-                                            <input type="search" id="estoque_material_producao-search" data-bs-endpoint="estoque_material_producao" data-bs-itemId="estoque_material_producao" class="form-control w-100 inpt-search" placeholder="Procurar funcionario(s)">
+                                            <input type="search" id="estoque_material_producao-search" data-bs-endpoint="estoque_material_producao" data-bs-itemId="estoque_material_producao" class="form-control w-100 inpt-search" placeholder="Procurar no estoque">
                                         </div>
                                         <div class="col">
                                             <i class="fa fa-search d-aboslute btn-search"></i>
@@ -961,7 +984,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Especificação</th>
-                                        <th scope="col">Cor</th>
+                                        <th scope="col">Cor/Estampa</th>
                                         <th scope="col">Unidade</th>
                                         <th scope="col">Entrada</th>
                                         <th scope="col">Saída</th>
@@ -1049,7 +1072,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Estoque de produto final</h2>
+                                <h2><i class="fa fa-box"></i> Estoque de produto final</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -1179,7 +1202,7 @@
                     <div class="row mt-4 w-50 card" id="form-abrir-caixa">
                         <div class="card-body">
                             <div class="col-12">
-                                <label for="caixa-id" class="mb-2">Caixa</label>
+                                <label for="caixa-id" class="mb-2"><i class="fa fa-dollar-sign"></i> Caixa</label>
                                 <select class="form-select" id="caixa-id">
                                     <option selected disabled>-- selecione o caixa --</option>
                                 </select>
@@ -1267,7 +1290,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Contas a pagar</h2>
+                                <h2><i class="fa fa-dollar-sign"></i> Contas a pagar</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -1366,7 +1389,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Contas a receber</h2>
+                                <h2><i class="fa fa-dollar-sign"></i> Contas a receber</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -1465,7 +1488,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col">
-                                <h2>Criar etiquetas</h2>
+                                <h2><i class="fa fa-barcode"></i> Criar etiquetas</h2>
                             </div>
                             <div class="col">
                                 <aside class="flot-right">
@@ -1544,7 +1567,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col-12">
-                                <h2>Relatório do caixa</h2>
+                                <h2><i class="fa fa-file-pdf"></i> Relatório do caixa</h2>
                             </div>
                             <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
                                 <aside>
@@ -1579,7 +1602,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col-12">
-                                <h2>Relatório de contas a pagar</h2>
+                                <h2><i class="fa fa-file-pdf"></i> Relatório de contas a pagar</h2>
                             </div>
                             <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
                                 <aside>
@@ -1614,7 +1637,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col-12">
-                                <h2>Relatório de contas a receber</h2>
+                                <h2><i class="fa fa-file-pdf"></i> Relatório de contas a receber</h2>
                             </div>
                             <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
                                 <aside>
@@ -1649,7 +1672,7 @@
                     <div style="text-align: left;">
                         <div class="row">
                             <div class="col-12">
-                                <h2>Relatório ordem de serviço</h2>
+                                <h2><i class="fa fa-file-pdf"></i> Relatório ordem de serviço</h2>
                             </div>
                             <div class="col-5 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
                                 <aside>
@@ -1723,7 +1746,7 @@
     </div>
 
     <!-- MODAL CATEGORIAS -->
-    <!-- <div class="modal" tabindex="-1" id="modal_categoria">
+    <div class="modal" tabindex="-1" id="modal_categoria">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1749,7 +1772,7 @@
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <!-- MODAL CORES -->
     <div class="modal" tabindex="-1" id="modal_cor">
@@ -1951,9 +1974,13 @@
                         $(inpt).maskMoney();
                         $(inpt).attr('type', 'text');
                     
-                    }else if(inpt.id.includes('desconto')){
+                    }/*else if(inpt.id.includes('desconto')){
+                        $(inpt).maskMoney();
                         inpt.addEventListener('input', () => { setDesconto(inpt.id) });
-                    }
+                    }else if(inpt.id.includes('quantidade')){
+                        $(inpt).maskMoney();
+                        $(inpt).attr('type', 'text');
+                    }*/
 
                 });
 
@@ -1988,7 +2015,6 @@
 
                 });
 
-
                 // DASHBOARD STUFF
                 const dashboardLoadEvent = new CustomEvent('load_dash', { detail : { dashboard_name : null } }); // LOAD APP WINDOW EVENT
                 const currentDashboard = localStorage.getItem('current_dashboard'); // CURRENT APP WINDOW
@@ -2021,12 +2047,12 @@
                     });
 
                     // MAS FOR CELLPHONE
-                    [...document.querySelectorAll('input[placeholder="Telefone fixo ou celular"]')].forEach(el => {
+                    [...document.querySelectorAll('input[placeholder="Telefone fixo ou celular"],input[placeholder="Whatsapp"]')].forEach(el => {
                         
                         let item_id = el.id
 
                         var options = {
-                            onKeyPress: function (cpf, ev, el, op) {
+                            onKeyPress: function (phone, ev, el, op) {
                                 var masks = ['(00) 0 0000-0000'];
                                 $('#' + item_id).mask(masks[0], op);
                             }
@@ -2190,9 +2216,9 @@
                                     tds += `<td><a class="link" target="_blank" href="https://instagram.com/${data[column]}">@${data[column]}</td>` + '\n';
                                 break;
 
-                                /*case 'categoria':
+                                case 'categoria':
                                     tds += `<td>${data['produtos_categoria'].nome}</td>` + '\n';
-                                break;*/
+                                break;
 
                                 case 'secao':
                                     tds += `<td>${data['produtos_seco'].nome}</td>` + '\n';
@@ -2222,9 +2248,9 @@
                                 case 'quantidade':
                                     if(getCurrentDashboard() == 'caixa'){
                                         tds += `<td>${data[column]}</td>` + '\n';
-                                    }/*else{
+                                    }else{
                                         tds += `<td>${data['estoque_produto_final'].estoque}</td>` + '\n';
-                                    }*/
+                                    }
                                 break;
 
                                 case 'estoque':
@@ -2309,7 +2335,7 @@
                                             break;
                                         }
     
-                                        if(column != 'id' && column != 'datecreated' && column != 'estoque'){
+                                        if(column != 'id' && column != 'datecreated' && column != 'estoque' && column != 'codigo_barras'){
                                             try{
                                                 
                                                 let field_form = document.querySelector(`#${item_name}-${column}`);
@@ -2459,7 +2485,7 @@
                                 });
                             
                                 document.querySelector(`#${selectElementName}`).innerHTML = options;
-                            
+                                
                                 $(`#${selectElementName}`).select2({
                                     minimumResultsForSearch: 2,
                                     width : 'resolve'
@@ -2740,10 +2766,10 @@
                                 });
 
                                 if(getCurrentDashboard() == 'produtos'){
-                                    /*loadSelectOptions('secao', {
+                                    loadSelectOptions('secao', {
                                         placeholder : '-- selecione a opção --',
                                         selectElementName : 'modal_categoria-secao-select'
-                                    });*/
+                                    });
                                 }
 
                                 if(getCurrentDashboard() == 'estoque_produto_final' || getCurrentDashboard() == 'produtos'){
@@ -2779,7 +2805,7 @@
 
                                         break;
 
-                                        //case 'categoria':
+                                        case 'categoria':
                                         case 'secao':
                                         case 'cor':
 
@@ -2945,7 +2971,7 @@
                 const btn_logout = document.querySelector('#btn-logout');
 
                 const btn_edit_secao = document.querySelector('#edit-secao'); // EDIT SECTION BUTTON
-                //const btn_edit_categoria = document.querySelector('#edit-categoria'); // EDIT CATEGORIA BUTTON
+                const btn_edit_categoria = document.querySelector('#edit-categoria'); // EDIT CATEGORIA BUTTON
                 const btn_edit_cor = document.querySelector('#edit-cor'); // EDIT COLOR BUTTON
                 const btn_edit_caixa = document.querySelector('#edit-caixa'); // EDIT CAIXA
 
@@ -2973,7 +2999,7 @@
 
                 // MODAL BUTTONS
                 const btn_save_secao = document.querySelector('#btn-add-secao');
-                //const btn_save_categoria = document.querySelector('#btn-add-categoria');
+                const btn_save_categoria = document.querySelector('#btn-add-categoria');
                 const btn_save_cor = document.querySelector('#btn-add-cor');
                 const btn_saida_caixa = document.querySelector('#btn-lancar-saida');
                 
@@ -3114,11 +3140,11 @@
                                         selectElementName : 'produto-secao'
                                     });
 
-                                    /*loadSelectOptions('secao', {
+                                    loadSelectOptions('secao', {
                                         placeholder : '-- selecione a opção --',
                                         selectElementName : 'modal_categoria-secao-select'
-                                    });*/
-                                    
+                                    });
+
                                     $('#modal_secao').val('');
                                     $('#modal_secao').modal('hide');
 
@@ -3144,10 +3170,10 @@
                                         selectElementName : 'produto-secao'
                                     });
 
-                                    /*loadSelectOptions('secao', {
+                                    loadSelectOptions('secao', {
                                         placeholder : '-- selecione a opção --',
                                         selectElementName : 'modal_categoria-secao-select'
-                                    });*/
+                                    });
 
                                     $('#modal_secao').val('');
                                     $('#modal_secao').modal('hide');
@@ -3163,7 +3189,7 @@
 
                 });
 
-                /*document.querySelector('#btn-add-categoria').addEventListener('click', (e) => {
+                document.querySelector('#btn-add-categoria').addEventListener('click', (e) => {
 
                     let categoria_id = document.querySelector('#modal_categoria-id').value;
                     let categoria_secao = document.querySelector('#modal_categoria-secao-select').value;
@@ -3235,7 +3261,7 @@
 
                     }
 
-                });*/
+                });
 
                 document.querySelector('#btn-add-cor').addEventListener('click', (e) => {
 
@@ -3390,7 +3416,7 @@
 
                 });
 
-                /*btn_edit_categoria.addEventListener('click', (e) => {
+                btn_edit_categoria.addEventListener('click', (e) => {
 
                     let secao_id = document.querySelector('#produto-secao').value;
                     let categoria_id = document.querySelector('#produto-categoria').value;
@@ -3423,7 +3449,7 @@
 
                         })
 
-                });*/
+                });
 
                 btn_edit_cor.addEventListener('click', (e) => {
 
@@ -3925,10 +3951,31 @@
                     let item_id = document.querySelector(`#${btn_id}-id`).value;
                     let item_data = prepareData(btn_id, current_dashboard);
 
-                    //console.log(item_id, item_data);
-                    //return;
+                    if(current_dashboard == 'produtos'){
+                    
+                        let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data'];
 
-                    console.log(item_id, item_data);
+                        if(Object.keys(item_data.form_data).length == 0){
+                            show(`${btn_id}-error`, ``, 4500);
+                            return
+                        }
+
+                        Object.keys(item_data.form_data).forEach(key => {
+
+                            if(!allowNullKeys.includes(key)){
+                                if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
+                                    show(`${btn_id}-error`, `Preencha o campo ${key}`, 4500);
+                                    return;
+                                }
+                            }
+
+                        });
+
+                        if(!item_data.form_data.descricao || item_data.form_data.descricao == '' || item_data.form_data.descricao == null){
+                            item_data.form_data.descricao = 'Nenhuma'
+                        }
+
+                    }
                     
                     if(!item_id){
                         

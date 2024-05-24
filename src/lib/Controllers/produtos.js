@@ -62,11 +62,11 @@ module.exports = () => {
         if(!req.params.id){
 
             results = await models.Produtos.findAll({ 
-                include : [/*{
+                include : [{
                     model : models.ProdutosCategorias,
                     required : true,
                     attributes : ['id', 'nome']
-                },*/{
+                },{
                     model : models.ProdutosSecoes,
                     required : true,
                     attributes : ['id', 'nome']
@@ -79,17 +79,19 @@ module.exports = () => {
                     required : false,
                     attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
                 }],
-                order : [['produtos_seco', 'id'], /*['produtos_categoria', 'nome'],*/ ['produtos_cor', 'nome']] 
+                //order : [['produtos_seco', 'nome'], ['produtos_categoria', 'nome'], ['produtos_cor', 'nome'], ['estoque_produto_final', 'produto_nome']] 
             });
+
+            console.log(results);
 
         }else{
 
             results = await models.Produtos.findByPk(req.params.id, {
-                include : [/*{
+                include : [{
                     model : models.ProdutosCategorias,
                     required : true,
                     attributes : ['id', 'nome']
-                },*/{
+                },{
                     model : models.ProdutosSecoes,
                     required : true,
                     attributes : ['id', 'nome']
@@ -102,7 +104,7 @@ module.exports = () => {
                     required : false,
                     attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
                 }],
-                order : ['nome', 'ASC']
+                order : [['produtos_seco', 'nome'], ['produtos_categoria', 'nome'], ['produtos_cor', 'nome']]
             });
 
         }
@@ -182,6 +184,7 @@ module.exports = () => {
 
         req.body.datecreated = new Date();
         req.body.codigo_barras = Security.generatebarcode(10);
+        req.body.usuario = req.session.session_username
 
         if(Object.keys(fields).length!=Object.keys(fields).length){
             return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
@@ -278,7 +281,7 @@ module.exports = () => {
 
     }
 
-    /*module.addProdutoCategoria = async (req, res, next) => {
+    module.addProdutoCategoria = async (req, res, next) => {
         
         let obj_create = {}
         let fields = models.ProdutosCategorias.rawAttributes;
@@ -315,7 +318,7 @@ module.exports = () => {
 
         }
 
-    }*/
+    }
 
     module.addProdutoCor = async (req, res, next) => {
         
@@ -448,7 +451,7 @@ module.exports = () => {
 
     }
 
-    /*module.saveCategoria = async (req, res, next) => {
+    module.saveCategoria = async (req, res, next) => {
         
         const categoria = await models.ProdutosCategorias.findByPk(req.params.id);
         let fields = models.ProdutosCategorias.rawAttributes;
@@ -479,7 +482,7 @@ module.exports = () => {
             res.status(500).json({ error : true, msg : 'categoria não encontrado' })
         }
 
-    }*/
+    }
 
     module.saveCor = async (req, res, next) => {
 
@@ -545,18 +548,18 @@ module.exports = () => {
         .use(sec.responses.setResponses)
         .get('/search/:search', module.searchProduct)
         .get('/secao/:id?', module.getSecoes)
-        //.get('/categoria/:id?', module.getCategorias)
+        .get('/categoria/:id?', module.getCategorias)
         .get('/cor/:id?', module.getCores)
         .get('/:id?', module.getProdutos)
         //.post('/', module.getProdutosInIds)
         .delete('/del/:id', module.deleteProduto)
         .post('/add', module.addProduto)
         .put('/secao/save/:id', module.saveSecao)
-        //.put('/categoria/save/:id', module.saveCategoria)
+        .put('/categoria/save/:id', module.saveCategoria)
         .put('/cor/save/:id', module.saveCor)
         .put('/save/:id', module.saveProduto)
         .post('/secao/add', module.addProdutoSecao)
-        //.post('/categoria/add', module.addProdutoCategoria)
+        .post('/categoria/add', module.addProdutoCategoria)
         .post('/cor/add', module.addProdutoCor)
 
     return router;

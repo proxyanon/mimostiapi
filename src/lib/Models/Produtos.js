@@ -16,10 +16,10 @@ const Model = db.define('produtos', {
         type : Sequelize.INTEGER,
         allowNull : false
     },
-    /*categoria : { 
+    categoria : { 
         type : Sequelize.INTEGER,
         allowNull : false
-    },*/
+    },
     preco : {
         type : Sequelize.FLOAT,
         allowNull : false
@@ -34,6 +34,7 @@ const Model = db.define('produtos', {
         allowNull : true
     },
     descricao : {type : Sequelize.STRING},
+    usuario : {type : Sequelize.STRING},
     codigo_barras : {type : Sequelize.STRING},
     datecreated : {
         type : Sequelize.DATE,

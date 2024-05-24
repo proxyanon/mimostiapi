@@ -1,6 +1,7 @@
 const { randomBytes } = require('crypto');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const { sanitize } = require('express-xss-sanitizer')
 
 class Security {
 
@@ -10,6 +11,7 @@ class Security {
         this.middlewares.csrf_check = this.middlewares.csrf_check.bind(this);
         this.middlewares.auth_check = this.middlewares.auth_check.bind(this);
         this.middlewares.redirect_singned = this.middlewares.redirect_singned.bind(this);
+        this.middlewares.sanitize_body = this.middlewares.sanitize_body.bind(this)
 
         this.responses.unauthorized = this.responses.unauthorized.bind(this);
         this.responses.setResponses = this.responses.setResponses.bind(this);
@@ -173,7 +175,7 @@ class Security {
 
             const isApi = req.baseUrl.indexOf('/api/') !== -1;
 
-            console.log(req.session)
+            //console.log(req.session)
 
             if(req.session.isAuthenticated && req.session.token){
 
@@ -195,6 +197,43 @@ class Security {
                 }else{
                     return res.redirect('/');
                 }
+            }
+
+        },
+
+        sanitize_body : async (req, res, next) => {
+
+            if((req.method == 'POST' || req.method == 'PUT') && req.body){
+                
+                if(!Object.keys(req.body).length){
+                    return res.status(400).json({ error : true, msg : '[Security.js] Body cannot be empty' })
+                }
+
+                console.log(req.params)
+
+                if(req.method == 'PUT' && !req.params.id){
+                    return res.status(400).json({ error : true, msg : '[Security.js] You have to specify ID to save' })
+                }
+
+                req.body = sanitize(req.body);
+
+                next();
+
+            }else{
+
+                if(req.method == 'DELETE' && !req.params.id){
+                    return res.status(400).json({ error : true, msg : '[Security.js] Specify ID' });
+                }
+
+                req.params.id = parseInt(req.params.id);
+
+                console.log(req.params.id, req.params)
+
+                if(req.params.id == NaN){
+                    return res.status(400).json({ error : true, msg : '[Security.js] Specify ID' });
+                }
+
+                next()
             }
 
         }
