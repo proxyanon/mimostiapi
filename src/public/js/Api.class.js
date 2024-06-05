@@ -223,10 +223,11 @@ class Api {
     printData(data){
 
         const { endpoint, form_data } = data;
+        const without_type_routes = ['vendas', 'ordem_servico', 'produtos', 'estoque_material_producao', 'recibo']
 
         this.setDefaultHeaders();
 
-        if(endpoint == 'vendas' || endpoint == 'ordem_servico'){
+        if(without_type_routes.includes(endpoint)){
             this.buildURL(`relatorios/${endpoint}`);
         }else{
             this.buildURL(`relatorios/${endpoint}/${form_data.type}`);

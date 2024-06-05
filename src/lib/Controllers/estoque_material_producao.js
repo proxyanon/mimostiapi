@@ -14,12 +14,13 @@ module.exports = () => {
 
     module.searchEstoqueMaterialProducao = async (req, res, next) => {
 
-        if(!req.params.search){ res.notAccept('Nada digitado') };
+        if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
 
         const { search } = req.params;
             
         const results = await models.EstoqueMaterialProducao.findAll({ 
-            where : { nome : { [ models.sequelize.Op.substring ] : search }} 
+            where : { especificao : { [ models.sequelize.Op.substring ] : search }},
+            order : [['especificao', 'ASC']]
         });
         
         results.length > 0 ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
@@ -34,7 +35,7 @@ module.exports = () => {
                 required : false,
                 attributes : ['id', 'nome']
             }],
-            order : [['produtos_cor', 'nome']] 
+            order : [['especificacao', 'ASC']]
         })
 
         if(results){

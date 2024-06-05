@@ -77,27 +77,77 @@ class Security {
 
         setResponses : async (req, res, next) => {
             
-            res.notAccept = function(msg){
+            res.notAccept = function(msg, fields = undefined){
+                
+                let hasFields = fields == undefined ? false : true;
+                
+                if(hasFields){
+                    return res.status(403).json({ error : true, msg, fields : Object.keys(fields) });
+                }
+
                 return res.status(403).json({ error : true, msg });
             }
 
-            res.serverError = function(msg){
+            res.serverError = function(msg, fields = undefined){
+                
+                let hasFields = fields == undefined ? false : true;
+                
+                if(hasFields){
+                    return res.status(500).json({ error : true, msg, fields : Object.keys(fields) });
+                }
+
                 return res.status(500).json({ error : true, msg });
             }
 
-            res.block = function(msg){
-                return res.status(401).error({ error : true, msg });
+            res.block = function(msg, fields = undefined){
+
+                let hasFields = fields == undefined ? false : true;
+                
+                if(hasFields){
+                    return res.status(401).json({ error : true, msg, fields : Object.keys(fields) });
+                }
+
+                return res.status(401).json({ error : true, msg });
             }
 
-            res.success = function(data){
+            res.success = function(data, fields = undefined){
 
                 const checkData = (data !== undefined && typeof data == 'object' && Object.values(data).length > 0);
 
+                let hasFields = fields == undefined ? false : true;
+
                 if(checkData) {
-                    return res.json({ error : false, data });
+                    if(hasFields){
+                        return res.json({ error : false, results : data, fields : Object.keys(fields) });
+                    }
+                    return res.json({ error : false, results : data });
                 }else{
-                    return res.status().json({ error : false });
+                    return res.status(400).json({ error : true, msg : 'Requisção mal formatada' });
                 }
+            }
+
+            res.notFound = function(msg, fields = undefined) {
+
+                let hasFields = fields == undefined ? false : true;
+                
+                if(hasFields){
+                    return res.status(404).json({ error : true, msg, fields : Object.keys(fields) });
+                }
+                
+                return res.status(404).json({ error : true, msg });
+            
+            }
+
+            res.sendOkResponse = function(fields = undefined){
+
+                let hasFields = fields == undefined ? false : true;
+                
+                if(hasFields){
+                    return res.status(200).json({ error : false, fields : Object.keys(fields) });
+                }
+
+                return res.status(200).json({ error : false });
+            
             }
 
             next();

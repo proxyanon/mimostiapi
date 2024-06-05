@@ -16,7 +16,7 @@ module.exports = () => {
 
     module.searchProduct = async (req, res, next) => {
 
-        if(!req.params.search){ return res.notAccept('Nada digitado') };
+        if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
 
         const { search } = req.params;
 
@@ -29,14 +29,15 @@ module.exports = () => {
                     { nome : { [models.sequelize.Op.substring] : search } },
                     { codigo_barras : { [models.sequelize.Op.substring] : search } },
                     models.sequelize.literal(`produtos_seco.nome LIKE ${search_scaped}`),
+                    models.sequelize.literal(`produtos_categoria.nome LIKE ${search_scaped}`),
                     models.sequelize.literal(`produtos_cor.nome LIKE ${search_scaped}`)
                 ],
             },
-            include : [/*{
+            include : [{
                 model : models.ProdutosCategorias,
                 required : true,
                 attributes : ['id', 'nome']
-            },*/{
+            },{
                 model : models.ProdutosSecoes,
                 required : true,
                 attributes : ['id', 'nome']
@@ -49,7 +50,7 @@ module.exports = () => {
                 required : false,
                 attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
             }],
-            order : [['produtos_seco', 'id'], /*['produtos_categoria', 'nome'],*/ ['produtos_cor', 'nome']] 
+            order : [['nome', 'ASC']] 
         })
         
         results.length > 0 ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
@@ -79,10 +80,8 @@ module.exports = () => {
                     required : false,
                     attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
                 }],
-                //order : [['produtos_seco', 'nome'], ['produtos_categoria', 'nome'], ['produtos_cor', 'nome'], ['estoque_produto_final', 'produto_nome']] 
+                order : [['nome', 'ASC']] 
             });
-
-            console.log(results);
 
         }else{
 
@@ -104,12 +103,13 @@ module.exports = () => {
                     required : false,
                     attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
                 }],
-                order : [['produtos_seco', 'nome'], ['produtos_categoria', 'nome'], ['produtos_cor', 'nome']]
+                order : [['nome', 'ASC']]
             });
 
         }
 
-        results ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
+        results ? res.success(results, module.fields) : res.notFound('Nada encontrado', module.fields);
+        //results ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
     }
 
     module.getProduto = async (req, res, next) => {
@@ -221,7 +221,7 @@ module.exports = () => {
 
                 obj_create_estoque.produto = results.id;
                 obj_create_estoque.cor = results.cor;
-                obj_create_estoque.especificacao = results.descricao;
+                obj_create_estoque.especificacao = results.nome;
                 obj_create_estoque.entrada = parseInt(produto_entrada);
                 obj_create_estoque.saida = 0;
                 obj_create_estoque.datecreated = new Date();
@@ -229,13 +229,13 @@ module.exports = () => {
                 const results_estoque = await models.EstoqueProdutoFinal.create(obj_create_estoque);
 
                 if(results_estoque){
-                    res.json({ error : false });
+                    res.sendOkResponse();
                 }else{
-                    res.json({ error : true, msg : 'Ocorreu um erro ao lançar produto no estoque' })
+                    res.notAccept('Ocorreu um erro ao lançar produto no estoque');
                 }
             
             }else{
-                res.status(500).json({ error : true, msg : 'Ocorreu um erro ao criar seção' })
+                res.serverError('Ocorreu um erro ao criar seção')
             }
 
         }

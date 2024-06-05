@@ -149,15 +149,15 @@ module.exports = () => {
                     res.json({ error : false, redirect : '/app' });
 
                 }else{
-                    res.status(401).json({ error : true, msg : 'Ocorreu um erro no login (CHECK)' })    
+                    res.block('Login e senha inválidos');
                 }
 
             }else{
-                res.status(401).json({ error : true, msg : 'Ocorreu um erro no login (404)' })
+                return res.status(404).json({ error : true, msg : 'Usuário não encontrado' })
             }
 
         }else{
-            res.status(500).json({ error : true, msg : 'Campo(s) inválido(s)' });
+            return res.status(500).json({ error : true, msg : 'Campo(s) inválido(s)' });
         }
 
     }
@@ -184,11 +184,12 @@ module.exports = () => {
     }
 
     router
+        .use(sec.responses.setResponses)
         .post('/login', module.login)
         .get('/logout', module.logout)
         .get('/:id?', module.getUsers)
-        .post('/add', module.addUser)
-        .put('/save/:id', module.saveUser)
+        .post('/add', sec.middlewares.auth_check, module.addUser)
+        .put('/save/:id', sec.middlewares.auth_check, module.saveUser)
         //.delete('/del/:id', sec.middlewares.csrf_check, sec.middlewares.auth_check, module.deleteUser)
 
     return router;

@@ -31,12 +31,13 @@
             font-family: monospace;
             border-radius: 0px !important;
         }
+
         .mainNavi { 
             margin-left: -10px;
             padding: 0px !important;
             position: absolute;
             left: 0px;
-            height: calc(100% + 50%);
+            height: 100%;
             /*width: 300px;*/
             background: linear-gradient(rgb(161, 0, 108), rgb(130, 58, 106), rgb(210, 75, 167),  rgb(161, 0, 108));
             display: block;
@@ -69,6 +70,9 @@
             max-height: 190px;
             overflow: auto;
             font-size: 13px;
+        }
+        .etiquetas-table label {
+            font-size: 12.5px !important;
         }
 
         h2,h3 { font-size: 25px; }
@@ -110,6 +114,14 @@
         #etiquetas-table > tr > td:first-child:hover { 
             background-color: transparent !important;
         }
+        .menuButtons span, .btn-menu {
+            font-size: 13px;
+        }
+        @media (min-width: 1390px){
+            .mainNavi {
+                height: calc(100% + 30%) !important;
+            }
+        }
     </style>
     
     <!-- APP CONTAINER MAIN -->
@@ -125,7 +137,7 @@
                 </div>
         
                 <!-- BUTTONS -->
-                <ul class="list-style-none mt-4">
+                <ul class="list-style-none mt-4 menuButtons">
                     
                     <li>
                         <div class="dropdown">
@@ -183,7 +195,10 @@
                                 <li class="btn-menu" target-window="relatorios-vendas"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Caixa</a></li>
                                 <li class="btn-menu" target-window="relatorios-contas_pagar"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Contas as pagar</a></li>
                                 <li class="btn-menu" target-window="relatorios-contas_receber"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Contas as receber</a></li>
+                                <li class="btn-menu" target-window="relatorios-produto"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Produtos</a></li>
+                                <li class="btn-menu" target-window="relatorios-estoque_material_producao"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Estoque material de produção</a></li>
                                 <li class="btn-menu" target-window="relatorios-ordem_servico"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Ordem de serviço</a></li>
+                                <li class="btn-menu" target-window="relatorios-recibo"><a class="dropdown-item" href="#"><i class="fa-regular fa-file-pdf"></i> Recibo</a></li>
                             </ul>
                         </div>
                     </li>
@@ -200,11 +215,11 @@
                         </button>
                     </li>
 
-                    <!-- <li class="mt-4 btn-menu" target-window="recibos">
+                    <li class="mt-4 btn-menu" target-window="recibos">
                         <button class="btn btn-custom" type="button" id="dropDownCadastros">
                             <span><i class="fa fa-newspaper"></i> Recibos</span>
                         </button>
-                    </li> -->
+                    </li>
 
                 </ul>
                 
@@ -1520,12 +1535,14 @@
                                 <thead class="table-dark text-center">
                                     <tr>
                                         <th scope="col">Selecionar</th>
-                                        <th scope="col">Nome</th>
+                                        <th scope="col">Produto</th>
                                         <th scope="col">Seção</th>
+                                        <th scope="col">Categoria</th>
                                         <th scope="col">Preço</th>
                                         <th scope="col">Desconto</th>
                                         <th scope="col">Descrição</th>
                                         <th scope="col">Cor</th>
+                                        <th scope="col">Usuário</th>
                                         <th scope="col">Data do registro</th>
                                     </tr>
                                 </thead>
@@ -1587,6 +1604,75 @@
                                         <div class="col-12 mt-5">
                                             <button class="btn btn-success form-control" id="relatorio-vendas-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório do caixa</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-vendas-error"></div>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RELATORIO DE ESTOQUE MATERIAL PRODUCAO -->
+                <div class="app-window" id="relatorios-estoque_material_producao">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2><i class="fa fa-file-pdf"></i> Relatório do estoque de material pra produção</h2>
+                            </div>
+                            <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
+                                <aside>
+                                    <div class="row">
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-estoque_material_producao-periodo_inicial" class="form-label"><i class="fa fa-calendar"></i> Data inicial</label>
+                                                <input type="date" id="relatorio-estoque_material_producao-periodo_inicial" class="form-control" placeholder="Data inicial">
+                                            </div>
+                                        </div>
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-estoque_material_producao-periodo_final" class="form-label"><i class="fa fa-calendar"></i> Data final</label>
+                                                <input type="date" id="relatorio-estoque_material_producao-periodo_final" class="form-control" placeholder="Data final">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-5">
+                                            <button class="btn btn-success form-control" id="relatorio-estoque_material_producao-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de material pra produção</button>
+                                            <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-estoque_material_producao-error"></div>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="app-window" id="relatorios-produto">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2><i class="fa fa-file-pdf"></i> Relatório de produtos</h2>
+                            </div>
+                            <div class="col-6 p-4 rounded" style="margin-left: 25%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
+                                <aside>
+                                    <div class="row">
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-produto-periodo_inicial" class="form-label"><i class="fa fa-calendar"></i> Data inicial</label>
+                                                <input type="date" id="relatorio-produto-periodo_inicial" class="form-control" placeholder="Data inicial">
+                                            </div>
+                                        </div>
+                                        <div class="col mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-produto-periodo_final" class="form-label"><i class="fa fa-calendar"></i> Data final</label>
+                                                <input type="date" id="relatorio-produto-periodo_final" class="form-control" placeholder="Data final">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-5">
+                                            <button class="btn btn-success form-control" id="relatorio-produto-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de produtos</button>
+                                            <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-produto-error"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1705,6 +1791,41 @@
                                         <div class="col-6" style="margin-left:10%;text-align:right !important">
                                             <button class="btn btn-success" id="relatorio-ordem_servico-btn"><i class="fa fa-file-pdf"></i> Imprimir ordem</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-ordem_servico-error"></div>
+                                        </div>
+                                    </div>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RECIBO -->
+                <div class="app-window" id="relatorios-recibo">
+
+                    <div style="text-align: left;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2><i class="fa fa-file-pdf"></i> Recibo</h2>
+                            </div>
+                            <div class="col-8 p-4 rounded" style="margin-left: 16%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
+                                <aside>
+                                    <div class="row">
+                                        <div class="col-4 mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-recibo-valor" class="form-label"><i class="fa fa-dollar-sign"></i> Valor do recibo</label>
+                                                <input type="number" id="relatorio-recibo-valor" class="form-control" placeholder="Valor">
+                                            </div>
+                                        </div>
+                                        <div class="col-8 mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-recibo-descricao" class="form-label"><i class="fa fa-edit"></i> Referenta a</label>
+                                                <input type="text" id="relatorio-recibo-descricao" class="form-control" placeholder="Descrição do recibo">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-5">
+                                            <button class="btn btn-success form-control" id="relatorio-recibo-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir recibo</button>
+                                            <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-recibo-error"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1953,8 +2074,12 @@
                         return;
                     }
 
+                    if(parseInt(desconto) == NaN || parseInt(valor) == NaN){
+                        return;
+                    }
+
                     if(desconto && valor){
-                        if(parseFloat(desconto) == 0){
+                        if(parseFloat(desconto) <= 0){
                             desconto_real = desconto;
                         }else{
                             desconto_real = (parseFloat(valor) * (parseFloat(desconto)/100));
@@ -1969,18 +2094,20 @@
 
                     if(inpt.id.includes('valor') || inpt.id.includes('preco')){
                     
-                        $(`#${inpt.id}`).change((e) => { setDesconto(inpt.id) })
+                        if(!getCurrentDashboard().includes('relatorios')){
+                            $(`#${inpt.id}`).change((e) => { setDesconto(inpt.id) })
+                        }
 
                         $(inpt).maskMoney();
                         $(inpt).attr('type', 'text');
                     
-                    }/*else if(inpt.id.includes('desconto')){
-                        $(inpt).maskMoney();
+                    }else if(inpt.id.includes('desconto')){
+                        //$(inpt).maskMoney();
                         inpt.addEventListener('input', () => { setDesconto(inpt.id) });
                     }else if(inpt.id.includes('quantidade')){
                         $(inpt).maskMoney();
                         $(inpt).attr('type', 'text');
-                    }*/
+                    }
 
                 });
 
@@ -2298,6 +2425,10 @@
 
                                 case 'cliente_id':
                                     tds += `<td>${data['cliente'].nome}</td>` + '\n';
+                                break;
+
+                                case 'especificacao':
+                                    tds += `<td>${data['produto_nome'].descricao}</td>` + '\n';
                                 break;
 
                                 default:
@@ -3013,7 +3144,10 @@
                 const btn_relatorio_vendas = document.querySelector('#relatorio-vendas-btn');
                 const btn_relatorio_contas_pagar = document.querySelector('#relatorio-contas_pagar-btn');
                 const btn_relatorio_contas_receber = document.querySelector('#relatorio-contas_receber-btn');
+                const btn_relatorio_produtos = document.querySelector('#relatorio-produto-btn');
+                const btn_relatorio_estoque_material_producao = document.querySelector('#relatorio-estoque_material_producao-btn');
                 const btn_relatorio_ordem_servico = document.querySelector('#relatorio-ordem_servico-btn');
+                const btn_relatorio_recibo = document.querySelector('#relatorio-recibo-btn');
                 const btn_relatorio_ordem_servico_add_item = document.querySelector('#btn-add-produto-ordem_servico');
                 const btn_etiquetas = document.querySelector('#btn-etiquetas');
 
@@ -3709,6 +3843,74 @@
 
                 });
 
+                btn_relatorio_produtos.addEventListener('click', (e) => {
+
+                    const periodo_inicial = document.querySelector('#relatorio-produto-periodo_inicial').value;
+                    const periodo_final = document.querySelector('#relatorio-produto-periodo_final').value;
+
+                    let data = { periodo_inicial, periodo_final };
+
+                    data.endpoint = 'produtos';
+                    data.form_data = data;
+
+                    api.printData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('relatorio-produto-error', results.msg, 5000)
+                            }else{
+
+                                let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                                setTimeout(() => {
+                                    window.open(file_url, 'Imprimir relatório', "width=800,height=600");
+                                }, 3000);
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            show('relatorio-produto-error', 'Ocorreu um erro ao fazer a requisição para o servidor', 5000)
+                        })
+
+                });
+
+                btn_relatorio_estoque_material_producao.addEventListener('click', (e) => {
+
+                    const periodo_inicial = document.querySelector('#relatorio-estoque_material_producao-periodo_inicial').value;
+                    const periodo_final = document.querySelector('#relatorio-estoque_material_producao-periodo_final').value;
+
+                    let data = { periodo_inicial, periodo_final };
+
+                    data.endpoint = 'estoque_material_producao';
+                    data.form_data = data;
+
+                    api.printData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('relatorio-estoque_material_producao-error', results.msg, 5000)
+                            }else{
+
+                                let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                                setTimeout(() => {
+                                    window.open(file_url, 'Imprimir relatório', "width=800,height=600");
+                                }, 3000);
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            show('relatorio-estoque_material_producao-error', 'Ocorreu um erro ao fazer a requisição para o servidor', 5000)
+                        })
+
+                });
+
                 document.querySelector('#relatorio-ordem_servico-quantidade').addEventListener('change', (e) => {
 
                     let produto = document.querySelector('#relatorio-ordem_servico-produto').value;
@@ -3784,6 +3986,40 @@
                         })
                         .catch(err => {
                             console.error(err);
+                        })
+
+                });
+
+                btn_relatorio_recibo.addEventListener('click', (e) => {
+
+                    const valor = parseFloat($('#relatorio-recibo-valor').val().replace(',', ''));
+                    const descricao = document.querySelector('#relatorio-recibo-descricao').value;
+
+                    let data = { valor, descricao };
+
+                    data.endpoint = 'recibo';
+                    data.form_data = data;
+
+                    api.printData(data)
+                        .then(resp => resp.json())
+                        .then(results => {
+
+                            if(results.error){
+                                show('relatorio-recibo-error', results.msg, 5000)
+                            }else{
+
+                                let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
+
+                                setTimeout(() => {
+                                    window.open(file_url, 'Imprimir recibo', "width=800,height=600");
+                                }, 3000);
+
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            show('relatorio-recibo-error', 'Ocorreu um erro ao fazer a requisição para o servidor', 5000)
                         })
 
                 });

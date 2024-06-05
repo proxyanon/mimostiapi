@@ -19,7 +19,7 @@ module.exports = () => {
 
     module.searchEtiquetas = async (req, res, next) => {
 
-        if(!req.params.search){ return res.notAccept('Nada digitado') };
+        if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
 
         const { search } = req.params;
 
@@ -36,6 +36,10 @@ module.exports = () => {
                 ],
             },
             include : [{
+                model : models.ProdutosCategorias,
+                required : true,
+                attributes : ['id', 'nome']
+            },{
                 model : models.ProdutosSecoes,
                 required : true,
                 attributes : ['id', 'nome']
@@ -63,6 +67,10 @@ module.exports = () => {
 
             results = await models.Produtos.findAll({ 
                 include : [{
+                    model : models.ProdutosCategorias,
+                    required : true,
+                    attributes : ['id', 'nome']
+                },{
                     model : models.ProdutosSecoes,
                     required : true,
                     attributes : ['id', 'nome']
@@ -204,7 +212,7 @@ module.exports = () => {
     module.imprimir = async (req, res, next) => {
 
         if(!req.body.produtos || req.body.produtos.length == 0){
-            return res.notAccept('Selecione algum produto');
+            res.notAccept('Selecione algum produto');
         }
 
         console.log(req.body);
@@ -217,14 +225,31 @@ module.exports = () => {
             }
         })
 
-        const results = await models.Produtos.findAll({
+        const results = await models.Produtos.findAll({ 
+            include : [{
+                model : models.ProdutosCategorias,
+                required : true,
+                attributes : ['id', 'nome']
+            },{
+                model : models.ProdutosSecoes,
+                required : true,
+                attributes : ['id', 'nome']
+            },{
+                model : models.ProdutosCor,
+                required : false,
+                attributes : ['id', 'nome']
+            },{
+                model : models.EstoqueProdutoFinal,
+                required : false,
+                attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
+            }],
             where : { id : { [models.sequelize.Op.in] : req.body.produtos } }
         });
         const filename = path.join(__dirname, '..', '..', 'public', 'pdfs', `${Security.makeid(10)}.pdf`);
 
-        const doc = new PDFDocument({ margin: 40, size: 'A4' });
+        const doc = new PDFDocument({ margin: 10, size: 'A4' });
 
-        let { pos_x, pos_y } = { pos_x : 30, pos_y : 30 };
+        let { pos_x, pos_y } = { pos_x : 30, pos_y : 10 };
         
         doc.pipe(fs.createWriteStream(filename));
         
@@ -232,9 +257,9 @@ module.exports = () => {
         
         results.forEach((row, i) => {
             
-            doc.font('Helvetica').fontSize(10).text(row.nome, pos_x, pos_y + 25, { width : 140, align : 'center' });
-            doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y + 50);
-            doc.font('Helvetica').fontSize(10).text(row.codigo_barras, pos_x, pos_y + 75, { width : 140, align : 'center' });
+            doc.font('Helvetica').fontSize(9).text(row.nome, pos_x, pos_y + 15, { width : 140, align : 'center' });
+            doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y + 30);
+            doc.font('Helvetica').fontSize(9).text('CN: ' + row.codigo_barras, pos_x, pos_y + 55, { width : 140, align : 'center' });
             
             //doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y);
             

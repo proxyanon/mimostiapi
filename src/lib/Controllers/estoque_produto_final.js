@@ -22,26 +22,47 @@ module.exports = () => {
 
     module.fields = models.EstoqueProdutoFinal.rawAttributes
 
+    module.empty = (str) => {
+    
+        if(!str || !str.length || str == '' || str == '\n'){ return true };
+    
+        return false
+    
+    }
+
+    module.escapeString = (str) => {
+
+        const db = require('../modules/database');
+
+        let search_scaped = db.escape(`%${str}%`);
+        return search_scaped;
+
+    }
+
     module.searchEstoqueProdutoFinal = async (req, res, next) => {
 
-        if(!req.params.search){ res.notAccept('Nada digitado') };
+        if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
 
         const { search } = req.params;
 
+        if(module.empty(search)){
+            res.notAccept('Digite algo...', module.fields)
+        }
+
+        search_scaped = module.escapeString(search);
+
         const results = await models.EstoqueProdutoFinal.findAll({
-            where : { especificacao : { [models.sequelize.Op.substring] : search }},
             include : [{
                 model : models.Produtos,
                 required : false,
-                attributes : ['id', 'nome'],
-                as : 'produto_nome',
-                where : {
-                    nome : {
-                        [models.sequelize.Op.substring] : search
-                    }
-                },
-            }]
+                attributes : ['id', 'nome', 'descricao'],
+                as : 'produto_nome'
+            }],
+            where : { especificacao : { [models.sequelize.Op.substring] : search } },
+            order : [['produto_nome', 'nome', 'ASC']]
         })
+
+        console.log(search, Object.values(results).length, results);
         
         results.length > 0 ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
 
@@ -53,9 +74,10 @@ module.exports = () => {
             include : [{
                 model : models.Produtos,
                 required : false,
-                attributes : ['id', 'nome'],
+                attributes : ['id', 'nome', 'descricao'],
                 as : 'produto_nome'
-            }]
+            }],
+            order : [['produto_nome', 'nome', 'ASC']]
         })
 
         if(results){

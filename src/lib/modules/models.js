@@ -24,6 +24,8 @@ Produtos.belongsTo(ProdutosSecoes, { foreignKey : 'secao', allowNull : false })
 Produtos.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false })
 Produtos.belongsTo(EstoqueProdutoFinal, { foreignKey : 'id', allowNull : false });
 
+ProdutosCategorias.belongsTo(Produtos, { foreignKey : 'id' });
+
 EstoqueMaterialProducao.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
 //EstoqueProdutoFinal.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
 EstoqueProdutoFinal.belongsTo(Produtos, { foreignKey : 'produto', as : 'produto_nome', allowNull : false });

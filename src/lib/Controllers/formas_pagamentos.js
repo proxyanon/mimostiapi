@@ -15,10 +15,10 @@ module.exports = () => {
 
     module.searchFormaPagamento = async (req, res, next) => {
 
-        if(!req.params.search){ res.notAccept('Nada digitado') };
+        if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
 
         const { search } = req.params;
-            
+        
         const results = await models.FormasPagamentos.findAll({ 
             where : { nome : { [ models.sequelize.Op.substring ] : search }} 
         });

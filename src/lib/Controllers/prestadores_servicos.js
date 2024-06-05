@@ -14,7 +14,7 @@ module.exports = () => {
 
     module.searchPrestadoresServicos = async (req, res, next) => {
 
-        if(!req.params.search){ res.notAccept('Nada digitado') };
+        if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
 
         const { search } = req.params;
             
