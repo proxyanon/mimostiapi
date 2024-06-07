@@ -4257,9 +4257,9 @@
                     let item_id = document.querySelector(`#${btn_id}-id`).value;
                     let item_data = prepareData(btn_id, current_dashboard);
 
+                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto'];
+
                     if(current_dashboard == 'produtos'){
-                    
-                        let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto'];
 
                         if(Object.keys(item_data.form_data).length == 0){
                             show(`${btn_id}-error`, ``, 4500);
@@ -4324,21 +4324,39 @@
 
                     }else{
 
-                        api.saveData(item_data)
-                            .then(resp => resp.json())
-                            .then(results => {
-                                
-                                if(!results.error){
-                                    loadDashboardPage(getCurrentDashboard());
-                                    clearForms();
-                                }else{
-                                    show(`${btn_id}-error`, results.msg, 10000);
-                                }
+                        let check = true;
 
-                            })
-                            .catch(err => {
-                                console.error(err);
-                            });
+                        Object.keys(item_data.form_data).forEach(key => {
+
+                            if(!allowNullKeys.includes(key)){
+                                if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
+                                    show(`${btn_id}-error`, `Preencha o campo ${key}`, app_config.errors.timeout);
+                                    check = false;
+                                }
+                            }
+
+                        });
+
+                        if(!check){
+                            return
+                        }else{
+
+                            api.saveData(item_data)
+                                .then(resp => resp.json())
+                                .then(results => {
+                                    
+                                    if(!results.error){
+                                        loadDashboardPage(getCurrentDashboard());
+                                        clearForms();
+                                    }else{
+                                        show(`${btn_id}-error`, results.msg, 10000);
+                                    }
+
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                });
+                        }
                     
                     }
 
