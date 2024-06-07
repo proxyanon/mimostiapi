@@ -753,8 +753,8 @@
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label for="funcionario-cpf" class="form-label">CPF</label>
-                                <input type="text" class="form-control" placeholder="CPF" id="funcionario-cpf">
+                                <label for="funcionario-cpf" class="form-label">CPF/CNPJ</label>
+                                <input type="text" class="form-control" placeholder="CPF/CNPJ" id="funcionario-cpf">
                             </div>
                         </div>
                         <div class="col">
@@ -1604,6 +1604,7 @@
                                         <div class="col-12 mt-5">
                                             <button class="btn btn-success form-control" id="relatorio-vendas-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório do caixa</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-vendas-error"></div>
+                                            <div class="loading-print mt-3 mb-2 p-2 text-center d-none"><img src="public/img/load.gif" alt="Carregando..." width="10%"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1639,6 +1640,7 @@
                                         <div class="col-12 mt-5">
                                             <button class="btn btn-success form-control" id="relatorio-estoque_material_producao-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de material pra produção</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-estoque_material_producao-error"></div>
+                                            <div class="loading-print mt-3 mb-2 p-2 text-center d-none"><img src="public/img/load.gif" alt="Carregando..." width="10%"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1673,6 +1675,7 @@
                                         <div class="col-12 mt-5">
                                             <button class="btn btn-success form-control" id="relatorio-produto-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de produtos</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-produto-error"></div>
+                                            <div class="loading-print mt-3 mb-2 p-2 text-center d-none"><img src="public/img/load.gif" alt="Carregando..." width="10%"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1708,6 +1711,7 @@
                                         <div class="col-12 mt-5">
                                             <button class="btn btn-success form-control" id="relatorio-contas_pagar-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de contas a pagar</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-contas_pagar-error"></div>
+                                            <div class="loading-print mt-3 mb-2 p-2 text-center d-none"><img src="public/img/load.gif" alt="Carregando..." width="10%"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1743,6 +1747,7 @@
                                         <div class="col-12 mt-5">
                                             <button class="btn btn-success form-control" id="relatorio-contas_receber-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir relatório de contas a receber</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-contas_receber-error"></div>
+                                            <div class="loading-print mt-3 mb-2 p-2 text-center d-none"><img src="public/img/load.gif" alt="Carregando..." width="10%"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1791,6 +1796,7 @@
                                         <div class="col-6" style="margin-left:10%;text-align:right !important">
                                             <button class="btn btn-success" id="relatorio-ordem_servico-btn"><i class="fa fa-file-pdf"></i> Imprimir ordem</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-ordem_servico-error"></div>
+                                            <div class="loading-print mt-3 mb-2 p-2 text-center d-none"><img src="public/img/load.gif" alt="Carregando..." width="10%"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -1826,6 +1832,7 @@
                                         <div class="col-12 mt-5">
                                             <button class="btn btn-success form-control" id="relatorio-recibo-btn" type="button"><div class="i fa fa-file-pdf"></div> Imprimir recibo</button>
                                             <div class="alert alert-danger mt-3 text-center p-1 d-none" id="relatorio-recibo-error"></div>
+                                            <div class="loading-print mt-3 mb-2 p-2 text-center d-none"><img src="public/img/load.gif" alt="Carregando..." width="10%"></div>
                                         </div>
                                     </div>
                                 </aside>
@@ -2112,6 +2119,14 @@
                 });
 
                 const socket = io(); // SOCKET
+                const app_config = {
+                    loading : {
+                        timeout : 3000
+                    },
+                    errors : {
+                        timeout : 5000
+                    }
+                };
 
                 // EVENTO DO LEITOR DE CODIGO DE BARRAS
                 socket.on('codigo_barras', (codigo_barras) => {
@@ -3098,6 +3113,15 @@
 
                 }
 
+                function toggleLoadingGif(){
+                    
+                    const loadingPrint = document.querySelectorAll('.loading-print');
+                    
+                    [...loadingPrint].forEach(load => { load.classList.contains('d-none') ? load.classList.remove('d-none') : load.classList.add('d-none') })
+
+                }
+
+                // ELEMENTS HOOOKS
                 const app_window = [...document.querySelectorAll('.app-window')]; // APP WINDOWS
                 const btn_menu = [...document.querySelectorAll('.btn-menu')]; // MENU BUTTONS
                 const btn_logout = document.querySelector('#btn-logout');
@@ -3127,8 +3151,6 @@
 
                 const btns_del_item = [...document.querySelectorAll('.btn.btn-danger')]; // DELETE BUTTONS
 
-                //console.log(btns_del_item);
-
                 // MODAL BUTTONS
                 const btn_save_secao = document.querySelector('#btn-add-secao');
                 const btn_save_categoria = document.querySelector('#btn-add-categoria');
@@ -3152,12 +3174,11 @@
                 const btn_relatorio_ordem_servico_add_item = document.querySelector('#btn-add-produto-ordem_servico');
                 const btn_etiquetas = document.querySelector('#btn-etiquetas');
 
-                //let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
-
                 //window.open(file_url, 'Imprimir pedido', "width=800,height=600");
 
                 const search_inputs = [...document.querySelectorAll('.inpt-search[type="search"]')]; // SEARCH INPUTS
 
+                // BTN LOGOUT LISTENER
                 btn_logout.addEventListener('click', (e) => {
 
                     api.logout()
@@ -3534,7 +3555,7 @@
                         .then(results => {
 
                             if(results.error){
-                                show('modal_secao-error', results.msg, 4500);
+                                show('modal_secao-error', results.msg, app_config.errors.timeout);
                             }else{
 
                                 results = results.results;
@@ -3561,7 +3582,7 @@
                         .then(results => {
 
                             if(results.error){
-                                show('modal_categoria-error', results.msg, 4500);
+                                show('modal_categoria-error', results.msg, app_config.errors.timeout);
                             }else{
 
                                 results = results.results;
@@ -3595,7 +3616,7 @@
                         .then(results => {
 
                             if(results.error){
-                                show('modal_cor-error', results.msg, 4500);
+                                show('modal_cor-error', results.msg, app_config.errors.timeout);
                             }else{
 
                                 results = results.results;
@@ -3645,7 +3666,7 @@
                                 .then(results => {
                                     
                                     if(results.error){
-                                        show('modal_lancar_caixa-error', results.msg, 4000);
+                                        show('modal_lancar_caixa-error', results.msg, app_config.errors.timeout);
                                     }else{
                                         
                                         results = results.results;
@@ -3729,7 +3750,7 @@
                         .then(results => {
 
                             if(results.error){
-                                show('modal_saida_caixa-error', results.msg, 4000);
+                                show('modal_saida_caixa-error', results.msg, app_config.errors.timeout);
                             }else{
                                 getCaixa();
                                 $('#modal_saida_caixa').modal('hide')
@@ -3760,14 +3781,17 @@
                         .then(results => {
 
                             if(results.error){
-                                show('relatorio-vendas-error', results.msg, 5000)
+                                show('relatorio-vendas-error', results.msg, app_config.errors.timeout)
                             }else{
 
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
 
+                                toggleLoadingGif();
+
                                 setTimeout(() => {
                                     window.open(file_url, 'Imprimir relatório', "width=800,height=600");
-                                }, 2300);
+                                    toggleLoadingGif();
+                                }, app_config.loading.timeout);
 
                             }
 
@@ -3793,14 +3817,17 @@
                         .then(results => {
 
                             if(results.error){
-                                show('relatorio-contas_pagar-error', results.msg, 5000)
+                                show('relatorio-contas_pagar-error', results.msg, app_config.errors.timeout)
                             }else{
 
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
 
+                                toggleLoadingGif();
+
                                 setTimeout(() => {
                                     window.open(file_url, 'Imprimir relatório', "width=800,height=600");
-                                }, 2300);
+                                    toggleLoadingGif();
+                                }, app_config.loading.timeout);
 
                             }
 
@@ -3826,14 +3853,17 @@
                         .then(results => {
 
                             if(results.error){
-                                show('relatorio-contas_receber-error', results.msg, 5000)
+                                show('relatorio-contas_receber-error', results.msg, app_config.errors.timeout)
                             }else{
                                 
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
 
+                                toggleLoadingGif();
+
                                 setTimeout(() => {
                                     window.open(file_url, 'Imprimir relatório', "width=800,height=600");
-                                }, 2300);
+                                    toggleLoadingGif();
+                                }, app_config.loading.timeout);
 
                             }
 
@@ -3859,14 +3889,17 @@
                         .then(results => {
 
                             if(results.error){
-                                show('relatorio-produto-error', results.msg, 5000)
+                                show('relatorio-produto-error', results.msg, app_config.errors.timeout)
                             }else{
 
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
 
+                                toggleLoadingGif();
+
                                 setTimeout(() => {
                                     window.open(file_url, 'Imprimir relatório', "width=800,height=600");
-                                }, 3000);
+                                    toggleLoadingGif();
+                                }, app_config.loading.timeout);
 
                             }
 
@@ -3898,9 +3931,12 @@
 
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
 
+                                toggleLoadingGif();
+
                                 setTimeout(() => {
                                     window.open(file_url, 'Imprimir relatório', "width=800,height=600");
-                                }, 3000);
+                                    toggleLoadingGif();
+                                }, app_config.loading.timeout);
 
                             }
 
@@ -3974,13 +4010,14 @@
                             localStorage.removeItem('ordem_servico');
 
                             if(results.error){
-                                show('relatorio-ordem_servico-error', results.msg, 5000)
+                                show('relatorio-ordem_servico-error', results.msg, app_config.errors.timeout)
                             }else{
 
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
                                 span_view.innerHTML = '0 produto selcionado';
-
+                                
                                 window.open(file_url, 'Imprimir ordem de serviço', "width=800,height=600");
+                                toggleLoadingGif();
 
                             }
 
@@ -4006,14 +4043,17 @@
                         .then(results => {
 
                             if(results.error){
-                                show('relatorio-recibo-error', results.msg, 5000)
+                                show('relatorio-recibo-error', results.msg, app_config.errors.timeout)
                             }else{
 
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
 
+                                toggleLoadingGif();
+
                                 setTimeout(() => {
                                     window.open(file_url, 'Imprimir recibo', "width=800,height=600");
-                                }, 3000);
+                                    toggleLoadingGif();
+                                }, app_config.loading.timeout);
 
                             }
 
