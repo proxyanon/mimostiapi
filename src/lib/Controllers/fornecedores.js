@@ -41,7 +41,7 @@ module.exports = () => {
         let obj_create = {}
 
         if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
+            return res.status(401).json({ error : true, msg : 'Preencha todos os campos' })
         }
         
         req.body.datecreated = new Date();
@@ -49,7 +49,7 @@ module.exports = () => {
         for(key in module.fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    return res.status(401).json({ error : true, msg : `Campos inválido(s) [${key}]` })
                 }else{
                     obj_create[key] = req.body[key]
                 }

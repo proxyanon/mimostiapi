@@ -4,6 +4,7 @@ const models = require('../modules/models')
 
 const Security = require('../modules/Security');
 const sequelize = require('../modules/database');
+const config = require('../config');
 
 const sec = new Security();
 const router = express.Router();
@@ -187,7 +188,7 @@ module.exports = () => {
         req.body.usuario = req.session.session_username
 
         if(Object.keys(fields).length!=Object.keys(fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
+            return res.status(401).json({ error : true, msg : 'Preecha todos os campos' })
         }
 
         for(key in fields){
@@ -203,11 +204,12 @@ module.exports = () => {
         }
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
         }else{
 
             let results = null;
-            console.log(obj_create);
+            
+            config.isDev && config.verbose ? console.log(obj_create) : '';
 
             try{
                 results = await models.Produtos.create(obj_create);
@@ -249,7 +251,7 @@ module.exports = () => {
         let fields = models.ProdutosSecoes.rawAttributes;
 
         if(Object.keys(fields).length!=Object.keys(fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
+            return res.status(401).json({ error : true, msg : 'Preencha o campo seção' })
         }
 
         console.log(req.body);
@@ -257,7 +259,7 @@ module.exports = () => {
         for(key in fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : `Campos inválido(s) [${key}]` })
+                    return res.status(401).json({ error : true, msg : `Campo(s) inválido(s) [${key}]` })
                 }else{
                     obj_create[key] = req.body[key]
                 }
@@ -288,15 +290,15 @@ module.exports = () => {
         let fields = models.ProdutosCategorias.rawAttributes;
 
         if(Object.keys(fields).length!=Object.keys(fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
+            return res.status(401).json({ error : true, msg : 'Preencha todos os campos' })
         }
 
-        console.log(req.body);
+        config.isDev && config.verbose ? console.log(req.body) : '';
 
         for(key in fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    return res.status(401).json({ error : true, msg : `Campo(s) inválido(s) [${key}]` })
                 }else{
                     obj_create[key] = req.body[key]
                 }
@@ -330,7 +332,7 @@ module.exports = () => {
             return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
         }
 
-        console.log(req.body);
+        config.isDev && config.verbose ? console.log(req.body) : '';
 
         for(key in fields){
             if(key != 'id'){
@@ -342,7 +344,7 @@ module.exports = () => {
             }
         }
 
-        console.log(obj_create);
+        config.isDev && config.verbose ? console.log(obj_create) : '';
 
         if(Object.keys(obj_create).length==0){
             res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
@@ -395,7 +397,7 @@ module.exports = () => {
             Object.keys(produto).includes('quantidade') ? delete req.body['quantidade'] : '';
 
             for(key in module.fields){
-                console.log(key, produto[key]);
+                config.isDev && config.verbose ? console.log(key, produto[key]) : '';
                 if(key != 'id' && req.body[key]){
                     if(module.fields[key].allowNull != false && produto[key].toString().empty()){
                         return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
@@ -426,6 +428,7 @@ module.exports = () => {
 
         if(secao){
             
+            config.isDev && config.verbose ? console.log(req.body) : '';
             //secao['datecreated'] = new Date();
 
             for(key in fields){
@@ -460,6 +463,7 @@ module.exports = () => {
         if(categoria){
             
             //categoria['datecreated'] = new Date();
+            config.isDev && config.verbose ? console.log(req.body) : '';
 
             for(key in fields){
                 if(key != 'id' && req.body[key]){
@@ -493,6 +497,7 @@ module.exports = () => {
         if(cor){
             
             //cor['datecreated'] = new Date();
+            config.isDev && config.verbose ? console.log(req.body) : '';
 
             for(key in fields){
                 if(key != 'id' && req.body[key]){

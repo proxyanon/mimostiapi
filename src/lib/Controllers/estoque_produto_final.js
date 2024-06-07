@@ -100,7 +100,7 @@ module.exports = () => {
 
         for(key in module.fields){
             if(key != 'id'){
-                if((module.module.fields[key].type == 'FLOAT' || module.module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
+                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
                     obj_create[key] = req.body[key]
                 }else if(!req.body[key]){
                     return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
@@ -150,6 +150,10 @@ module.exports = () => {
             estoque_produto_final['entrada'] = parseInt(estoque_produto_final['entrada']) + parseInt(req.body['entrada'])
             estoque_produto_final['saida'] = parseInt(estoque_produto_final['saida']) + parseInt(req.body['saida'])
 
+            if(estoque_produto_final['saida'] > estoque_produto_final['entrada']){
+                return res.notAccept('A saída não pode ser maior do que a quantidade do estoque');
+            }
+
             estoque_produto_final['estoque'] = parseInt(estoque_produto_final['entrada']) - parseInt(estoque_produto_final['saida']);
 
             const results = await estoque_produto_final.save();
@@ -186,7 +190,7 @@ module.exports = () => {
         .use(sec.responses.setResponses)
         .get('/search/:search', module.searchEstoqueProdutoFinal)
         .get('/:id?', module.getEstoqueProdutoFinal)
-        .post('/add', module.addEstoqueProdutoFinal)
+        //.post('/add', module.addEstoqueProdutoFinal)
         .put('/save/:id', module.saveEstoqueProdutoFinal)
         .delete('/del/:id', module.deleteEstoqueProdutoFinal);
 

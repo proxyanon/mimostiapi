@@ -52,7 +52,7 @@ module.exports = () => {
         for(key in module.fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : `Campos inválido(s) 2 [${key}]` })
+                    return res.status(401).json({ error : true, msg : `Campos inválido(s) [${key}]` })
                 }else{
                     obj_create[key] = req.body[key]
                 }

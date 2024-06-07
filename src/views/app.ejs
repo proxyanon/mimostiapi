@@ -58,7 +58,9 @@
         .bnt-custom:visited { color : white !important }
         .container-fluid { height: 100% !important; }
         .dashboard { margin-left: 20%; height: 100%; width: 80%; }
-        .app-window {  }
+        .app-window { font-size: 14px; }
+        .app-window input { font-size: 14px; }
+        .app-window button { font-size: 15px; }
         #app-container {
             position: absolute;
             left: 5%;
@@ -75,7 +77,7 @@
             font-size: 12.5px !important;
         }
 
-        h2,h3 { font-size: 25px; }
+        h2,h3 { font-size: 24px; }
 
         .clientes-table {
             position: relative;
@@ -117,9 +119,9 @@
         .menuButtons span, .btn-menu {
             font-size: 13px;
         }
-        @media (min-width: 1390px){
+        @media (min-width: 1280px){
             .mainNavi {
-                height: calc(100% + 30%) !important;
+                height: calc(100% + 45%) !important;
             }
         }
     </style>
@@ -288,8 +290,8 @@
                         </div>
                     </div>
                     
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Cadastrar ou alterar cliente</h2>
                         
                         </div>
@@ -350,7 +352,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-cliente"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-cliente" disabled><i class="fa fa-trash"></i> Excluir cliente</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-cliente" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="cliente-error"></div>
                     </div>
@@ -401,8 +403,8 @@
                         </div>
                     </div>
                     
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Cadastrar ou alterar fornecedor</h2>
                         </div>
                     </div>
@@ -462,7 +464,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-fornecedor"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-fornecedor" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-fornecedor" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="fornecedor-error"></div>
                     </div>
@@ -513,8 +515,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Cadastrar ou alterar vendedor</h2>
                         </div>
                     </div>
@@ -574,7 +576,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-vendedor"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-vendedor" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-vendedor" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="vendedor-error"></div>
                     </div>
@@ -625,8 +627,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Cadastrar ou alterar prestador de serviço</h2>
                         </div>
                     </div>
@@ -686,7 +688,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-prestador_servico"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-prestador_servico" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-prestador_servico" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="prestador_servico-error"></div>
                     </div>
@@ -737,8 +739,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Cadastrar ou alterar funcionário</h2>
                         </div>
                     </div>
@@ -797,7 +799,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-funcionario"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-funcionario" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-funcionario" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="funcionario-error"></div>
                     </div>
@@ -851,7 +853,7 @@
                         </div>
                     </div>
 
-                    <div class="row mt-1">
+                    <div class="row mt-2">
                         <div class="col-12 text-left mt-1" style="text-align:left">
                             <h3>Cadastrar ou alterar produtos</h3>
                         </div>
@@ -1013,8 +1015,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Alterar estoque</h2>
                         </div>
                     </div>
@@ -1074,7 +1076,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-estoque_material_producao"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-estoque_material_producao" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-estoque_material_producao" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="estoque_material_producao-error"></div>
                     </div>
@@ -1124,8 +1126,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Alterar estoque</h2>
                         </div>
                     </div>
@@ -1343,8 +1345,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Lançar conta a pagar</h2>
                         </div>
                     </div>
@@ -1391,7 +1393,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-contas_pagar"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-contas_pagar" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-contas_pagar" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="contas_pagar-error"></div>
                     </div>
@@ -1442,8 +1444,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-left mt-4" style="text-align:left">
+                    <div class="row mt-2">
+                        <div class="col-12 text-left mt-1" style="text-align:left">
                             <h2> Lançar conta a receber</h2>
                         </div>
                     </div>
@@ -1490,7 +1492,7 @@
                             <button class="btn btn-success form-control form-btn" type="button" id="save-contas_receber"><i class="fa fa-save"></i> Salvar</button>
                         </div>
                         <div class="col mt-4">
-                            <button class="btn btn-danger form-control" type="button" id="del-contas_receber" disabled><i class="fa fa-trash"></i> Cancelar</button>
+                            <button class="btn btn-danger form-control" type="button" id="del-contas_receber" disabled><i class="fa fa-trash"></i> Excluir item</button>
                         </div>
                         <div class="alert alert-danger col-12 mt-4 text-center d-none" id="contas_receber-error"></div>
                     </div>
@@ -2211,6 +2213,7 @@
                     })
                 }
     
+                // SHOW ALERT DIVS BOOTSTRAP
                 function showAlertDiv(div_name, text){
 
                     document.querySelector(`#${div_name}`).innerHTML = text;
@@ -2222,6 +2225,7 @@
 
                 }
 
+                // SHOW AN ELEMENT BY ID WITH TIMEOUT
                 function show(element_id, text, timeout = 0){
 
                     const element = document.querySelector(`#${element_id}`);
@@ -2237,10 +2241,12 @@
 
                 }
 
+                // HIDE AND ELEMENT BY ID
                 function hide(element_id){
                     document.querySelector(`#${element_id}`).classList.add('d-none');
                 }
 
+                // SHOW AN ELEMENT
                 function showElem(elements){
                     elements.forEach(el => {
                         $(el).show();
@@ -2248,6 +2254,7 @@
                     })
                 }
     
+                // HIDE AN ELEMENT
                 function hideElem(elements){
                     elements.forEach(el => {
                         $(el).hide();
@@ -2255,27 +2262,32 @@
                     })
                 }
     
+                // LOAD ANY DASHBOARD PAGE
                 function loadDashboardPage(page_name){
                     document.querySelector('.load-window').classList.add('d-none');
                     dashboardLoadEvent.detail.dashboard_name = page_name;
                     document.dispatchEvent(dashboardLoadEvent);
                 }
     
+                // SHOW ANY DASHBOARD PAGE
                 function showDashboardPage(page_name){
                     hideElem([...document.querySelectorAll('.app-window')]);
                     showElem([...document.querySelectorAll('#' + page_name)]);
                     localStorage.setItem('current_dashboard', page_name);
                 }
 
+                // FORMAT MONEY BRL
                 function formatMoney(value){
                     return `R$ ${parseFloat(value).toFixed(2).replace('.', ',')}`;
                 }
 
+                // FORMAT PERCENT
                 function formatPercent(value){
                     let percent = parseFloat(value).toFixed(2).split('.')[1] == '00' ? parseInt(value) : parseFloat(value).toFixed(2);
                     return `${percent}%`;
                 }
 
+                // FORMAT UNIT IN METEERS
                 function formatUnity(value){
                     return `${value}m`;
                 }
@@ -2351,7 +2363,7 @@
                                 break;
 
                                 case 'endereco':
-                                    tds += `<td>${data[column]}${data['ponto_referencia'] ? ',' + data['ponto_referencia'] : ''}</td>` + '\n';
+                                    tds += `<td>${data[column]}${data['ponto_referencia'] ? ', ' + data['ponto_referencia'] : ''}</td>` + '\n';
                                 break;
 
                                 case 'instagram':
@@ -3066,6 +3078,7 @@
 
                 }
 
+                // GET CAIXA TEMP ACTUALY PRODUCTS SALED
                 function getCaixaTemp(caixa_id){
 
                     api.getData({ endpoint : { path : 'caixa/temp', id : caixa_id } })
@@ -3119,6 +3132,7 @@
 
                 }
 
+                // SHOW AND HIDE LOADING GIF IN REPORTS
                 function toggleLoadingGif(){
                     
                     const loadingPrint = document.querySelectorAll('.loading-print');
@@ -4229,6 +4243,9 @@
 
                     if(current_dashboard == 'caixa'){
                         current_dashboard = 'caixa/temp';
+                    }else if(current_dashboard == 'estoque_produto_final' && (document.querySelector(`#${btn_id}-id`).value == '' || parseInt(document.querySelector(`#${btn_id}-id`).value) == NaN)){
+                        show(`${btn_id}-error`, 'Selecione algum produto', app_config.errors.timeout);
+                        return;
                     }
 
                     let item_id = document.querySelector(`#${btn_id}-id`).value;
@@ -4236,7 +4253,7 @@
 
                     if(current_dashboard == 'produtos'){
                     
-                        let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data'];
+                        let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto'];
 
                         if(Object.keys(item_data.form_data).length == 0){
                             show(`${btn_id}-error`, ``, 4500);
