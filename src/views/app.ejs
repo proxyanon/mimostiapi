@@ -1788,7 +1788,7 @@
                                     <div class="row mt-4">
                                         <div class="form-group">
                                             <label for="relatorio-ordem_servico-quantidade" class="form-label">Quantidade para produção</label>
-                                            <input type="number" id="relatorio-ordem_servico-quantidade" class="form-control" disabled>
+                                            <input type="text" id="relatorio-ordem_servico-quantidade" class="form-control" disabled>
                                         </div>
                                     </div>
                                     <div class="row mt-4">
@@ -3975,6 +3975,8 @@
                     let inpt = e.currentTarget;
                     let inpt_value = inpt.value;
 
+                    console.log(produto, inpt, inpt_value);
+
                     let data = [];
 
                     if(produto && inpt_value){
@@ -4036,8 +4038,12 @@
                                 let file_url = `${document.location.protocol}//${document.location.hostname}/public/pdfs/${results.filename}`;
                                 span_view.innerHTML = '0 produto selcionado';
                                 
-                                window.open(file_url, 'Imprimir ordem de serviço', "width=800,height=600");
                                 toggleLoadingGif();
+
+                                setTimeout(() => {
+                                    window.open(file_url, 'Imprimir ordem de serviço', "width=800,height=600");
+                                    toggleLoadingGif();
+                                }, app_config.loading.timeout);
 
                             }
 
