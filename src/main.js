@@ -58,6 +58,7 @@ const scanner = new BarcodeScanner({});
         throw err;
     }
 
+    config.server.start_chrome = config.isDev ? false : true;
     config.server.session.cookie.secure = config.server.port == 443 ? true : false;
     
     app.use(handleParams);

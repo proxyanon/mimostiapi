@@ -110,20 +110,19 @@ class Security {
                 return res.status(401).json({ error : true, msg });
             }
 
-            res.success = function(data, fields = undefined){
+            res.success = function(data = undefined, fields = undefined){
 
-                const checkData = (data !== undefined && typeof data == 'object' && Object.values(data).length > 0);
+                let checkData = data != undefined && typeof data == 'object' && Object.values(data).length > 0 ? true : false;
+                let hasFields = fields != undefined ? true : false;
 
-                let hasFields = fields == undefined ? false : true;
-
-                if(checkData) {
-                    if(hasFields){
-                        return res.json({ error : false, results : data, fields : Object.keys(fields) });
-                    }
-                    return res.json({ error : false, results : data });
+                if(checkData && hasFields){
+                    return res.json({ error : false, results : data, fields : Object.keys(module.fields) })
+                }else if(hasFields){
+                    return res.json({ error : false, fields : Object.keys(fields) })
                 }else{
-                    return res.status(400).json({ error : true, msg : 'Requisção mal formatada' });
+                    return res.json({ error : false })
                 }
+
             }
 
             res.notFound = function(msg, fields = undefined) {

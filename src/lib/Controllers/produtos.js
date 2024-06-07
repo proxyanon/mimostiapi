@@ -108,8 +108,8 @@ module.exports = () => {
 
         }
 
-        results ? res.success(results, module.fields) : res.notFound('Nada encontrado', module.fields);
-        //results ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
+        //results ? res.success(results, module.fields) : res.notFound('Nada encontrado', module.fields);
+        results ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
     }
 
     module.getProduto = async (req, res, next) => {
@@ -229,7 +229,8 @@ module.exports = () => {
                 const results_estoque = await models.EstoqueProdutoFinal.create(obj_create_estoque);
 
                 if(results_estoque){
-                    res.sendOkResponse();
+                    //res.sendOkResponse();
+                    res.json({ error : false, results, fields : Object.keys(module.fields) })
                 }else{
                     res.notAccept('Ocorreu um erro ao lançar produto no estoque');
                 }
