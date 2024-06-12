@@ -82,10 +82,11 @@ class Security {
                 let hasFields = fields == undefined ? false : true;
                 
                 if(hasFields){
-                    res.status(403).json({ error : true, msg, fields : Object.keys(fields) });
+                    return res.status(403).json({ error : true, msg, fields : Object.keys(fields) });
+                }else{
+                    return res.status(403).json({ error : true, msg });
                 }
 
-                res.status(403).json({ error : true, msg });
             }
 
             res.serverError = function(msg, fields = undefined){

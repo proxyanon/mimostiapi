@@ -12,9 +12,35 @@ const router = express.Router();
 
 const extenso = require('extenso');
 
+String.prototype.capitalize = function (lower) {
+    return (lower ? this.toLowerCase() : this).replace(/(?:^|\s|['`‘’.-])[^\x00-\x60^\x7B-\xDF](?!(\s|$))/g, function (a) {
+        return a.toUpperCase();
+    });
+};
+
+String.prototype.empty = function(){
+
+    var str = this;
+
+    if(!str || !str.length) return true;
+
+    return false;
+
+}
+
 module.exports = () => {
 
     var module = {};
+
+    module.checkCPF_CNPJ = (cpf_cnpj) => {
+        
+        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
+            return false
+        }
+
+        return true
+
+    }
 
     module.getDataAtual = (datecreated = undefined) => {
 
@@ -384,67 +410,122 @@ module.exports = () => {
 
     module.recibo = async (req, res, next) => {
 
-        if(!req.body.valor || !req.body.descricao){
-            res.notAccept('Preencha todos os campos');
+        const fields = ['nome', 'cpf_cnpj', 'valor', 'descricao'];
+        let checkObj = { check : true, msg : '' };
+
+        for(let i = 0; i < fields.length; i++){
+
+            key = fields[i];
+
+            if(!req.body[key]){
+                checkObj.check = false;
+                checkObj.msg = `Preencha o campo ${key}`;
+                break
+            }
+
+            if(key == 'valor' && (req.body[key] == null || parseInt(req.body[key]) == NaN )){
+                checkObj.check = false;
+                checkObj.msg = 'Preencha o campo valor';
+                break;
+            }
+
+            if(req.body[key].toString().empty() || req.body[key] == null || req.body[key] == undefined){
+                checkObj.check = false;
+                checkObj.msg = `Preencha o campo ${key}`;
+                break
+            }
+
         }
 
-        let filename = path.join(__dirname, '..', '..', 'public', 'pdfs', `${Security.makeid(10)}.pdf`);
+        if(!module.checkCPF_CNPJ(req.body.cpf_cnpj)){
+            checkObj.check = false;
+            checkObj.msg = 'CPF ou CPNJ inválido(s)';
+        }
 
-        const Document = require('pdfkit');
-        const doc = new Document({ margin : 30, size : 'A4' });
+        if(!checkObj.check){
+            res.status(400).json({ error : true, msg : checkObj.msg });
+        }else{
 
-        let margint_to_add = req.body.descricao.length * (req.body.descricao.length >= 229 && req.body.descricao.length < 300 ? 0.08 : 0.15);
-        let margin_top_dynamic = req.body.descricao.length >= 229 ? margint_to_add : 0;
+            const { nome, cpf_cnpj, valor, descricao } = req.body;
 
-        console.log(margin_top_dynamic)
+            console.log(nome, cpf_cnpj, valor, descricao);
 
-        doc.pipe(fs.createWriteStream(filename));
+            let filename = path.join(__dirname, '..', '..', 'public', 'pdfs', `${Security.makeid(10)}.pdf`);
 
-        doc.fontSize(10)
-            .font('Helvetica')
-            .text('VALOR DO RECIBO: ', 380, 20, { width : 300, align : 'left' });
+            const Document = require('pdfkit');
+            const doc = new Document({ margin : 30, size : 'A4' });
 
-        doc
-            .fontSize(10)
-            .font('Helvetica-Bold')
-            .text(` ${module.formatMoney(req.body.valor)}`, 475, 20)
+            //let margint_to_add = descricao.length * (descricao.length >= 229 && descricao.length < 300 ? 0.08 : 0.15);
+            //let margin_top_dynamic = descricao.length >= 229 ? margint_to_add : 0;
 
-        doc
-            .fontSize(11)
-            .font('Helvetica')
-            .text('Recebi da empresa Mimos Tia Pi, a importância de: ', 110, 50, { width : 500, align : 'left' })
+            margin_top_dynamic = (descricao.length/2) + (descricao.length >= 250 ? (72.8/2) : 72.8);
+            //margin_top_dynamic  += 20;
 
-        doc
-            .fontSize(11)
-            .font('Helvetica-Bold')
-            .text(`${extenso(parseFloat(req.body.valor), { mode: 'currency', currency: { type: 'BRL' } }).toUpperCase()}`, 365, 50, { width : 500, align : 'left' })
-        doc
-            .fontSize(11)
-            .font('Helvetica')
-            .text('Referente a: ', 110, 72.8, { width : 430, align : 'left' })
+            doc.pipe(fs.createWriteStream(filename));
+
+            doc.fontSize(10)
+                .font('Helvetica')
+                .text('VALOR DO RECIBO: ', 380, 20, { width : 300, align : 'left' });
+
+            doc
+                .fontSize(10)
+                .font('Helvetica-Bold')
+                .text(` ${module.formatMoney(valor)}`, 475, 20)
+
+            doc
+                .fontSize(11)
+                .font('Helvetica')
+                .text('Recebi da empresa Mimos Tia Pi, a importância de: ', 110, 50, { width : 500, align : 'left' })
+
+            doc
+                .fontSize(11)
+                .font('Helvetica-Bold')
+                .text(`${extenso(parseFloat(valor), { mode: 'currency', currency: { type: 'BRL' } }).toUpperCase()}`, 365, 50, { width : 500, align : 'left' })
+            doc
+                .fontSize(11)
+                .font('Helvetica')
+                .text('Referente a: ', 110, 72.8, { width : 300, align : 'left' })
+            
+            doc
+                .fontSize(11)
+                .font('Helvetica-Bold')
+                .text(descricao.toUpperCase(), 175, 72.8, { width : 300, align : 'justify' })
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('Arcoverde na data:  ', 110, 20 + margin_top_dynamic, { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica-Bold')
+                .text(`${module.getDataAtual()} `, 205, 20 + margin_top_dynamic, { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('Nome: ', 110, 35 + margin_top_dynamic, { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica-Bold')
+                .text(nome.toLowerCase().capitalize(), 'Nome: '.length + 140, 35 + margin_top_dynamic, { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('CPF/CNPJ: ', 110, 50 + margin_top_dynamic, { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica-Bold')
+                .text(cpf_cnpj, 168, 50 + margin_top_dynamic, { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('Assinatura: ____________________________________________________________', 110, 95 + margin_top_dynamic, { width : 500, align : 'left' });
+
+            doc.image(path.join(__dirname, '..', '..', 'public', 'img', 'logo.png'), 15, 35, { width : 75 });
         
-        doc
-            .fontSize(11)
-            .font('Helvetica-Bold')
-            .text(req.body.descricao, 175, 72.8, { width : 365, align : 'justify' })
+            doc.end();
 
-        doc.fontSize(11)
-            .font('Helvetica')
-            .text('Arcoverde na data:  ', 110, 105 + margin_top_dynamic, { width : 500, align : 'left' });
+            res.json({ error : false, filename : path.basename(filename) });
 
-        doc.fontSize(11)
-            .font('Helvetica-Bold')
-            .text(`${module.getDataAtual()} `, 205, 105 + margin_top_dynamic, { width : 500, align : 'left' });
-
-        doc.fontSize(11)
-            .font('Helvetica')
-            .text('Assinatura _____________________________________________________________', 110, 150  + margin_top_dynamic, { width : 500, align : 'left' });
-
-        doc.image(path.join(__dirname, '..', '..', 'public', 'img', 'logo.png'), 15, 35, { width : 75 });
-    
-        doc.end();
-
-        res.json({ error : false, filename : path.basename(filename) });
+        }
 
     }
 
@@ -535,7 +616,7 @@ module.exports = () => {
 
     router
         //.use(sec.middlewares.auth_check)
-        .use(sec.responses.setResponses)
+        //.use(sec.responses.setResponses)
         .post('/ordem_servico', module.relatorioOrdemServico)
         .post('/contas/:type', module.relatorioContas)
         .post('/vendas', module.relatorioVendas)

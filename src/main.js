@@ -18,7 +18,8 @@ const express = require('express'),
     BarcodeScanner = require('native-barcode-scanner'),
     PDFDocument = require('pdfkit'),
     { xss } = require('express-xss-sanitizer'),
-    { exec } = require('child_process');
+    { exec } = require('child_process'),
+    fileUpload = require('express-fileupload');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -32,6 +33,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended : true }));
 app.use(express.json());
+app.use(fileUpload());
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
@@ -84,6 +86,28 @@ const scanner = new BarcodeScanner({});
     app.use('/api/v1/contas_receber', routes.contas_receber);
     app.use('/api/v1/relatorios', routes.relatorios);
     app.use('/api/v1/etiquetas', routes.etiquetas);
+
+    app.post('/api/v1/upload', (req, res, next) => {
+
+        let sampleFile;
+        let uploadPath;
+
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).send('No files were uploaded.');
+        }
+
+        sampleFile = req.files.sampleFile;
+        upload1Path = __dirname + '/somewhere/on/your/server/' + sampleFile.name;
+
+        // Use the mv() method to place the file somewhere on your server
+        sampleFile.mv(uploadPath, function(err) {
+            if (err){
+                return res.status(500).send(err);
+            }
+            res.send('File uploaded!');
+        });
+
+    });
 
     if(config.isDev){
         

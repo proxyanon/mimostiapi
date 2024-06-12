@@ -67,7 +67,6 @@
             width: 70% !important;
             height: 90%;
         }
-
         .table-overflow-auto, .table-responsive { 
             max-height: 190px;
             overflow: auto;
@@ -76,9 +75,7 @@
         .etiquetas-table label {
             font-size: 12.5px !important;
         }
-
         h2,h3 { font-size: 24px; }
-
         .clientes-table {
             position: relative;
             overflow: auto;
@@ -95,23 +92,11 @@
         thead th { background-color: rgb(130, 58, 106) !important; }
         thead th:hover { background-color: rgb(33,37,41);}
         th:hover, td:hover { background-color: rgba(130, 58, 106, 0.8); color:azure }
-
         thead,tbody { text-align: center; }
-
-        /*.btn-abrir-caixa { position: absolute; width: 100%; height: 80%; }*/
         #form-abrir-caixa {position: absolute; top: 20%; left: 25%; }
         .select2-container--open {
             z-index: 9999999
         }
-        /*.select2-container--bootstrap {
-            width: auto;
-            flex: 1 1 auto;
-        }
-        .select2-container--bootstrap .select2-selection--single {
-            height: 100%;
-            line-height: inherit;
-            padding: 0.5rem 1rem;
-        }*/
         #etiquetas-table > td:last-child { padding-bottom: 0px !important; }
         #etiquetas-table > tr > td:first-child:hover { 
             background-color: transparent !important;
@@ -211,15 +196,15 @@
                         </button>
                     </li>
 
-                    <li class="mt-4" id="btn-logout">
-                        <button class="btn btn-custom" type="button">
-                            <span><i class="fa fa-sign-out"></i> Sair do sistema</span>
-                        </button>
-                    </li>
-
                     <li class="mt-4 btn-menu" target-window="relatorios-recibo">
                         <button class="btn btn-custom" type="button" id="dropDownCadastros">
                             <span><i class="fa fa-newspaper"></i> Recibos</span>
+                        </button>
+                    </li>
+
+                    <li class="mt-4" id="btn-logout">
+                        <button class="btn btn-custom" type="button">
+                            <span><i class="fa fa-sign-out"></i> Sair do sistema</span>
                         </button>
                     </li>
 
@@ -1819,13 +1804,25 @@
                             <div class="col-8 p-4 rounded" style="margin-left: 16%;margin-top:14%;box-shadow:1px 1px 1px 2.5px rgba(0,0,0,.06);">
                                 <aside>
                                     <div class="row">
-                                        <div class="col-4 mt-2">
+                                        <div class="col-6 mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-recibo-nome" class="form-label"><i class="fa fa-user"></i> Recibo para</label>
+                                                <input type="text" id="relatorio-recibo-nome" class="form-control" placeholder="Digite quem recebera o recibo">
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mt-2">
+                                            <div class="form-group">
+                                                <label for="relatorio-recibo-cpf_cnpj" class="form-label"><i class="fa fa-edit"></i> CPF/CNPJ</label>
+                                                <input type="text" id="relatorio-recibo-cpf_cnpj" class="form-control" placeholder="CPF/CNPJ">
+                                            </div>
+                                        </div>
+                                        <div class="col-4 mt-4">
                                             <div class="form-group">
                                                 <label for="relatorio-recibo-valor" class="form-label"><i class="fa fa-dollar-sign"></i> Valor do recibo</label>
                                                 <input type="number" id="relatorio-recibo-valor" class="form-control" placeholder="Valor">
                                             </div>
                                         </div>
-                                        <div class="col-8 mt-2">
+                                        <div class="col-8 mt-4">
                                             <div class="form-group">
                                                 <label for="relatorio-recibo-descricao" class="form-label"><i class="fa fa-edit"></i> Referenta a</label>
                                                 <input type="text" id="relatorio-recibo-descricao" class="form-control" placeholder="Descrição do recibo">
@@ -2069,6 +2066,7 @@
                     localStorage.setItem('current_dashboard', 'clientes');
                 }
 
+                // CALCULATE PERCENTUAL DISCOUNT TO REAL VALUE
                 function setDesconto(input_id){
 
                     let field = getCurrentDashboard().includes('contas') ? 'valor' : 'preco';
@@ -2207,25 +2205,14 @@
                     });
                 }
 
+                // SET LISTENER TO ANY ELEMENTS
                 function setListener(elements, eventName, callback){
                     elements.forEach(element => {
                         element.addEventListener(eventName, callback);
                     })
                 }
-    
-                // SHOW ALERT DIVS BOOTSTRAP
-                function showAlertDiv(div_name, text){
 
-                    document.querySelector(`#${div_name}`).innerHTML = text;
-                    $(`#${div_name}`).show();
-
-                    if(div_name.includes('success')){
-                        setTimeout(() => { $(`#${div_name}`).hide(); }, 4000)
-                    }
-
-                }
-
-                // SHOW AN ELEMENT BY ID WITH TIMEOUT
+                // SHOW AN ELEMENT BY ID WITH TIMEOUT TO HIDDEN
                 function show(element_id, text, timeout = 0){
 
                     const element = document.querySelector(`#${element_id}`);
@@ -2246,7 +2233,7 @@
                     document.querySelector(`#${element_id}`).classList.add('d-none');
                 }
 
-                // SHOW AN ELEMENT
+                // SHOW AN ELEMENT (USED TO CONTROL DASHBOARD FLOW)
                 function showElem(elements){
                     elements.forEach(el => {
                         $(el).show();
@@ -2254,7 +2241,7 @@
                     })
                 }
     
-                // HIDE AN ELEMENT
+                // HIDE AN ELEMENT (USED TO CONTROL DASHBOARD FLOW)
                 function hideElem(elements){
                     elements.forEach(el => {
                         $(el).hide();
@@ -2717,6 +2704,7 @@
 
                 }
 
+                // LOAD SELECT OPTIONS IN FORMS
                 function prepareOptions(results){
 
                     let produtos_categorias = [];
@@ -3107,6 +3095,7 @@
 
                 }
 
+                // GET INFO OF CAIXA TEMP SET INPUT, OUTPUT AND SALDO
                 function getCaixaForm(){
 
                     api.getData({ endpoint : { path : 'caixa', id : getCurrentCaixa() } })
@@ -3144,8 +3133,9 @@
                 // ELEMENTS HOOOKS
                 const app_window = [...document.querySelectorAll('.app-window')]; // APP WINDOWS
                 const btn_menu = [...document.querySelectorAll('.btn-menu')]; // MENU BUTTONS
-                const btn_logout = document.querySelector('#btn-logout');
+                const btn_logout = document.querySelector('#btn-logout'); // LOGOUT BTN
 
+                // BUTTONS TO EDIT SELECT ELEMENTS
                 const btn_edit_secao = document.querySelector('#edit-secao'); // EDIT SECTION BUTTON
                 const btn_edit_categoria = document.querySelector('#edit-categoria'); // EDIT CATEGORIA BUTTON
                 const btn_edit_cor = document.querySelector('#edit-cor'); // EDIT COLOR BUTTON
@@ -3279,10 +3269,11 @@
                 });
     
                 loadDashboardPage(currentDashboard); // LOAD LAST STORAGE DASHBOARD
-                initFieldsMasks()
+                initFieldsMasks(); // INIT FIELDS MASKS
 
                 $('#modal_saida_caixa-saida').maskMoney();
 
+                // ADD SECTION IN PRODUCTS FORM
                 document.querySelector('#btn-add-secao').addEventListener('click', (e) => {
 
                     let secao_id = document.querySelector('#modal_secao-id').value;
@@ -3365,6 +3356,7 @@
 
                 });
 
+                // ADD CATEGORIE IN PRODUCTS FORM
                 document.querySelector('#btn-add-categoria').addEventListener('click', (e) => {
 
                     let categoria_id = document.querySelector('#modal_categoria-id').value;
@@ -3439,6 +3431,7 @@
 
                 });
 
+                // ADD COLOR IN PRODUCTS FORM
                 document.querySelector('#btn-add-cor').addEventListener('click', (e) => {
 
                     let cor_id = document.querySelector('#modal_cor-id').value;
@@ -3785,7 +3778,7 @@
 
                 });
 
-                // RELATORIOS LISTENERS
+                // REPORTS LISTENERS
                 btn_relatorio_vendas.addEventListener('click', (e) => {
 
                     const periodo_inicial = document.querySelector('#relatorio-vendas-periodo_inicial').value;
@@ -4056,10 +4049,12 @@
 
                 btn_relatorio_recibo.addEventListener('click', (e) => {
 
+                    const nome = document.querySelector('#relatorio-recibo-nome').value;
+                    const cpf_cnpj = document.querySelector('#relatorio-recibo-cpf_cnpj').value;
                     const valor = parseFloat($('#relatorio-recibo-valor').val().replace(',', ''));
                     const descricao = document.querySelector('#relatorio-recibo-descricao').value;
 
-                    let data = { valor, descricao };
+                    let data = { nome, cpf_cnpj, valor, descricao };
 
                     data.endpoint = 'recibo';
                     data.form_data = data;

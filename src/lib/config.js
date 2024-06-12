@@ -89,7 +89,7 @@ const config = module.exports = {
         }
     },
 
-    isDev : false,
+    isDev : true,
     verbose : true
 
 }
