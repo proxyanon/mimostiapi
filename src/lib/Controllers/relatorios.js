@@ -455,11 +455,8 @@ module.exports = () => {
             const Document = require('pdfkit');
             const doc = new Document({ margin : 30, size : 'A4' });
 
-            //let margint_to_add = descricao.length * (descricao.length >= 229 && descricao.length < 300 ? 0.08 : 0.15);
-            //let margin_top_dynamic = descricao.length >= 229 ? margint_to_add : 0;
-
-            margin_top_dynamic = (descricao.length/2) + (descricao.length >= 250 ? (72.8/2) : 72.8);
-            //margin_top_dynamic  += 20;
+            let max_height_descricao = descricao.length >= 100 ? 100 : 40;
+            let margin_top_dynamic = max_height_descricao + 75;
 
             doc.pipe(fs.createWriteStream(filename));
 
@@ -476,7 +473,6 @@ module.exports = () => {
                 .fontSize(11)
                 .font('Helvetica')
                 .text('Recebi da empresa Mimos Tia Pi, a importância de: ', 110, 50, { width : 500, align : 'left' })
-
             doc
                 .fontSize(11)
                 .font('Helvetica-Bold')
@@ -489,38 +485,96 @@ module.exports = () => {
             doc
                 .fontSize(11)
                 .font('Helvetica-Bold')
-                .text(descricao.toUpperCase(), 175, 72.8, { width : 300, align : 'justify' })
+                .text(descricao.toUpperCase(), 175, 72.8, { width : 300, align : 'justify', height : max_height_descricao })
 
             doc.fontSize(11)
                 .font('Helvetica')
-                .text('Arcoverde na data:  ', 110, 20 + margin_top_dynamic, { width : 500, align : 'left' });
+                .text('Arcoverde na data:  ', 110, margin_top_dynamic, { width : 500, align : 'left' });
 
             doc.fontSize(11)
                 .font('Helvetica-Bold')
-                .text(`${module.getDataAtual()} `, 205, 20 + margin_top_dynamic, { width : 500, align : 'left' });
+                .text(`${module.getDataAtual()} `, 205, margin_top_dynamic, { width : 500, align : 'left' });
 
             doc.fontSize(11)
                 .font('Helvetica')
-                .text('Nome: ', 110, 35 + margin_top_dynamic, { width : 500, align : 'left' });
+                .text('Nome: ', 110, margin_top_dynamic + 15, { width : 500, align : 'left' });
 
             doc.fontSize(11)
                 .font('Helvetica-Bold')
-                .text(nome.toLowerCase().capitalize(), 'Nome: '.length + 140, 35 + margin_top_dynamic, { width : 500, align : 'left' });
+                .text(nome.toLowerCase().capitalize(), 'Nome: '.length + 140, margin_top_dynamic + 15, { width : 500, align : 'left' });
 
             doc.fontSize(11)
                 .font('Helvetica')
-                .text('CPF/CNPJ: ', 110, 50 + margin_top_dynamic, { width : 500, align : 'left' });
+                .text('CPF/CNPJ: ', 110, 30 + margin_top_dynamic, { width : 500, align : 'left' });
 
             doc.fontSize(11)
                 .font('Helvetica-Bold')
-                .text(cpf_cnpj, 168, 50 + margin_top_dynamic, { width : 500, align : 'left' });
+                .text(cpf_cnpj, 168, 30 + margin_top_dynamic, { width : 500, align : 'left' });
 
             doc.fontSize(11)
                 .font('Helvetica')
-                .text('Assinatura: ____________________________________________________________', 110, 95 + margin_top_dynamic, { width : 500, align : 'left' });
+                .text('Assinatura: ____________________________________________________________', 110, 75 + margin_top_dynamic, { width : 500, align : 'left' });
 
             doc.image(path.join(__dirname, '..', '..', 'public', 'img', 'logo.png'), 15, 35, { width : 75 });
+            doc.image(path.join(__dirname, '..', '..', 'public', 'img', 'logo.png'), 15, 150 + margin_top_dynamic, { width : 75 });
         
+            doc.fontSize(8.89)
+                .font('Helvetica-Bold')  
+                .text('2º via do recibo', 110, 140 + margin_top_dynamic, { width : 300, align : 'left' });
+
+            doc.fontSize(10)
+                .font('Helvetica')  
+                .text('VALOR DO RECIBO: ', 380, 140 + margin_top_dynamic, { width : 300, align : 'left' });
+            doc
+                .fontSize(10)
+                .font('Helvetica-Bold')
+                .text(` ${module.formatMoney(valor)}`, 475, 140 + margin_top_dynamic)
+            doc
+                .fontSize(11)
+                .font('Helvetica')
+                .text('Recebi da empresa Mimos Tia Pi, a importância de: ', 110, 172.8 + margin_top_dynamic, { width : 500, align : 'left' })
+            doc
+                .fontSize(11)
+                .font('Helvetica-Bold')
+                .text(`${extenso(parseFloat(valor), { mode: 'currency', currency: { type: 'BRL' } }).toUpperCase()}`, 365, 172.8 + margin_top_dynamic, { width : 500, align : 'left' })
+
+            doc
+                .fontSize(11)
+                .font('Helvetica')
+                .text('Referente a: ', 110, 195.6 + margin_top_dynamic, { width : 300, align : 'left' })
+            doc
+                .fontSize(11)
+                .font('Helvetica-Bold')
+                .text(descricao.toUpperCase(), 175, 195.6 + margin_top_dynamic, { width : 300, align : 'justify', height : max_height_descricao })
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('Arcoverde na data:  ', 110, 252.8 + margin_top_dynamic + (max_height_descricao > 50 ? max_height_descricao/2 : 1), { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica-Bold')
+                .text(`${module.getDataAtual()} `, 205, 252.8 + margin_top_dynamic + (max_height_descricao > 50 ? max_height_descricao/2 : 0), { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('Nome: ', 110, 267.8 + margin_top_dynamic + (max_height_descricao > 50 ? max_height_descricao/2 : 1), { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica-Bold')
+                .text(nome.toLowerCase().capitalize(), 'Nome: '.length + 140, 267.8 + margin_top_dynamic + (max_height_descricao > 50 ? max_height_descricao/2 : 1), { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('CPF/CNPJ: ', 110, 282.8 + margin_top_dynamic + (max_height_descricao > 50 ? max_height_descricao/2 : 1), { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica-Bold')
+                .text(cpf_cnpj, 168, 282.8 + margin_top_dynamic + (max_height_descricao > 50 ? max_height_descricao/2 : 1), { width : 500, align : 'left' });
+
+            doc.fontSize(11)
+                .font('Helvetica')
+                .text('Assinatura: ____________________________________________________________', 110, 327.8 + margin_top_dynamic + (max_height_descricao > 50 ? max_height_descricao/2 : 1), { width : 500, align : 'left' });
+
             doc.end();
 
             res.json({ error : false, filename : path.basename(filename) });
