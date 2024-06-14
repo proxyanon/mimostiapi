@@ -7,6 +7,9 @@ const Sequelize = require('../modules/database');
 const sec = new Security();
 const router = express.Router();
 
+const { xss, sanitize } = require('express-xss-sanitizer');
+const config = require('../config');
+
 module.exports = () => {
 
     var module = {};
@@ -111,16 +114,28 @@ module.exports = () => {
             
             req.body.datecreated = new Date();
 
+            req.body = sanitize(req.body);
+
             for(key in module.fields){
                 if(key != 'id'){
                     if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
-                        ContasReceber[key] = req.body[key];
-                    }else if(!req.body[key]){
-                        return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
+                    
+                        if(key == 'valor_pago'){
+                            ContasReceber[key] = parseFloat(ContasReceber[key]) + parseFloat(req.body[key]);
+                        }else{
+                            ContasReceber[key] = parseFloat(req.body[key]);
+                        }
+                    
+                    }else if(!Object.keys(req.body).includes(key)){
+                        return req.block(`Preencha o campo ${key}`);
                     }else{
                         ContasReceber[key] = req.body[key];
                     }
                 }
+            }
+
+            if(parseFloat(ContasReceber['valor']) < parseFloat(ContasReceber['valor_pago'])){
+                return res.notAccept('O valor pago não pode ser maior que o valor do título');
             }
 
             const results = await ContasReceber.save();
@@ -128,11 +143,11 @@ module.exports = () => {
             if(results){
                 res.json({ error : false, results });
             }else{
-                res.status(400).json({ error : true, msg : 'Ocorreu um erro ao salvar a conta' });
+                return res.badRequest('Ocorreu um erro ao salvar a conta');
             }
 
         }else{
-            res.status(500).json({ error : true, msg : 'Registro não encontrado' });
+            return res.serverError('Registro não encontrado');
         }
 
     }

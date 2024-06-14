@@ -1,76 +1,88 @@
+/**
+ * @author Daniel Victor Freire Freire
+ * @version 1.2.0
+ * @copyright mimostiapi
+ * @license MIT
+ * @namespace main
+ * @package main.js
+ */
+
+// MAIN IMPORTS
 const express = require('express'),
     app = express(),
-    config = require('./lib/config'),
-    { handleParams } = require('./lib/modules/Security'),
-    http_ = require('http'),
-    https_ = require('https'),
+    config = require('./lib/config'), // app config
+    { handleParams } = require('./lib/modules/Security'), // Handle params to prevent error responses
+    http_ = require('http'), // http server
+    https_ = require('https'), // https server
     sequelize = require('sequelize'),
-    cookieParser = require('cookie-parser'),
+    cookieParser = require('cookie-parser'), // manage cookie middlewares
     //session = cookieSession(config.session),
-    session = require('express-session'),
-    cors = require('cors'),
+    session = require('express-session'), // manage sessions middlewares
+    cors = require('cors'), // remove errors in api requests
     helmet = require('helmet'),
     path = require('path'),
     fs = require('fs'),
-    { Server } = require('socket.io'),
-    routes = require('./lib/modules/routes'),
-    compression = require('compression'),
-    BarcodeScanner = require('native-barcode-scanner'),
-    PDFDocument = require('pdfkit'),
-    { xss } = require('express-xss-sanitizer'),
-    { exec } = require('child_process'),
+    { Server } = require('socket.io'), // socket.io
+    routes = require('./lib/modules/routes'), // api routes
+    compression = require('compression'), // compress requests to upgrade peformance
+    BarcodeScanner = require('native-barcode-scanner'), // scanner barcodes
+    PDFDocument = require('pdfkit'), // PDF creation
+    { xss } = require('express-xss-sanitizer'), // XSS middleware
+    { exec } = require('child_process'), // exec to start chrome
     fileUpload = require('express-fileupload');
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs'); // SET VIEW ENGINE IN THIS CASE EJS
+app.set('views', path.join(__dirname, 'views')); // VIEWS PATH
 
-app.use(helmet({
-    contentSecurityPolicy : false
-}));
-app.use(cors());
-app.use(xss())
-app.use(compression());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended : true }));
-app.use(express.json());
+// CONFIG HEADERS TO HANDLE CLIENT REQUESTS
+app.use(helmet({ contentSecurityPolicy : false }));
+app.use(cors()); // remove mutiple errors in api requests
+app.use(xss()); // xss prevent
+app.use(compression()); // compress request to performance
+app.use(cookieParser()); // session manegment
+app.use(express.urlencoded({ extended : true })); // set accept only JSON requests
+app.use(express.json()); // set to accept only JSON requets
 app.use(fileUpload());
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public'))); // Static route for folder src/public
 
 let server = null;
 
+// Trying to create http or https server if https try to use certificates
 try{
-    server = config.server.use_https ? https_.createServer({ cert : fs.readFileSync(config.server.https.cert), key : fs.readFileSync(config.server.https.key), rejectUnauthorized : true }, app) : http_.createServer(app);
+    server = config.server.use_https ? https_.createServer({ cert : fs.readFileSync(config.server.https.cert), key : fs.readFileSync(config.server.https.key), rejectUnauthorized : true }, app) : http_.createServer(app); // Server HTTP or HTTPS
 }catch(err){
     throw err;
 }
 
-const io = new Server(server);
-const scanner = new BarcodeScanner({});
+const io = new Server(server); // socket.io service attached
+const scanner = new BarcodeScanner({}); // Barcode scanner class
 
 (async () => {
 
-    const db = require('./lib/modules/database');
+    const db = require('./lib/modules/database'); // Database instance
 
+    // Try to sync database
     try{
         await db.sync();
     }catch(err){
         throw err;
     }
 
-    config.server.start_chrome = config.isDev ? false : true;
+    //config.server.start_chrome = config.isDev ? false : true;
     config.server.session.cookie.secure = config.server.port == 443 ? true : false;
     
+    // server configs and midlewares
     app.use(handleParams);
-    app.set('trust proxy', config.server.trust_proxy);
-    app.use(session(config.server.session));
-    app.set('socket-io', io);
+    app.set('trust proxy', config.server.trust_proxy); // set if trust proxy is true or false
+    app.use(session(config.server.session)); // use session in server
+    app.set('socket-io', io); // attach socket.io in server
 
     // views routes
     app.use('/', routes.index);
     app.use('/app', routes.app);
 
-    // api routes
+    // api routes (CRUD ROUTES)
     app.use('/api/v1/usuarios', routes.usuarios);
     app.use('/api/v1/clientes', routes.clientes);
     app.use('/api/v1/fornecedores', routes.fornecedores);
@@ -84,6 +96,8 @@ const scanner = new BarcodeScanner({});
     app.use('/api/v1/formas_pagamentos', routes.formas_pagamentos);
     app.use('/api/v1/contas_pagar', routes.contas_pagar);
     app.use('/api/v1/contas_receber', routes.contas_receber);
+    
+    // api routes (REPORTS AND PRINT ROUTES)
     app.use('/api/v1/relatorios', routes.relatorios);
     app.use('/api/v1/etiquetas', routes.etiquetas);
 
@@ -209,13 +223,14 @@ const scanner = new BarcodeScanner({});
 
     }
 
+    // START HTTP OR HTTPS SERVER
     server.listen(config.server.port, config.server.hostname, () => {
 
         let app_url = `${config.server.use_https ? 'https://' : 'http://'}${config.server.hostname}:${config.server.port}`;
 
         config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.green}[+] Server listening on${config.colors.reset}`, `${config.colors.underscore}${config.colors.fg.yellow}${config.colors.bright}${app_url}${config.colors.reset}`) : '';
 
-        async function start_chrome(){
+        async function start_chrome(){ // Start chome automatic
             config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.green}[+] Starting chrome on ${config.colors.underscore}${config.colors.fg.yellow}${app_url}${config.colors.reset}`) : '';
             const { stdout, stderr } = await exec(`start chrome.exe ${app_url}`);
 
@@ -235,18 +250,19 @@ const scanner = new BarcodeScanner({});
 
     });
 
+    // SOCKET.IO LISTENERS
     io.on('connection', socket => {
 
         console.log('Connected from' + socket.id);
 
-        socket.join(socket.id);
+        socket.join(socket.id); // join new socket connection
 
-        scanner.on('code', code => {
+        scanner.on('code', code => { // Listener barcodes
             //console.log(code);
             socket.emit('codigo_barras', code);
         });
 
-        socket.on('disconnect', () => {
+        socket.on('disconnect', () => { // disconnect socket
             console.log('Disconnected', socket.id);
             //scanner.off();
         })
