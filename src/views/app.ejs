@@ -1321,6 +1321,7 @@
                                         <th scope="col">Forma de pagamento</th>
                                         <th scope="col">Desconto</th>
                                         <th scope="col">Descrição</th>
+                                        <th scope="col">Valor pago</th>
                                         <th scope="col">Data do registro</th>
                                     </tr>
                                 </thead>
@@ -1352,13 +1353,19 @@
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label for="contas_pagar-desconto" class="form-label">Desconto do pagamento % <span class="fw-bold" id="desconto-contas_pagar"></span></label>
-                                <input type="number" class="form-control" placeholder="Desconto" id="contas_pagar-desconto">
+                                <label for="contas_pagar-valor_pago" class="form-label">Valor pago R$</label>
+                                <input type="number" class="form-control" placeholder="Valor pago" id="contas_pagar-valor_pago">
                             </div>
                         </div>
                     </div>
 
                     <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group mt-4">
+                                <label for="contas_pagar-desconto" class="form-label">Desconto do pagamento % <span class="fw-bold" id="desconto-contas_pagar"></span></label>
+                                <input type="number" class="form-control" placeholder="Desconto" id="contas_pagar-desconto">
+                            </div>
+                        </div>
                         <div class="col">
                             <div class="form-group mt-4">
                                 <label for="contas_pagar-forma_pagamento" class="mb-2">Forma de pagamento</label>
@@ -1420,6 +1427,7 @@
                                         <th scope="col">Forma de pagamento</th>
                                         <th scope="col">Desconto</th>
                                         <th scope="col">Descrição</th>
+                                        <th scope="col">Valor recebido</th>
                                         <th scope="col">Data do registro</th>
                                     </tr>
                                 </thead>
@@ -1451,13 +1459,19 @@
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label for="contas_receber-desconto" class="form-label">Desconto % <span class="fw-bold" id="desconto-contas_receber"></span></label>
-                                <input type="number" class="form-control" placeholder="Desconto" id="contas_receber-desconto">
+                                <label for="contas_receber-valor_pago" class="form-label">Valor recebido R$</label>
+                                <input type="number" class="form-control" placeholder="Valor recebido" id="contas_receber-valor_pago">
                             </div>
                         </div>
                     </div>
 
                     <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group mt-4">
+                                <label for="contas_receber-desconto" class="form-label">Desconto % <span class="fw-bold" id="desconto-contas_receber"></span></label>
+                                <input type="number" class="form-control" placeholder="Desconto" id="contas_receber-desconto">
+                            </div>
+                        </div>
                         <div class="col">
                             <div class="form-group mt-4">
                                 <label for="contas_receber-forma_pagamento" class="mb-2">Forma de pagamento</label>
@@ -2099,7 +2113,7 @@
 
                 [...document.querySelectorAll('input[type="number"]')].forEach((inpt) => {
 
-                    if(inpt.id.includes('valor') || inpt.id.includes('preco')){
+                    if(inpt.id.includes('valor') || inpt.id.includes('preco') || inpt.id.includes('valor_pago')){
                     
                         if(!getCurrentDashboard().includes('relatorios')){
                             $(`#${inpt.id}`).change((e) => { setDesconto(inpt.id) })
@@ -2405,6 +2419,7 @@
                                 break;
 
                                 case 'valor':
+                                case 'valor_pago':
                                 case 'preco':
                                     tds += `<td>${formatMoney(data[column])}</td>` + '\n';
                                 break;
@@ -2484,7 +2499,7 @@
                                             break;
                                         }
     
-                                        if(column != 'id' && column != 'datecreated' && column != 'estoque' && column != 'codigo_barras'){
+                                        if(column != 'id' && column != 'datecreated' && column != 'estoque' && column != 'codigo_barras' && column != 'valor_pago'){
                                             try{
                                                 
                                                 let field_form = document.querySelector(`#${item_name}-${column}`);
@@ -2498,7 +2513,7 @@
                                                     field_form.value = [data[column]];
                                                     $(field_form).trigger('change');
                                                 }else{
-                                                    if(column.includes('preco') || column.includes('valor')){
+                                                    if(column.includes('preco') || column.includes('valor') || column.includes('valor_pago')){
                                                         field_form.value = parseFloat(data[column]).toFixed(2);
                                                     }else if(column.includes('entrada') || column.includes('saida')){
                                                         field_form.value = 0;
@@ -2644,7 +2659,7 @@
                                     
                                     var data = e.params.data;
                             
-                                    if(data.selected && data.id && data.text && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && getCurrentDashboard() != 'estoque_produto_final' ){
+                                    if(data.selected && data.id && data.text && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && getCurrentDashboard() != 'estoque_produto_final' && getCurrentDashboard() != 'contas_pagar'){
                                         try{
                                             document.querySelector(`#edit-${name}`).removeAttribute('disabled');
                                         }catch(err){
@@ -2664,7 +2679,7 @@
                             
                                     let data = e.currentTarget;
                             
-                                    if(data.value && name != 'caixa' && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && !getCurrentDashboard().includes('estoque_produto_final')){
+                                    if(data.value && name != 'caixa' && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && !getCurrentDashboard().includes('estoque_produto_final') && !getCurrentDashboard().includes('contas_pagar')){
                                         try{
                                             document.querySelector(`#edit-${name}`).removeAttribute('disabled');
                                         }catch(err){
@@ -2829,7 +2844,7 @@
                                 column_name = 'caixa_id';
                             }
 
-                            if(column_name == 'preco' || column_name == 'valor'){
+                            if(column_name == 'preco' || column_name == 'valor' || column_name == 'valor_pago'){
 
                                 if(input.getAttribute('type') == 'hidden'){
                                     column_data = parseFloat(column_data);
@@ -4252,7 +4267,7 @@
                     let item_id = document.querySelector(`#${btn_id}-id`).value;
                     let item_data = prepareData(btn_id, current_dashboard);
 
-                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto'];
+                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber'];
 
                     if(current_dashboard == 'produtos'){
 

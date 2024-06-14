@@ -17,7 +17,7 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.generate_csrf)
+        .use(sec.middlewares.generate_csrf)
         .get('/', module.index)
 
     return router

@@ -443,7 +443,7 @@ module.exports = () => {
         }
 
         if(!checkObj.check){
-            res.status(400).json({ error : true, msg : checkObj.msg });
+            res.notAccept(checkObj.msg)
         }else{
 
             const { nome, cpf_cnpj, valor, descricao } = req.body;
@@ -615,8 +615,8 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
-        //.use(sec.responses.setResponses)
+        .use(sec.middlewares.auth_check)
+        .use(sec.responses.setResponses)
         .post('/ordem_servico', module.relatorioOrdemServico)
         .post('/contas/:type', module.relatorioContas)
         .post('/vendas', module.relatorioVendas)

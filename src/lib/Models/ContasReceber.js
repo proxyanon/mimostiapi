@@ -28,6 +28,11 @@ const Model = db.define('contas_receber', {
         type : Sequelize.STRING,
         allowNull : true
     },
+    valor_pago : {
+        type : Sequelize.FLOAT,
+        allowNull : true,
+        defaultValue : 0
+    },
     datecreated : {
         type : Sequelize.DATE,
         allowNull : false

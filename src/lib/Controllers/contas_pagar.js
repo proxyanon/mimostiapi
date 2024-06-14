@@ -8,6 +8,7 @@ const sec = new Security();
 const router = express.Router();
 
 const { xss, sanitize } = require('express-xss-sanitizer');
+const config = require('../config');
 
 module.exports = () => {
 
@@ -75,32 +76,36 @@ module.exports = () => {
 
         req.body = sanitize(req.body);
 
-        console.log(req.body);
+        if(config.isDev || config.verbose){
+            console.log(req.body);
+        }
 
         for(key in module.fields){
             if(key != 'id'){
                 if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
-                    obj_create[key] = req.body[key]
-                }else if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    obj_create[key] = req.body[key];
+                }else if(!Object.keys(req.body).includes(key)){
+                    return req.block(`Preencha o campo ${key}`);
                 }else{
-                    obj_create[key] = req.body[key]
+                    obj_create[key] = req.body[key];
                 }
             }
         }
 
-        console.log(obj_create);
+        if(parseFloat(obj_create.valor) < parseFloat(obj_create.valor_pago)){
+            return res.notAccept('O valor pago não pode ser maior que o valor do título');
+        }
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+            return res.block('Campo(s) inválido(s)');
         }else{
 
             const results = await models.ContasPagar.create(obj_create);
 
             if(results){
-                res.json({ error : false })
+                res.json({ error : false, results });
             }else{
-                res.status(500).json({ error : true, msg : 'Ocorreu um erro ao criar ContasPagar' })
+                return res.serverError('Ocorreu um erro ao criar título a pagar')
             }
 
         }
@@ -120,13 +125,23 @@ module.exports = () => {
             for(key in module.fields){
                 if(key != 'id'){
                     if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
-                        ContasPagar[key] = req.body[key];
-                    }else if(!req.body[key]){
-                        return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
+                    
+                        if(key == 'valor_pago'){
+                            ContasPagar[key] = parseFloat(ContasPagar[key]) + parseFloat(req.body[key]);
+                        }else{
+                            ContasPagar[key] = parseFloat(req.body[key]);
+                        }
+                    
+                    }else if(!Object.keys(req.body).includes(key)){
+                        return req.block(`Preencha o campo ${key}`);
                     }else{
                         ContasPagar[key] = req.body[key];
                     }
                 }
+            }
+
+            if(parseFloat(ContasPagar['valor']) < parseFloat(ContasPagar['valor_pago'])){
+                return res.notAccept('O valor pago não pode ser maior que o valor do título');
             }
 
             const results = await ContasPagar.save();
@@ -134,11 +149,11 @@ module.exports = () => {
             if(results){
                 res.json({ error : false, results });
             }else{
-                res.status(400).json({ error : true, msg : 'Ocorreu um erro ao salvar a conta' });
+                return res.badRequest('Ocorreu um erro ao salvar a conta');
             }
 
         }else{
-            res.status(500).json({ error : true, msg : 'Registro não encontrado' });
+            return res.serverError('Registro não encontrado');
         }
 
     }
@@ -164,7 +179,7 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
+        .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
         .get('/search/:search', sec.middlewares.csrf_check, module.searchContasPagar)
         .get('/:id?', sec.middlewares.csrf_check, module.getContasPagar)

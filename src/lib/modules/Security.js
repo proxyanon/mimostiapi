@@ -89,6 +89,18 @@ class Security {
 
             }
 
+            res.badRequest = function(msg, fields = undefined){
+
+                let hasFields = fields == undefined ? false : true;
+                
+                if(hasFields){
+                    return res.status(400).json({ error : true, msg, fields : Object.keys(fields) });
+                }else{
+                    return res.status(400).json({ error : true, msg });
+                }
+
+            }
+
             res.serverError = function(msg, fields = undefined){
                 
                 let hasFields = fields == undefined ? false : true;
@@ -174,7 +186,7 @@ class Security {
             if(req.session.isAuthenticated && req.session.token){
                 return res.redirect('/app');
             }else{
-                return res.redirect('/teste');
+                return res.redirect('/');
             }
 
         },
