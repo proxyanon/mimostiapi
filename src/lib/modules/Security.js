@@ -194,11 +194,9 @@ class Security {
         generate_csrf : async (req, res, next) => {
 
             if(config.tokens.csrf.required){
-
                 if(req.session.csrf_token === undefined){
                     req.session.csrf_token = randomBytes(config.tokens.csrf.size).toString('base64');
                 }
-
             }
 
             next();
@@ -213,7 +211,7 @@ class Security {
                     return this.responses.unauthorized(res, 'Não autorizado (CSRF)');
                 }else{
 
-                    console.log(req.headers[config.tokens.csrf.header], req.session.csrf_token);
+                    config.isDev || config.verbose ? console.log(req.headers[config.tokens.csrf.header], req.session.csrf_token) : null;
 
                     if(req.headers[config.tokens.csrf.header] != req.session.csrf_token){
                         return this.responses.unauthorized(res, 'Não autorizado (CSRF 2)');
@@ -236,8 +234,6 @@ class Security {
         auth_check : async (req, res, next) => {
 
             const isApi = req.baseUrl.indexOf('/api/') !== -1;
-
-            //console.log(req.session)
 
             if(req.session.isAuthenticated && req.session.token){
 
@@ -263,6 +259,8 @@ class Security {
 
         },
 
+        // sanitize requests bodys
+        // check if has id in DELETE method
         sanitize_body : async (req, res, next) => {
 
             if((req.method == 'POST' || req.method == 'PUT') && req.body){
@@ -271,7 +269,7 @@ class Security {
                     return res.status(400).json({ error : true, msg : '[Security.js] Body cannot be empty' })
                 }
 
-                console.log(req.params)
+                config.isDev || config.verbose ? console.log(req.params) : null;
 
                 if(req.method == 'PUT' && !req.params.id){
                     return res.status(400).json({ error : true, msg : '[Security.js] You have to specify ID to save' })
@@ -289,13 +287,13 @@ class Security {
 
                 req.params.id = parseInt(req.params.id);
 
-                console.log(req.params.id, req.params)
+                config.isDev || config.verbose ? console.log(req.params.id, req.params) : null
 
-                if(req.params.id == NaN){
+                if(parseInt(req.params.id) == NaN){
                     return res.status(400).json({ error : true, msg : '[Security.js] Specify ID' });
                 }
 
-                next()
+                next();
             }
 
         }
