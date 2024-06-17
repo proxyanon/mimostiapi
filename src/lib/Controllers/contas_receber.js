@@ -71,19 +71,25 @@ module.exports = () => {
         if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
             return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
         }
-        
+
         req.body.datecreated = new Date();
 
-        console.log(req.body);
+        req.body = sanitize(req.body);
+
+        if(config.isDev || config.verbose){
+            console.log(req.body);
+        }
 
         for(key in module.fields){
             if(key != 'id'){
                 if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
-                    obj_create[key] = req.body[key]
-                }else if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    obj_create[key] = req.body[key];
+                }else if(module.fields[key].type == 'BOOLEAN'){
+                    obj_create[key] = Boolean(req.body[key]);
+                }else if(!Object.keys(req.body).includes(key)){
+                    return res.notAccept(`Preencha o campo ${key}`);
                 }else{
-                    obj_create[key] = req.body[key]
+                    obj_create[key] = req.body[key];
                 }
             }
         }
@@ -92,20 +98,16 @@ module.exports = () => {
             return res.notAccept('O valor pago não pode ser maior que o valor do título');
         }
 
-        if(parseFloat(obj_create.valor) == parseFloat(obj_create.valor_pago)){
-            obj_create.pago = 'Título pago'
-        }
-
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+            return res.notAccept('Campo(s) inválido(s)');
         }else{
 
             const results = await models.ContasReceber.create(obj_create);
 
             if(results){
-                res.json({ error : false })
+                res.json({ error : false, results });
             }else{
-                res.status(500).json({ error : true, msg : 'Ocorreu um erro ao criar ContasReceber' })
+                return res.serverError('Ocorreu um erro ao criar título a pagar')
             }
 
         }
@@ -118,7 +120,7 @@ module.exports = () => {
 
         if(ContasReceber){
 
-            if(ContasReceber['pago'] == 'Título pago'){
+            if(ContasReceber['pago'] == true){
                 return res.notAccept('O título já foi pago');
             }
             
@@ -135,21 +137,25 @@ module.exports = () => {
                         }else{
                             ContasReceber[key] = parseFloat(req.body[key]);
                         }
-                    
+                    }else if(module.fields[key].type == 'BOOLEAN'){
+                        ContasReceber[key] = Boolean(req.body[key]);
                     }else if(!Object.keys(req.body).includes(key)){
-                        return req.block(`Preencha o campo ${key}`);
+                        return res.block(`Preencha o campo ${key}`);
                     }else{
                         ContasReceber[key] = req.body[key];
                     }
                 }
             }
 
+            console.log(Object.values(ContasReceber))
+            console.log(req.body)
+
             if(parseFloat(ContasReceber['valor']) < parseFloat(ContasReceber['valor_pago'])){
                 return res.notAccept('O valor pago não pode ser maior que o valor do título');
             }
 
             if(parseFloat(ContasReceber['valor']) == parseFloat(ContasReceber['valor_pago'])){
-                ContasReceber['pago'] = 'Título pago';
+                ContasReceber['pago'] = true;
             }
 
             const results = await ContasReceber.save();
@@ -187,13 +193,14 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
+        .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        .get('/search/:search', sec.middlewares.csrf_check, module.searchContasReceber)
-        .get('/:id?', sec.middlewares.csrf_check, module.getContasReceber)
-        .post('/add', sec.middlewares.csrf_check, module.addContasReceber)
-        .put('/save/:id', sec.middlewares.csrf_check, module.saveContasReceber)
-        .delete('/del/:id', sec.middlewares.csrf_check, module.deleteContasReceber);
+        .use(sec.middlewares.csrf_check)
+        .get('/search/:search', module.searchContasReceber)
+        .get('/:id?', module.getContasReceber)
+        .post('/add', xss(), sec.middlewares.sanitize_body, module.addContasReceber)
+        .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveContasReceber)
+        .delete('/del/:id', xss(), module.deleteContasReceber);
 
     return router;
 

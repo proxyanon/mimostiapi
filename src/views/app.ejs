@@ -1381,7 +1381,7 @@
                         </div>
                     </div>
 
-                    <input type="hidden" id="contas_pagar-pago" value="Não pago">
+                    <input type="hidden" id="contas_pagar-pago" value="0">
 
                     <div class="row mt-4">
                         <div class="col mt-4">
@@ -1431,6 +1431,7 @@
                                         <th scope="col">Desconto</th>
                                         <th scope="col">Descrição</th>
                                         <th scope="col">Valor recebido</th>
+                                        <th scope="col">Título pago</th>
                                         <th scope="col">Data do registro</th>
                                     </tr>
                                 </thead>
@@ -1488,6 +1489,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <input type="hidden" id="contas_receber-pago" value="0">
 
                     <div class="row mt-4">
                         <div class="col mt-4">
@@ -2468,7 +2471,7 @@
                                 break;
 
                                 case 'pago':
-                                    tds += `<td class="${data[column] == 'Título pago' ? 'text-success' : 'text-danger'}">${data[column].toUpperCase()}</td>` + '\n';
+                                    tds += `<td class="${data[column] == true ? 'text-success' : 'text-danger'}">${data[column] == true ? 'PAGO' : 'NÃO PAGO'}</td>` + '\n';
                                 break;
 
                                 default:
@@ -2499,6 +2502,13 @@
                                 if(parseInt(data['id']) == parseInt(item_id)){
     
                                     table_columns.forEach(column => {
+
+                                        if(column == 'pago'){
+                                            if(data[column] == true){
+                                                alert('O título já foi pago');
+                                                document.location.reload()
+                                            }
+                                        }
     
                                         switch(column){
                                             case 'produto_nome':
@@ -2666,7 +2676,7 @@
                                     
                                     var data = e.params.data;
                             
-                                    if(data.selected && data.id && data.text && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && getCurrentDashboard() != 'estoque_produto_final' && getCurrentDashboard() != 'contas_pagar'){
+                                    if(data.selected && data.id && data.text && getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio') && getCurrentDashboard() != 'estoque_produto_final' && !getCurrentDashboard().includes('contas')){
                                         try{
                                             document.querySelector(`#edit-${name}`).removeAttribute('disabled');
                                         }catch(err){
@@ -2784,6 +2794,8 @@
                             !field.classList.contains('btn') && !$(field).attr('disabled') ? field.value = '' : null; 
                             getCurrentDashboard() == 'relatorios-ordem_servico' ? field.setAttribute('disabled', true) : ''
                             getCurrentDashboard() == 'produtos' ? field.removeAttribute('disabled') : ''
+                            getCurrentDashboard().includes('contas') && field.id == 'contas_pagar-pago' ? field.value = false : null;
+                            getCurrentDashboard().includes('contas') && field.id == 'contas_pagar-valor_pago' ? field.value = 0 : null;
                         });
 
                         hiddenFields.forEach(field => { field.value = null; });
@@ -2859,7 +2871,11 @@
                                 }
                             }
 
-                            data[column_name] = column_data;
+                            if(column_name == 'contas_pagar' || column_name == 'contas_receber'){
+                                null
+                            }else{
+                                data[column_name] = column_data;
+                            }
                         
                         }
 
@@ -4273,7 +4289,9 @@
                     let item_id = document.querySelector(`#${btn_id}-id`).value;
                     let item_data = prepareData(btn_id, current_dashboard);
 
-                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber', 'pago'];
+                    console.log(item_id, item_data);
+
+                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber', 'pago', 'valor_pago'];
 
                     if(current_dashboard == 'produtos'){
 

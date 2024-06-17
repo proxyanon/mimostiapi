@@ -34,9 +34,9 @@ const Model = db.define('contas_pagar', {
         defaultValue : 0
     },
     pago : {
-        type : Sequelize.STRING,
+        type : Sequelize.BOOLEAN,
         allowNull : true,
-        defaultValue : 'Não pago'
+        defaultValue : false
     },
     datecreated : {
         type : Sequelize.DATE,

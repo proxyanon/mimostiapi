@@ -84,8 +84,10 @@ module.exports = () => {
             if(key != 'id'){
                 if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
                     obj_create[key] = req.body[key];
+                }else if(module.fields[key].type == 'BOOLEAN'){
+                    obj_create[key] = Boolean(req.body[key]);
                 }else if(!Object.keys(req.body).includes(key)){
-                    return req.notAccept(`Preencha o campo ${key}`);
+                    return res.notAccept(`Preencha o campo ${key}`);
                 }else{
                     obj_create[key] = req.body[key];
                 }
@@ -95,12 +97,6 @@ module.exports = () => {
         if(parseFloat(obj_create.valor) < parseFloat(obj_create.valor_pago)){
             return res.notAccept('O valor pago não pode ser maior que o valor do título');
         }
-
-        /*if(parseFloat(obj_create.valor) == parseFloat(obj_create.valor_pago)){
-            obj_create.pago = 'Título pago'
-        }else{
-            obj_create.pago = 'Título não pago'
-        }*/
 
         if(Object.keys(obj_create).length==0){
             return res.notAccept('Campo(s) inválido(s)');
@@ -124,7 +120,7 @@ module.exports = () => {
 
         if(ContasPagar){
 
-            if(ContasPagar['pago'] == 'Título pago'){
+            if(ContasPagar['pago'] == true){
                 return res.notAccept('O título já foi pago');
             }
             
@@ -141,9 +137,10 @@ module.exports = () => {
                         }else{
                             ContasPagar[key] = parseFloat(req.body[key]);
                         }
-                    
+                    }else if(module.fields[key].type == 'BOOLEAN'){
+                        ContasPagar[key] = Boolean(req.body[key]);
                     }else if(!Object.keys(req.body).includes(key)){
-                        return req.block(`Preencha o campo ${key}`);
+                        return res.block(`Preencha o campo ${key}`);
                     }else{
                         ContasPagar[key] = req.body[key];
                     }
@@ -155,7 +152,7 @@ module.exports = () => {
             }
 
             if(parseFloat(ContasPagar['valor']) == parseFloat(ContasPagar['valor_pago'])){
-                ContasPagar['pago'] = 'Título pago';
+                ContasPagar['pago'] = true;
             }
 
             const results = await ContasPagar.save();
@@ -195,11 +192,12 @@ module.exports = () => {
     router
         .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        .get('/search/:search', sec.middlewares.csrf_check, module.searchContasPagar)
-        .get('/:id?', sec.middlewares.csrf_check, module.getContasPagar)
-        .post('/add', xss(), sec.middlewares.sanitize_body, sec.middlewares.csrf_check, module.addContasPagar)
-        .put('/save/:id', xss(), sec.middlewares.sanitize_body, sec.middlewares.csrf_check, module.saveContasPagar)
-        .delete('/del/:id', xss(), sec.middlewares.csrf_check, module.deleteContasPagar);
+        .use(sec.middlewares.csrf_check)
+        .get('/search/:search', module.searchContasPagar)
+        .get('/:id?', module.getContasPagar)
+        .post('/add', xss(), sec.middlewares.sanitize_body, module.addContasPagar)
+        .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveContasPagar)
+        .delete('/del/:id', xss(), module.deleteContasPagar);
 
     return router;
 
