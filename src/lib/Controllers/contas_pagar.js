@@ -85,7 +85,7 @@ module.exports = () => {
                 if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
                     obj_create[key] = req.body[key];
                 }else if(!Object.keys(req.body).includes(key)){
-                    return req.block(`Preencha o campo ${key}`);
+                    return req.notAccept(`Preencha o campo ${key}`);
                 }else{
                     obj_create[key] = req.body[key];
                 }
@@ -96,8 +96,14 @@ module.exports = () => {
             return res.notAccept('O valor pago não pode ser maior que o valor do título');
         }
 
+        /*if(parseFloat(obj_create.valor) == parseFloat(obj_create.valor_pago)){
+            obj_create.pago = 'Título pago'
+        }else{
+            obj_create.pago = 'Título não pago'
+        }*/
+
         if(Object.keys(obj_create).length==0){
-            return res.block('Campo(s) inválido(s)');
+            return res.notAccept('Campo(s) inválido(s)');
         }else{
 
             const results = await models.ContasPagar.create(obj_create);
@@ -117,6 +123,10 @@ module.exports = () => {
         const ContasPagar = await models.ContasPagar.findByPk(req.params.id);
 
         if(ContasPagar){
+
+            if(ContasPagar['pago'] == 'Título pago'){
+                return res.notAccept('O título já foi pago');
+            }
             
             req.body.datecreated = new Date();
 
@@ -142,6 +152,10 @@ module.exports = () => {
 
             if(parseFloat(ContasPagar['valor']) < parseFloat(ContasPagar['valor_pago'])){
                 return res.notAccept('O valor pago não pode ser maior que o valor do título');
+            }
+
+            if(parseFloat(ContasPagar['valor']) == parseFloat(ContasPagar['valor_pago'])){
+                ContasPagar['pago'] = 'Título pago';
             }
 
             const results = await ContasPagar.save();

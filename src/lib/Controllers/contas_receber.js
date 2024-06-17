@@ -88,7 +88,13 @@ module.exports = () => {
             }
         }
 
-        console.log(obj_create);
+        if(parseFloat(obj_create.valor) < parseFloat(obj_create.valor_pago)){
+            return res.notAccept('O valor pago não pode ser maior que o valor do título');
+        }
+
+        if(parseFloat(obj_create.valor) == parseFloat(obj_create.valor_pago)){
+            obj_create.pago = 'Título pago'
+        }
 
         if(Object.keys(obj_create).length==0){
             res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
@@ -111,6 +117,10 @@ module.exports = () => {
         const ContasReceber = await models.ContasReceber.findByPk(req.params.id);
 
         if(ContasReceber){
+
+            if(ContasReceber['pago'] == 'Título pago'){
+                return res.notAccept('O título já foi pago');
+            }
             
             req.body.datecreated = new Date();
 
@@ -136,6 +146,10 @@ module.exports = () => {
 
             if(parseFloat(ContasReceber['valor']) < parseFloat(ContasReceber['valor_pago'])){
                 return res.notAccept('O valor pago não pode ser maior que o valor do título');
+            }
+
+            if(parseFloat(ContasReceber['valor']) == parseFloat(ContasReceber['valor_pago'])){
+                ContasReceber['pago'] = 'Título pago';
             }
 
             const results = await ContasReceber.save();

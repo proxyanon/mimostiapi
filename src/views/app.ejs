@@ -1322,6 +1322,7 @@
                                         <th scope="col">Desconto</th>
                                         <th scope="col">Descrição</th>
                                         <th scope="col">Valor pago</th>
+                                        <th scope="col">Título pago</th>
                                         <th scope="col">Data do registro</th>
                                     </tr>
                                 </thead>
@@ -1379,6 +1380,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <input type="hidden" id="contas_pagar-pago" value="Não pago">
 
                     <div class="row mt-4">
                         <div class="col mt-4">
@@ -2464,6 +2467,10 @@
                                     }
                                 break;
 
+                                case 'pago':
+                                    tds += `<td class="${data[column] == 'Título pago' ? 'text-success' : 'text-danger'}">${data[column].toUpperCase()}</td>` + '\n';
+                                break;
+
                                 default:
                                     tds += `<td>${data[column]}</td>` + '\n';
                                 break;
@@ -2499,7 +2506,7 @@
                                             break;
                                         }
     
-                                        if(column != 'id' && column != 'datecreated' && column != 'estoque' && column != 'codigo_barras' && column != 'valor_pago'){
+                                        if(column != 'id' && column != 'datecreated' && column != 'estoque' && column != 'codigo_barras' && column != 'valor_pago' && column != 'pago'){
                                             try{
                                                 
                                                 let field_form = document.querySelector(`#${item_name}-${column}`);
@@ -2715,7 +2722,6 @@
                             console.log(name, params)
                             console.error(err)
                         })
-
 
                 }
 
@@ -4267,7 +4273,7 @@
                     let item_id = document.querySelector(`#${btn_id}-id`).value;
                     let item_data = prepareData(btn_id, current_dashboard);
 
-                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber'];
+                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber', 'pago'];
 
                     if(current_dashboard == 'produtos'){
 
@@ -4373,7 +4379,6 @@
                 });
 
             }
-
 
         });
 

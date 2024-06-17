@@ -33,6 +33,11 @@ const Model = db.define('contas_receber', {
         allowNull : true,
         defaultValue : 0
     },
+    pago : {
+        type : Sequelize.STRING,
+        allowNull : true,
+        defaultValue : 'Não pago'
+    },
     datecreated : {
         type : Sequelize.DATE,
         allowNull : false
