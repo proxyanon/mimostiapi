@@ -31,9 +31,13 @@ const Model = db.define('produtos', {
     },
     cor : {
         type : Sequelize.INTEGER,
-        allowNull : true
+        allowNull : false
     },
-    descricao : {type : Sequelize.STRING},
+    descricao : {
+        type : Sequelize.STRING,
+        allowNull : true,
+        defaultValue : 'Nenhuma',
+    },
     usuario : {type : Sequelize.STRING},
     codigo_barras : {type : Sequelize.STRING},
     datecreated : {

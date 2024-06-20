@@ -193,19 +193,36 @@ module.exports = () => {
 
         for(key in fields){
             if(key != 'id'){
-                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
-                    obj_create[key] = req.body[key]
+                if((module.fields[key].type == 'INTEGER' || module.fields[key].type == 'FLOAT') && (parseInt(req.body[key]) == NaN || key == 'quantidade' && parseInt(req.body[key]) == 0)){
+                    return res.status(400).json({ error : true, msg : `Preencha o campo ${key} 1` });
                 }else if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
                 }else{
                     obj_create[key] = req.body[key]
                 }
+                /*if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (parseInt(req.body[key]) != NaN || req.body[key] != null || req.body[key] != undefined)){
+                    obj_create[key] = req.body[key];
+                }else if(module.fields[key].type == 'INTEGER' && key == 'secao'){
+                    if(parseInt(req.body[key]) == NaN){
+                        return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
+                    }else{
+                        obj_create = req.body[key];
+                    }
+                }else if(!req.body[key]){
+                    return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
+                }else{
+                    obj_create[key] = req.body[key]
+                }*/
             }
         }
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
+            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
         }else{
+
+            if(parseInt(obj_create.quantidade) == 0){
+                return res.status(400).json({ error : true, msg : 'Preencha o campo quantidade 2' });
+            }
 
             let results = null;
             
@@ -214,7 +231,8 @@ module.exports = () => {
             try{
                 results = await models.Produtos.create(obj_create);
             }catch(err){
-                console.error(err);
+                config.isDev && config.verbose ? console.error(err) : '';
+                return res.json({ error : true, msg : err.toString() })
             }
 
             if(results){
@@ -232,13 +250,13 @@ module.exports = () => {
 
                 if(results_estoque){
                     //res.sendOkResponse();
-                    res.json({ error : false, results, fields : Object.keys(module.fields) })
+                    return res.json({ error : false, results, fields : Object.keys(module.fields) })
                 }else{
-                    res.notAccept('Ocorreu um erro ao lançar produto no estoque');
+                    return res.json({ error : true, msg : 'Ocorreu um erro ao lançar o produto', fields : Object.keys(module.fields) });
                 }
             
             }else{
-                res.serverError('Ocorreu um erro ao criar seção')
+                return res.json({ error : true, msg : 'Ocorreu um erro ao criar seção' });
             }
 
         }

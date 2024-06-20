@@ -2410,7 +2410,11 @@
                                     if(getCurrentDashboard() == 'caixa'){
                                         tds += `<td>${data[column]}</td>` + '\n';
                                     }else{
-                                        tds += `<td>${data['estoque_produto_final'].estoque}</td>` + '\n';
+                                        if(!data['estoque_produto_final']){
+                                            tds += `<td>Quantidade indisponível</td>` + '\n';
+                                        }else{
+                                            tds += `<td>${data['estoque_produto_final'].estoque}</td>` + '\n';
+                                        }
                                     }
                                 break;
 
@@ -2498,6 +2502,8 @@
                             let item_id = e.currentTarget.getAttribute('data-bs-id');
     
                             results.forEach(data => {
+
+                                console.log(data);
     
                                 if(parseInt(data['id']) == parseInt(item_id)){
     
@@ -2516,9 +2522,12 @@
                                             break;
                                         }
     
-                                        if(column != 'id' && column != 'datecreated' && column != 'estoque' && column != 'codigo_barras' && column != 'valor_pago' && column != 'pago'){
+                                        if(column != 'id' && column != 'datecreated' && column != 'estoque' && column != 'codigo_barras' && column != 'valor_pago' && column != 'pago' && column != 'usuario'){
                                             try{
                                                 
+                                                
+                                                console.log(`#${item_name}-${column}`);
+
                                                 let field_form = document.querySelector(`#${item_name}-${column}`);
                                                 let field_type = field_form.tagName;
     
@@ -2534,6 +2543,8 @@
                                                         field_form.value = parseFloat(data[column]).toFixed(2);
                                                     }else if(column.includes('entrada') || column.includes('saida')){
                                                         field_form.value = 0;
+                                                    }else if(column == 'quantidade'){
+                                                        field_form.value = data['estoque_produto_final'] != null ? data['estoque_produto_final'].estoque : 0;
                                                     }else{
                                                         field_form.value = data[column]
                                                     }
@@ -2655,7 +2666,7 @@
 
                                 let placeholder = params.placeholder
                                 let selectElementName = params.selectElementName;
-                                let options = getCurrentDashboard() == 'relatorios-ordem_servico' ? `<option value="0" selected disabled>${placeholder}</option>` + '\n' : `<option selected disabled>${placeholder}</option>` + '\n';
+                                let options = getCurrentDashboard() == 'relatorios-ordem_servico' ? `<option value="0" selected disabled>${placeholder}</option>` + '\n' : `<option value=0 selected disabled>${placeholder}</option>` + '\n';
                             
                                 /*if(getCurrentCaixa() == 'caixa'){
                                     document.querySelector('#caixa_valor_view').innerHTML = '';
@@ -2794,6 +2805,7 @@
                             !field.classList.contains('btn') && !$(field).attr('disabled') ? field.value = '' : null; 
                             getCurrentDashboard() == 'relatorios-ordem_servico' ? field.setAttribute('disabled', true) : ''
                             getCurrentDashboard() == 'produtos' ? field.removeAttribute('disabled') : ''
+                            getCurrentDashboard() == 'produtos' && field.id == 'produtos-quantidade' ? field.value = '' : ''
                             getCurrentDashboard().includes('contas') && field.id == 'contas_pagar-pago' ? field.value = false : null;
                             getCurrentDashboard().includes('contas') && field.id == 'contas_pagar-valor_pago' ? field.value = 0 : null;
                         });
@@ -2964,6 +2976,10 @@
                                 if(getCurrentDashboard() == 'estoque_produto_final' || getCurrentDashboard() == 'produtos'){
 
                                     results.forEach((data) => {
+
+                                        if(!data.estoque_produto_final){
+                                            data.estoque_produto_final.estoque = 0;
+                                        }
 
                                         let estoque = getCurrentDashboard() == 'estoque_produto_final' ? parseInt(data.entrada) - parseInt(data.saida) : parseInt(data.estoque_produto_final.estoque);
 
@@ -3223,6 +3239,7 @@
 
                 //window.open(file_url, 'Imprimir pedido', "width=800,height=600");
 
+                //const rports_inputs = [...document.querySelectorAll('.btn')].forEach((field) => { if(field.classList.contains('relatorio')) })
                 const search_inputs = [...document.querySelectorAll('.inpt-search[type="search"]')]; // SEARCH INPUTS
 
                 // BTN LOGOUT LISTENER
@@ -4289,6 +4306,8 @@
                     let item_id = document.querySelector(`#${btn_id}-id`).value;
                     let item_data = prepareData(btn_id, current_dashboard);
 
+                    let checkAdd = true;
+
                     console.log(item_id, item_data);
 
                     let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber', 'pago', 'valor_pago'];
@@ -4297,7 +4316,7 @@
 
                         if(Object.keys(item_data.form_data).length == 0){
                             show(`${btn_id}-error`, ``, 4500);
-                            return
+                            checkAdd = false;
                         }
 
                         Object.keys(item_data.form_data).forEach(key => {
@@ -4305,19 +4324,33 @@
                             if(!allowNullKeys.includes(key)){
                                 if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
                                     show(`${btn_id}-error`, `Preencha o campo ${key}`, 4500);
-                                    return;
+                                    checkAdd = false;
                                 }
                             }
 
                         });
 
-                        if(!item_data.form_data.descricao || item_data.form_data.descricao == '' || item_data.form_data.descricao == null){
+                        Object.keys(item_data.form_data).forEach(key => {
+
+                            if(['secao', 'categoria', 'cor'].includes(key)){
+                                item_data.form_data[key] = parseInt(item_data.form_data[key])
+                            }
+
+                            if(!allowNullKeys.includes(key)){
+                                if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
+                                    show(`${btn_id}-error`, `Preencha o campo ${key}`, 4500);
+                                    checkAdd = false;
+                                }
+                            }
+
+                        });
+                        /*if(!item_data.form_data.descricao || item_data.form_data.descricao == '' || item_data.form_data.descricao == null){
                             item_data.form_data.descricao = 'Nenhuma'
-                        }
+                        }*/
 
                     }
                     
-                    if(!item_id){
+                    if(!item_id && checkAdd){
                         
                         api.createData(item_data)
                             .then(resp => resp.json())
