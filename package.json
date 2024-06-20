@@ -1,10 +1,10 @@
 {
   "name": "mimostiapi",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Mimos da tia PI",
   "main": "main.js",
   "scripts": {
-    "start": "node src/main.js",
+    "start": "nodemon src/main.js",
     "dev": "nodemon src/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
