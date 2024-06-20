@@ -12,7 +12,7 @@ const Model = db.define('funcionarios', {
         type : Sequelize.STRING,
         allowNull : false
     },
-    cpf : {
+    cpf_cnpj : {
         type : Sequelize.STRING,
         allowNull : false
     },

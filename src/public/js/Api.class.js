@@ -197,7 +197,7 @@ class Api {
         this.setDefaultHeaders();
         this.buildURL(url);
 
-        console.log(this.url);
+        console.log(this.url, this.body);
 
         return fetch(this.url, {
             method : 'GET',

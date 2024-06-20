@@ -6,11 +6,24 @@ const Security = require('../modules/Security');
 const sec = new Security();
 const router = express.Router();
 
+const config = require('../config');
+const { xss } = require('express-xss-sanitizer')
+
 module.exports = () => {
 
     var module = {};
 
     module.fields = models.Funcionarios.rawAttributes
+
+    module.checkCPF_CNPJ = (cpf_cnpj) => {
+        
+        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
+            return false
+        }
+
+        return true
+
+    }
 
     module.searchFuncionarios = async (req, res, next) => {
 
@@ -44,21 +57,29 @@ module.exports = () => {
         
         req.body.datecreated = new Date();
 
+        config.isDev && config.verbose ? console.log(req.body) : '';
+
         for(key in module.fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
                 }else{
                     obj_create[key] = req.body[key]
                 }
             }
         }
 
-        console.log(obj_create);
+        config.isDev && config.verbose ? console.log(obj_create) : '';
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+           return res.notAccept('Requisição inválida');
         }else{
+
+            config.isDev && config.verbose ? console.log(obj_create) : '';
+
+            if(!module.checkCPF_CNPJ(obj_create.cpf_cnpj)){
+                return res.notAccept('O CPF ou CNPJ é inválido');
+            }
 
             const results = await models.Funcionarios.create(obj_create);
 
@@ -89,6 +110,10 @@ module.exports = () => {
                         funcionario[key] = req.body[key]
                     }
                 }
+            }
+
+            if(!module.checkCPF_CNPJ(funcionario.cpf_cnpj)){
+                return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
             const results = await funcionario.save();
@@ -125,8 +150,8 @@ module.exports = () => {
         .use(sec.responses.setResponses)
         .get('/search/:search', module.searchFuncionarios)
         .get('/:id?', module.getFuncionarios)
-        .post('/add', module.addFuncionario)
-        .put('/save/:id', module.saveFuncionario)
+        .post('/add', xss(), module.addFuncionario)
+        .put('/save/:id', xss(), module.saveFuncionario)
         .delete('/del/:id', module.deleteFuncionario);
 
     return router;

@@ -14,6 +14,18 @@ module.exports = () => {
 
     module.fields = models.Fornecedores.rawAttributes
 
+    module.checkCPF_CNPJ = (cpf_cnpj) => {
+        
+        if(!cpf_cnpj) return false;
+
+        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
+            return false
+        }
+
+        return true
+
+    }
+
     module.searchFornecedores = async (req, res, next) => {
 
         if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
@@ -49,17 +61,21 @@ module.exports = () => {
         for(key in module.fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : `Campos inválido(s) [${key}]` })
+                    return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` })
                 }else{
                     obj_create[key] = req.body[key]
                 }
             }
         }
 
+        if(!module.checkCPF_CNPJ(obj_create.cpf_cnpj)){
+            return res.notAccept('O CPF ou CNPJ é inválido');
+        }
+
         console.log(obj_create);
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+            res.status(500).json({ error : true, msg : 'Requisição inválida' })
         }else{
 
             const results = await models.Fornecedores.create(obj_create);
@@ -67,7 +83,7 @@ module.exports = () => {
             if(results){
                 res.json({ error : false })
             }else{
-                res.status(500).json({ error : true, msg : 'Ocorreu um erro ao criar o ornecedor' })
+                res.status(500).json({ error : true, msg : 'Ocorreu um erro ao criar o fornecedor' })
             }
 
         }
@@ -91,6 +107,10 @@ module.exports = () => {
                         fornecedor[key] = req.body[key]
                     }
                 }
+            }
+
+            if(!module.checkCPF_CNPJ(fornecedor.cpf_cnpj)){
+                return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
             const results = await fornecedor.save();

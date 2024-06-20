@@ -9,6 +9,8 @@ const config = require('../config');
 const sec = new Security();
 const router = express.Router();
 
+const { xss } = require('express-xss-sanitizer');
+
 module.exports = () => {
 
     var module = {};
@@ -193,26 +195,19 @@ module.exports = () => {
 
         for(key in fields){
             if(key != 'id'){
-                if((module.fields[key].type == 'INTEGER' || module.fields[key].type == 'FLOAT') && (parseInt(req.body[key]) == NaN || key == 'quantidade' && parseInt(req.body[key]) == 0)){
-                    return res.status(400).json({ error : true, msg : `Preencha o campo ${key} 1` });
-                }else if(!req.body[key]){
+                if((module.fields[key].type == 'INTEGER' || module.fields[key].type == 'FLOAT') && (parseInt(req.body[key]) == NaN || parseInt(req.body[key]) == 0 || req.body[key] == null || req.body[key] == undefined)){
+                    if(parseInt(req.body[key]) == 0 && key != 'desconto'){
+                        return res.status(400).json({ error : true, msg : `O campo ${key} precisa ser ${['categoria','secao','cor'].includes(key) ? 'selecionado' : 'preenchido'}` });
+                    }else if(key != 'desconto'){
+                        return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
+                    }else if(key == 'desconto' && parseInt(req.body[key]) < 0){
+                        return res.status(400).json({ error : true, msg : `O ${key} não pode ser menor que zero` });
+                    }
+                }else if(!req.body[key] && key != 'desconto'){
                     return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
                 }else{
                     obj_create[key] = req.body[key]
                 }
-                /*if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (parseInt(req.body[key]) != NaN || req.body[key] != null || req.body[key] != undefined)){
-                    obj_create[key] = req.body[key];
-                }else if(module.fields[key].type == 'INTEGER' && key == 'secao'){
-                    if(parseInt(req.body[key]) == NaN){
-                        return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
-                    }else{
-                        obj_create = req.body[key];
-                    }
-                }else if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
-                }else{
-                    obj_create[key] = req.body[key]
-                }*/
             }
         }
 
@@ -220,8 +215,8 @@ module.exports = () => {
             return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
         }else{
 
-            if(parseInt(obj_create.quantidade) == 0){
-                return res.status(400).json({ error : true, msg : 'Preencha o campo quantidade 2' });
+            if(parseInt(produto_entrada) <= 0){
+                return res.status(400).json({ error : true, msg : 'A quantidade não pode ser menor ou igual a zero' });
             }
 
             let results = null;
@@ -568,23 +563,25 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
+        .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
+        .use(sec.middlewares.sanitize_body)
+        .use(sec.middlewares.csrf_check)
         .get('/search/:search', module.searchProduct)
         .get('/secao/:id?', module.getSecoes)
         .get('/categoria/:id?', module.getCategorias)
         .get('/cor/:id?', module.getCores)
         .get('/:id?', module.getProdutos)
-        //.post('/', module.getProdutosInIds)
-        .delete('/del/:id', module.deleteProduto)
-        .post('/add', module.addProduto)
-        .put('/secao/save/:id', module.saveSecao)
-        .put('/categoria/save/:id', module.saveCategoria)
-        .put('/cor/save/:id', module.saveCor)
-        .put('/save/:id', module.saveProduto)
-        .post('/secao/add', module.addProdutoSecao)
-        .post('/categoria/add', module.addProdutoCategoria)
-        .post('/cor/add', module.addProdutoCor)
+        //.post('/', xss(), module.getProdutosInIds)
+        .delete('/del/:id', xss(), module.deleteProduto)
+        .post('/add', xss(), module.addProduto)
+        .put('/secao/save/:id', xss(), module.saveSecao)
+        .put('/categoria/save/:id', xss(), module.saveCategoria)
+        .put('/cor/save/:id', xss(), module.saveCor)
+        .put('/save/:id', xss(), module.saveProduto)
+        .post('/secao/add', xss(), module.addProdutoSecao)
+        .post('/categoria/add', xss(), module.addProdutoCategoria)
+        .post('/cor/add', xss(), module.addProdutoCor)
 
     return router;
 

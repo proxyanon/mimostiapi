@@ -9,6 +9,8 @@ const config = require('../config');
 const sec = new Security();
 const router = express.Router();
 
+const { xss } = require('express-xss-sanitizer');
+
 module.exports = () => {
 
     var module = {};
@@ -186,8 +188,8 @@ module.exports = () => {
     router
         .use(sec.responses.setResponses)
         .post('/login', module.login)
-        .get('/logout', module.logout)
-        .get('/:id?', module.getUsers)
+        .get('/logout', sec.middlewares.auth_check, module.logout)
+        .get('/:id?', sec.middlewares.auth_check, module.getUsers)
         .post('/add', sec.middlewares.auth_check, module.addUser)
         .put('/save/:id', sec.middlewares.auth_check, module.saveUser)
         //.delete('/del/:id', sec.middlewares.csrf_check, sec.middlewares.auth_check, module.deleteUser)

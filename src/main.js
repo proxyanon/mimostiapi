@@ -241,12 +241,12 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
 
         config.server.start_chrome ? start_chrome() : (config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.red}[-] Chrome not started automatily`, config.colors.reset) : '');
         
-        /*async function gen_password(){
+        async function gen_password(){
             const bcrypt = require('bcrypt');
-            console.log(await bcrypt.hash('admlaura', 10))
+            console.log(await bcrypt.hash('admtiapi', 10))
         }
 
-        gen_password();*/
+        gen_password();
 
     });
 

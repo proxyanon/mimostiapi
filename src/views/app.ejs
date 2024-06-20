@@ -120,7 +120,7 @@
         
                 <!-- HEADER -->
                 <div class="mainNaviHeader text-center">
-                    <span class="text-white">Menu</span>
+                    <span class="text-white">Mimos tia pi</span>
                 </div>
         
                 <!-- BUTTONS -->
@@ -740,8 +740,8 @@
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label for="funcionario-cpf" class="form-label">CPF/CNPJ</label>
-                                <input type="text" class="form-control" placeholder="CPF/CNPJ" id="funcionario-cpf">
+                                <label for="funcionario-cpf_cnpj" class="form-label">CPF/CNPJ</label>
+                                <input type="text" class="form-control" placeholder="CPF/CNPJ" id="funcionario-cpf_cnpj">
                             </div>
                         </div>
                         <div class="col">
@@ -1216,6 +1216,7 @@
                                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_add_caixa" type="button"><i class="fa fa-plus"></i> Criar caixa</button>
                                 </div>
                             </div>
+                            <div class="alert alert-danger col-12 mt-4 text-center d-none" id="caixa-select-error"></div>
                         </div>
                     </div>
 
@@ -2145,7 +2146,8 @@
                     },
                     errors : {
                         timeout : 5000
-                    }
+                    },
+                    verbose : true
                 };
 
                 // EVENTO DO LEITOR DE CODIGO DE BARRAS
@@ -2188,6 +2190,44 @@
                     csrf_token : csrf_token,
                     endpoint : '/api/v1'
                 });
+
+                // GET ACTIVE PDVS AND STORAGE FIRTS PDV ID
+                function loadCaixaStorage(){
+
+                    try{
+                        
+                        api.getData({ endpoint : { path : 'caixa', id : null } })
+                            .then(resp => resp.json())
+                            .then(results => {
+                                if(results.error){
+                                    show('caixa-select-error', results.msg, app_config.verbose)
+                                    localStorage.setItem('current_caixa', 1);
+                                    return
+                                }else{
+    
+                                    results = results.results;
+    
+                                    for(let i = 0; i < results.length; i++){
+                                        localStorage.setItem('current_caixa', parseInt(results[i].id))
+                                        break
+                                    }
+    
+                                }
+                            })
+                            .catch(err => {
+                                localStorage.setItem('current_caixa', 1);
+                                show('caixa-select-error', err.toString(), app_config.verbose)
+                                app_config.verbose ? console.error(err) : '';
+                            })
+                    }catch(err){
+                        show('caixa-select-error', err.toString(), app_config.verbose)
+                        localStorage.setItem('current_caixa', 1);
+                        app_config.verbose ? console.error(err) : '';
+                    }
+
+                }
+
+                loadCaixaStorage();
 
                 // UTILS FUNCTIONS
                 function initFieldsMasks(){
@@ -2308,12 +2348,12 @@
                     }*/
 
                     if(!params.table_name){
-                        console.error('Not found table_name in params [loadTable] => ', params);
+                        app_config.verbose ? console.error('Not found table_name in params [loadTable] => ', params) : '';
                         return null;
                     }
 
                     if(!params.table_columns){
-                        console.error('Not found table_columns in params [loadTable] => ', params);
+                        app_config.verbose ? console.error('Not found table_columns in params [loadTable] => ', params) : '';
                         return null;
                     }
 
@@ -2355,7 +2395,7 @@
 
                         table_columns.forEach((column, c_index)  => {
 
-                            console.log(column, c_index)
+                            app_config.verbose ? console.log(column, c_index) : '';
 
                             switch(column){
 
@@ -2503,7 +2543,7 @@
     
                             results.forEach(data => {
 
-                                console.log(data);
+                                app_config.verbose ? console.log(data) : '';
     
                                 if(parseInt(data['id']) == parseInt(item_id)){
     
@@ -2526,7 +2566,7 @@
                                             try{
                                                 
                                                 
-                                                console.log(`#${item_name}-${column}`);
+                                                app_config.verbose ? console.log(`#${item_name}-${column}`) : '';
 
                                                 let field_form = document.querySelector(`#${item_name}-${column}`);
                                                 let field_type = field_form.tagName;
@@ -2551,7 +2591,7 @@
                                                 }
     
                                             }catch(err){
-                                                console.error(err, item_name, column)
+                                                app_config.verbose ? console.error(err, item_name, column) : ''
                                             }
                                         }
     
@@ -2613,7 +2653,7 @@
                                 .then(results => {
 
                                     if(results.error){
-                                        console.error(results.error)
+                                        app_config.verbose ? console.error(results.error) : '';
                                     }else{
 
                                         let produto = results.results;
@@ -2640,7 +2680,7 @@
 
                                     })
                             .catch(err => {
-                                console.error(err)
+                                app_config.verbose ? console.error(err) : '';
                             })
 
                         })
@@ -2691,13 +2731,13 @@
                                         try{
                                             document.querySelector(`#edit-${name}`).removeAttribute('disabled');
                                         }catch(err){
-                                            console.warn('Erro ao tentar remover atributo disabled', '\n', err)
+                                            app_config.verbose ? console.warn('Erro ao tentar remover atributo disabled', '\n', err) : ''
                                         }
                                     }else if(getCurrentDashboard() != 'caixa' && !getCurrentDashboard().includes('relatorio')){
                                         try{
                                             document.querySelector(`#edit-${name}`).setAttribute('disabled', true);
                                         }catch(err){
-                                            console.warn('Erro ao adicionar atributo ao campo', '\n', err);
+                                            app_config.verbose ? console.warn('Erro ao adicionar atributo ao campo', '\n', err) : '';
                                         }
                                     }
                             
@@ -2711,7 +2751,7 @@
                                         try{
                                             document.querySelector(`#edit-${name}`).removeAttribute('disabled');
                                         }catch(err){
-                                            console.warn('Erro ao tentar remover atributo disabled', '\n', err)
+                                            app_config.verbose ? console.warn('Erro ao tentar remover atributo disabled', '\n', err) : '';
                                         }
                                     }else if(data.value && name == 'caixa'){
                                         try{
@@ -2720,7 +2760,7 @@
                                             localStorage.setItem('current_caixa', data.value);
                                             getCaixaTemp(data.value);
                                         }catch(err){
-                                            console.warn('Erro ao remover atributo de campo', '\n', err);
+                                            app_config.verbose ? console.warn('Erro ao remover atributo de campo', '\n', err) : '';
                                         }
                                     }
                             
@@ -2730,18 +2770,18 @@
                                     try{
                                         callback();
                                     }catch(err){
-                                        console.warn('Erro ao iniciar callback', '\n', err);
+                                        app_config.verbose ? console.warn('Erro ao iniciar callback', '\n', err) : '';
                                     }
                                 }
 
                             }else{
-                                console.error(results.msg);
+                                app_config.verbose ? console.error(results.msg) : '';
                             }
 
                         })
                         .catch(err => {
-                            console.log(name, params)
-                            console.error(err)
+                            app_config.verbose ? console.log(name, params) : '';
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 }
@@ -2849,7 +2889,7 @@
                         document.querySelector('#desconto-contas_receber').innerHTML = '';
 
                     }catch(err){
-                        console.error(err);
+                        app_config.verbose ? console.error(err) : '';
                     }
 
                 }
@@ -2883,6 +2923,30 @@
                                 }
                             }
 
+                            if(column_name == 'quantidade' && getCurrentDashboard() == 'produtos'){
+                                
+                                column_data = $(input).maskMoney('unmasked')[0];
+
+                                if(parseInt(column_data) == NaN){
+                                    column_data = 0
+                                }else{
+                                    column_data = parseInt(column_data);
+                                }
+
+                            }
+
+                            if(column_name == 'desconto' && getCurrentDashboard() == 'produtos'){
+                                column_data = !column_data ? 0 : parseInt(column_data);
+                            }
+
+                            if(['secao', 'categoria', 'cor'].includes(column_name) && getCurrentDashboard() == 'produtos'){
+                                if(parseInt(column_data) == NaN){
+                                    column_data = 0;
+                                }else{
+                                    column_data = parseInt(column_data);
+                                }
+                            }
+
                             if(column_name == 'contas_pagar' || column_name == 'contas_receber'){
                                 null
                             }else{
@@ -2908,7 +2972,7 @@
                     try{
                      
                         if(!document.querySelector(`#${params.field_name}-id`).value){
-                            console.error('id empty [prepareDelete()]', params)
+                            app_config.verbose ? console.error('id empty [prepareDelete()]', params) : '';
                         }
 
                         data.endpoint = params.endpoint;
@@ -2936,7 +3000,7 @@
                 function getDataTables(item_id = null, item_name = '', load_options = false, item){
 
                     if(item_name.empty()){
-                        console.error('item_name cannot be empty', item_name);
+                        app_config.verbose ? console.error('item_name cannot be empty', item_name) : '';
                         return;
                     }
 
@@ -2958,7 +3022,7 @@
 
                                 results = results.results;
 
-                                console.log(getCurrentDashboard(), results)
+                                app_config.verbose ? console.log(getCurrentDashboard(), results) : '';
 
                                 loadTable(results, {
                                     table_name : `${getCurrentDashboard()}-table`,
@@ -2977,7 +3041,7 @@
 
                                     results.forEach((data) => {
 
-                                        if(!data.estoque_produto_final){
+                                        if(!data.estoque_produto_final && getCurrentDashboard() == 'produtos'){
                                             data.estoque_produto_final.estoque = 0;
                                         }
 
@@ -3058,20 +3122,25 @@
     
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 }
 
                 // GET CAIXA
-                function getCaixa(caixa_id = null){
+                function getCaixa(caixa_id){
+
+                    if(!caixa_id){
+                        show('caixa-select-error', 'Erro ao selecionar um caixa', app_config.errors.timeout)
+                        return
+                    }
 
                     api.getData({ endpoint : { path : 'caixa', id : caixa_id } })
                         .then(resp => resp.json())
                         .then(results => {
 
                             if(results.error){
-                                console.error(results.msg);
+                                app_config.verbose ? console.error(results.msg) : '';
                             }else{
 
                                 loadSelectOptions('caixa', {
@@ -3114,7 +3183,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         });
 
                 }
@@ -3127,7 +3196,7 @@
                         .then(results => {
 
                             if(results.error){
-                                console.error(results.msg);
+                                app_config.verbose ? console.error(results.msg) : '';
                             }else{
 
                                 let fields = results.fields;
@@ -3143,7 +3212,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         });
 
                 }
@@ -3164,12 +3233,12 @@
                                 document.querySelector('#caixa-saldo').value = formatMoney(results.saldo);
 
                             }else{
-                                console.error(results.msg)
+                                app_config.verbose ? console.error(results.msg) : '';
                             }
 
                         })
                         .catch(err => {
-                            console.error(err)
+                            app_config.verbose ? console.error(err) : '';
                         });
 
                 }
@@ -3248,7 +3317,7 @@
                     api.logout()
                         .then(resp => { document.location.reload() })
                         .catch(err => {
-                            console.error(err)
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 });
@@ -3373,7 +3442,7 @@
     
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             });
 
                     }else{
@@ -3403,7 +3472,7 @@
     
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             });
 
                     }
@@ -3453,7 +3522,7 @@
     
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             });
 
                     }else{
@@ -3478,7 +3547,7 @@
     
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             });
 
                     }
@@ -3516,7 +3585,7 @@
 
                                     loadSelectOptions('cor', {
                                         placeholder : '-- selecione a opção --',
-                                        selectElementName : 'produto-cor'
+                                        selectElementName : getCurrentDashboard() == 'produtos' ? 'produto-cor' : 'estoque_material_producao-cor'
                                     });
                                     
                                     $('#modal_cor').val('');
@@ -3526,7 +3595,7 @@
     
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             });
 
                     }else{
@@ -3536,12 +3605,12 @@
                             .then(results => {
     
                                 if(results.error){
-                                    show('modal_cor-error', results.msg, 4000);
+                                    show('modal_cor-error', results.msg, app_config.errors.timeout);
                                 }else{
                                     
                                     loadSelectOptions('cor', {
                                         placeholder : '-- selecione a opção --',
-                                        selectElementName : 'produto-cor'
+                                        selectElementName : getCurrentDashboard() == 'produtos' ? 'produto-cor' : 'estoque_material_producao-cor'
                                     });
 
                                     $('#modal_cor').val('');
@@ -3551,7 +3620,7 @@
     
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             });
 
                     }
@@ -3566,7 +3635,7 @@
                         .then(results => {
                             
                             if(results.error){
-                                console.error(results.msg);
+                                app_config.verbose ? console.error(results.msg) : '';
                             }else{
 
                                 hide('form-abrir-caixa');
@@ -3581,7 +3650,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         });
 
                 });
@@ -3596,7 +3665,7 @@
                         .then(results => {
 
                             if(results.error){
-                                console.error(results.error);
+                                app_config.verbose ? console.error(results.error) : '';
                             }else{
 
                                 results = results.results;
@@ -3608,7 +3677,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err)
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 });
@@ -3688,7 +3757,7 @@
 
                                 results = results.results;
 
-                                console.log(results);
+                                app_config.verbose ? console.log(results) : '';
 
                                 document.querySelector('#modal_cor-id').value = results.id;
                                 document.querySelector('#modal_cor-nome').value = results.nome;
@@ -3765,7 +3834,7 @@
                     
                                 })
                                 .catch(err => {
-                                    console.error(err);
+                                    app_config.verbose ? console.error(err) : '';
                                 });
                     
                         }
@@ -3782,7 +3851,7 @@
                         .then(results => {
                             
                             if(results.error){
-                                console.error(results.msg);
+                                app_config.verbose ? console.error(results.msg) : '';
                             }else{
                                 localStorage.removeItem('current_caixa');
                                 document.location.reload();
@@ -3790,7 +3859,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         });
 
                 });
@@ -3825,7 +3894,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         });
                     
                     clearForms();
@@ -3864,7 +3933,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 });
@@ -3900,7 +3969,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 });
@@ -3936,7 +4005,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 });
@@ -3972,7 +4041,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                             show('relatorio-produto-error', 'Ocorreu um erro ao fazer a requisição para o servidor', 5000)
                         })
 
@@ -4009,7 +4078,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                             show('relatorio-estoque_material_producao-error', 'Ocorreu um erro ao fazer a requisição para o servidor', 5000)
                         })
 
@@ -4022,7 +4091,7 @@
                     let inpt = e.currentTarget;
                     let inpt_value = inpt.value;
 
-                    console.log(produto, inpt, inpt_value);
+                    app_config.verbose ? console.log(produto, inpt, inpt_value) : '';
 
                     let data = [];
 
@@ -4096,7 +4165,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 });
@@ -4134,7 +4203,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err);
+                            app_config.verbose ? console.error(err) : '';
                             show('relatorio-recibo-error', 'Ocorreu um erro ao fazer a requisição para o servidor', 5000)
                         })
 
@@ -4165,7 +4234,7 @@
 
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                                 show('etiquetas-error', err);
                             })
                     }
@@ -4189,20 +4258,20 @@
                             .then(results => {
 
                                 if(results.error){
-                                    console.error(results.msg);
+                                    app_config.verbose ? console.error(results.msg) : '';
                                 }else{
                                     loadDashboardPage(endpoint);
                                 }
 
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             });
 
                         clearForms();
 
                     }else{
-                        console.log(e.currentTarget);
+                        app_config.verbose ? console.log(e.currentTarget) : '';
                     }
 
                 });
@@ -4212,7 +4281,7 @@
 
                     let window_id = e.currentTarget.getAttribute('target-window');
 
-                    console.log('window_id', window_id);
+                    app_config.verbose ? console.log('window_id', window_id) : '';
 
                     loadDashboardPage(window_id);
 
@@ -4244,7 +4313,7 @@
 
                                 if(inpt_id.includes('caixa')){
 
-                                    console.log(results);
+                                    app_config.verbose ? console.log(results) : '';
 
                                     if(results.length > 0){
                                         alert('Existe mais de um produto cadastrado com esse código de barras');
@@ -4255,7 +4324,7 @@
 
                                 }else{
 
-                                    console.log(results, fields);
+                                    app_config.verbose ? console.log(results, fields) : '';
 
                                     loadTable(results, {
                                         table_name : `${endpoint}-table`,
@@ -4284,7 +4353,7 @@
 
                         })
                         .catch(err => {
-                            console.error(err)
+                            app_config.verbose ? console.error(err) : '';
                         })
 
                 });
@@ -4308,45 +4377,29 @@
 
                     let checkAdd = true;
 
-                    console.log(item_id, item_data);
+                    app_config.verbose ? console.log(item_id, item_data) : '';
 
                     let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber', 'pago', 'valor_pago'];
 
                     if(current_dashboard == 'produtos'){
 
                         if(Object.keys(item_data.form_data).length == 0){
-                            show(`${btn_id}-error`, ``, 4500);
+                            show(`${btn_id}-error`, ``, app_config.errors.timeout);
                             checkAdd = false;
                         }
 
                         Object.keys(item_data.form_data).forEach(key => {
 
                             if(!allowNullKeys.includes(key)){
-                                if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
-                                    show(`${btn_id}-error`, `Preencha o campo ${key}`, 4500);
+                                if(key == 'desconto' && item_data.form_data[key] >= 0){
+                                    checkAdd = true
+                                }else if(key != 'desconto' && (item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0)){
+                                    show(`${btn_id}-error`, `Preencha o campo ${key} 1`, app_config.errors.timeout);
                                     checkAdd = false;
                                 }
                             }
 
                         });
-
-                        Object.keys(item_data.form_data).forEach(key => {
-
-                            if(['secao', 'categoria', 'cor'].includes(key)){
-                                item_data.form_data[key] = parseInt(item_data.form_data[key])
-                            }
-
-                            if(!allowNullKeys.includes(key)){
-                                if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
-                                    show(`${btn_id}-error`, `Preencha o campo ${key}`, 4500);
-                                    checkAdd = false;
-                                }
-                            }
-
-                        });
-                        /*if(!item_data.form_data.descricao || item_data.form_data.descricao == '' || item_data.form_data.descricao == null){
-                            item_data.form_data.descricao = 'Nenhuma'
-                        }*/
 
                     }
                     
@@ -4365,7 +4418,7 @@
         
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             })
 
                     }else if(item_id && current_dashboard == 'caixa/temp'){
@@ -4386,25 +4439,25 @@
         
                             })
                             .catch(err => {
-                                console.error(err);
+                                app_config.verbose ? console.error(err) : '';
                             })
 
                     }else{
 
-                        let check = true;
+                        let checkSave = true;
 
                         Object.keys(item_data.form_data).forEach(key => {
 
                             if(!allowNullKeys.includes(key)){
                                 if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
                                     show(`${btn_id}-error`, `Preencha o campo ${key}`, app_config.errors.timeout);
-                                    check = false;
+                                    checkSave = false;
                                 }
                             }
 
                         });
 
-                        if(!check){
+                        if(!checkSave){
                             return
                         }else{
 
@@ -4412,6 +4465,8 @@
                                 .then(resp => resp.json())
                                 .then(results => {
                                     
+                                    console.log('RESULTS SAVE', results);
+
                                     if(!results.error){
                                         loadDashboardPage(getCurrentDashboard());
                                         clearForms();
@@ -4421,7 +4476,7 @@
 
                                 })
                                 .catch(err => {
-                                    console.error(err);
+                                    app_config.verbose ? console.error(err) : '';
                                 });
                         }
                     

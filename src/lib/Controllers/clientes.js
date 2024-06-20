@@ -7,6 +7,8 @@ const Sequelize = require('../modules/database');
 const sec = new Security();
 const router = express.Router();
 
+const config = require('../config');
+
 const { xss, sanitize } = require('express-xss-sanitizer');
 
 module.exports = () => {
@@ -14,6 +16,18 @@ module.exports = () => {
     var module = {};
 
     module.fields = models.Clientes.rawAttributes
+
+    module.checkCPF_CNPJ = (cpf_cnpj) => {
+        
+        if(!cpf_cnpj) return false;
+
+        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
+            return false
+        }
+
+        return true
+
+    }
 
     module.searchClientes = async (req, res, next) => {
 
@@ -59,7 +73,11 @@ module.exports = () => {
             }
         }
 
-        console.log(obj_create);
+        if(!module.checkCPF_CNPJ(obj_create.cpf_cnpj)){
+            return res.notAccept('O CPF ou CNPJ é inválido');
+        }
+
+        config.isDev && config.verbose ? console.log(obj_create) : '';
 
         if(Object.keys(obj_create).length==0){
             res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
@@ -96,6 +114,10 @@ module.exports = () => {
                         cliente[key] = req.body[key]
                     }
                 }
+            }
+
+            if(!module.checkCPF_CNPJ(cliente.cpf_cnpj)){
+                return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
             const results = await cliente.save();

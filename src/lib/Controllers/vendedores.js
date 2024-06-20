@@ -6,11 +6,26 @@ const Security = require('../modules/Security');
 const sec = new Security();
 const router = express.Router();
 
+const config = require('../config');
+const { xss } = require('express-xss-sanitizer');
+
 module.exports = () => {
 
     var module = {};
 
     module.fields = models.Vendedores.rawAttributes
+
+    module.checkCPF_CNPJ = (cpf_cnpj) => {
+
+        if(!cpf_cnpj) return false;
+        
+        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
+            return false
+        }
+
+        return true
+
+    }
 
     module.searchVendedores = async (req, res, next) => {
 
@@ -39,7 +54,7 @@ module.exports = () => {
         let obj_create = {}
 
         if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
+            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
         }
         
         req.body.datecreated = new Date();
@@ -47,18 +62,23 @@ module.exports = () => {
         for(key in module.fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` })
                 }else{
                     obj_create[key] = req.body[key]
                 }
             }
         }
 
-        console.log(obj_create);
+        config.isDev && config.verbose ? console.log(obj_create) : '';
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+            return res.notAccept('Requisição inválida');
         }else{
+
+            if(!module.checkCPF_CNPJ(obj_create.cpf)){
+                console.log(obj_create)
+                return res.notAccept('O CPF ou CNPJ é inválido');
+            }
 
             const results = await models.Vendedores.create(obj_create);
 
@@ -81,14 +101,17 @@ module.exports = () => {
             vendedor['datecreated'] = new Date();
 
             for(key in module.fields){
-                console.log(key, vendedor[key]);
                 if(key != 'id' && req.body[key]){
                     if(module.fields[key].allowNull != false && vendedor[key].toString().empty()){
-                        return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
+                        return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
                     }else{
                         vendedor[key] = req.body[key]
                     }
                 }
+            }
+
+            if(!module.checkCPF_CNPJ(vendedor.cpf)){
+                return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
             const results = await vendedor.save();
@@ -123,11 +146,13 @@ module.exports = () => {
     router
         .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        .get('/search/:search', sec.middlewares.csrf_check, module.searchVendedores)
-        .get('/:id?', sec.middlewares.csrf_check, module.getVendedores)
-        .post('/add', sec.middlewares.csrf_check, module.addVendedor)
-        .put('/save/:id', sec.middlewares.csrf_check, module.saveVendedor)
-        .delete('/del/:id', sec.middlewares.csrf_check, module.deleteVendedor);
+        .use(sec.middlewares.csrf_check)
+        .use(sec.middlewares.sanitize_body)
+        .get('/search/:search', module.searchVendedores)
+        .get('/:id?', module.getVendedores)
+        .post('/add', xss(), module.addVendedor)
+        .put('/save/:id', xss(), module.saveVendedor)
+        .delete('/del/:id', module.deleteVendedor);
 
     return router;
 
