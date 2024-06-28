@@ -109,6 +109,21 @@ class Api {
 
     }
 
+    uploadPhoto(file){
+
+        const formData = new FormData();
+
+        formData.append('foto', file);
+        
+        this.buildURL('upload');
+
+        return fetch(this.url, {
+            method : 'POST',
+            body : formData
+        })
+
+    }
+
     // CREATE ANY RECORD FROM ANY ENDPOINT
     createData(data){
 

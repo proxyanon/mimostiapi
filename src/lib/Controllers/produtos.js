@@ -111,6 +111,8 @@ module.exports = () => {
 
         }
 
+        console.log(module.fields);
+
         //results ? res.success(results, module.fields) : res.notFound('Nada encontrado', module.fields);
         results ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
     }
@@ -177,6 +179,10 @@ module.exports = () => {
     }
 
     module.addProduto = async (req, res, next) => {
+
+        /*if(Object.keys(req).includes('upload_path')){
+            return res.json(500).json({ error : true, msg : 'Você precisa enviar a foto do produto' });
+        }*/
 
         let obj_create = {}
         let fields = models.Produtos.rawAttributes;
@@ -404,19 +410,21 @@ module.exports = () => {
         const produto = await models.Produtos.findByPk(req.params.id);
 
         if(produto){
-            
+
             produto['datecreated'] = new Date();
 
             Object.keys(produto).includes('quantidade') ? delete req.body['quantidade'] : '';
 
             for(key in module.fields){
-                config.isDev && config.verbose ? console.log(key, produto[key]) : '';
-                if(key != 'id' && req.body[key]){
+                config.isDev || config.verbose ? console.log(key, produto[key]) : '';
+                if(key != 'id' && req.body[key] && key != 'desconto'){
                     if(module.fields[key].allowNull != false && produto[key].toString().empty()){
                         return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
                     }else{
                         produto[key] = req.body[key]
                     }
+                }else if(key == 'desconto'){
+                    produto[key] = parseInt(req.body[key]) == NaN ? 0 : parseInt(req.body[key]);
                 }
             }
 
@@ -565,7 +573,7 @@ module.exports = () => {
     router
         .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        .use(sec.middlewares.sanitize_body)
+        //.use(sec.middlewares.sanitize_body)
         .use(sec.middlewares.csrf_check)
         .get('/search/:search', module.searchProduct)
         .get('/secao/:id?', module.getSecoes)

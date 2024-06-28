@@ -36,7 +36,7 @@ const config = module.exports = {
 
         hostname : 'mimostiapi.io',
         port : 443,
-        start_chrome : true,
+        start_chrome : false,
         use_https : true,
 
         https : {
@@ -87,6 +87,14 @@ const config = module.exports = {
             size : 35,
             header : 'X-CSRF-TOKEN'.toLowerCase()
         }
+    },
+
+    uploads : {
+
+        accepted_ext : ['.png', '.jpg', '.jpeg'],
+        accepted_mime_types : ['image/jpeg', 'image/png', 'image/jpg'],
+        upload_path : path.join(__dirname, '..', 'public', 'files')
+
     },
 
     isDev : true,

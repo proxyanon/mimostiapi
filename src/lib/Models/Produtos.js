@@ -8,6 +8,11 @@ const Model = db.define('produtos', {
         allowNull : false,
         primaryKey : true
     },
+    foto : {
+        type : Sequelize.STRING,
+        allowNull : true,
+        defaultValue : 'defaultProduct.png',
+    },
     nome : {
         type : Sequelize.STRING,
         allowNull : false

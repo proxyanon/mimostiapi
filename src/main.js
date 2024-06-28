@@ -7,6 +7,8 @@
  * @package main.js
  */
 
+const Security = require('./lib/modules/Security');
+
 // MAIN IMPORTS
 const express = require('express'),
     app = express(),
@@ -28,8 +30,7 @@ const express = require('express'),
     BarcodeScanner = require('native-barcode-scanner'), // scanner barcodes
     PDFDocument = require('pdfkit'), // PDF creation
     { xss } = require('express-xss-sanitizer'), // XSS middleware
-    { exec } = require('child_process'), // exec to start chrome
-    fileUpload = require('express-fileupload');
+    { exec } = require('child_process'); // exec to start chrome
 
 app.set('view engine', 'ejs'); // SET VIEW ENGINE IN THIS CASE EJS
 app.set('views', path.join(__dirname, 'views')); // VIEWS PATH
@@ -42,7 +43,6 @@ app.use(compression()); // compress request to performance
 app.use(cookieParser()); // session manegment
 app.use(express.urlencoded({ extended : true })); // set accept only JSON requests
 app.use(express.json()); // set to accept only JSON requets
-app.use(fileUpload());
 
 app.use('/public', express.static(path.join(__dirname, 'public'))); // Static route for folder src/public
 
@@ -70,7 +70,7 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     }
 
     //config.server.start_chrome = config.isDev ? false : true;
-    config.server.session.cookie.secure = config.server.port == 443 ? true : false;
+    config.server.session.cookie.secure = config.server.use_https ? true : false;
     
     // server configs and midlewares
     app.use(handleParams);
@@ -81,6 +81,9 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     // views routes
     app.use('/', routes.index);
     app.use('/app', routes.app);
+
+    // UPLOAD IMAGES ROUTE
+    app.use('/api/v1/upload', routes.upload);
 
     // api routes (CRUD ROUTES)
     app.use('/api/v1/usuarios', routes.usuarios);
@@ -100,28 +103,6 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     // api routes (REPORTS AND PRINT ROUTES)
     app.use('/api/v1/relatorios', routes.relatorios);
     app.use('/api/v1/etiquetas', routes.etiquetas);
-
-    app.post('/api/v1/upload', (req, res, next) => {
-
-        let sampleFile;
-        let uploadPath;
-
-        if (!req.files || Object.keys(req.files).length === 0) {
-            return res.status(400).send('No files were uploaded.');
-        }
-
-        sampleFile = req.files.sampleFile;
-        upload1Path = __dirname + '/somewhere/on/your/server/' + sampleFile.name;
-
-        // Use the mv() method to place the file somewhere on your server
-        sampleFile.mv(uploadPath, function(err) {
-            if (err){
-                return res.status(500).send(err);
-            }
-            res.send('File uploaded!');
-        });
-
-    });
 
     if(config.isDev){
         
@@ -241,12 +222,12 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
 
         config.server.start_chrome ? start_chrome() : (config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.red}[-] Chrome not started automatily`, config.colors.reset) : '');
         
-        async function gen_password(){
+        /*async function gen_password(){
             const bcrypt = require('bcrypt');
             console.log(await bcrypt.hash('admtiapi', 10))
         }
 
-        gen_password();
+        gen_password();*/
 
     });
 

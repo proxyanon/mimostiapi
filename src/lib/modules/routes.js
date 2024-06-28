@@ -14,10 +14,11 @@ const index = require('../Controllers/index')(),
     contas_receber = require('../Controllers/contas_receber')(),
     caixa = require('../Controllers/caixa')(),
     etiquetas = require('../Controllers/etiquetas')()
-    relatorios = require('../Controllers/relatorios')();
+    relatorios = require('../Controllers/relatorios')(),
+    upload = require('../Controllers/upload')();
 
 module.exports = {
 
-    index,usuarios,clientes,vendedores,fornecedores,produtos,funcionarios,prestadores_servicos,estoque_material_producao,estoque_produto_final,formas_pagamentos,contas_pagar,contas_receber,caixa,relatorios,etiquetas,app
+    index,usuarios,clientes,vendedores,fornecedores,produtos,funcionarios,prestadores_servicos,estoque_material_producao,estoque_produto_final,formas_pagamentos,contas_pagar,contas_receber,caixa,relatorios,etiquetas,upload,app
 
 }
