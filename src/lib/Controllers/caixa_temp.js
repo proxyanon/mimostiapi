@@ -8,6 +8,10 @@ const moment = require('moment');
 const sec = new Security();
 const router = express.Router();
 
+const { xss, sanitize } = require('express-xss-sanitizer');
+
+const config = require('../config');
+
 moment.locale('pt-br');
 
 module.exports = () => {
@@ -90,6 +94,13 @@ module.exports = () => {
         }
         
         req.body.datecreated = moment().format('YYYY-MM-DD HH:mm:ss');
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.CaixaTemp.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         for(key in fields){
             if(key != 'id'){

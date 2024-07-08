@@ -68,13 +68,14 @@ module.exports = () => {
 
         let obj_create = {}
 
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }
-
         req.body.datecreated = new Date();
 
         req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.ContasPagar.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         if(config.isDev || config.verbose){
             console.log(req.body);

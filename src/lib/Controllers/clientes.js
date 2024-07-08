@@ -17,18 +17,6 @@ module.exports = () => {
 
     module.fields = models.Clientes.rawAttributes
 
-    module.checkCPF_CNPJ = (cpf_cnpj) => {
-        
-        if(!cpf_cnpj) return false;
-
-        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
-            return false
-        }
-
-        return true
-
-    }
-
     module.searchClientes = async (req, res, next) => {
 
         if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
@@ -54,41 +42,42 @@ module.exports = () => {
     module.addCliente = async (req, res, next) => {
 
         let obj_create = {}
-
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }
         
         req.body.datecreated = new Date();
 
         req.body = sanitize(req.body);
 
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.Clientes.tableName.toUpperCase()}] Formulário não aceito`);
+        }
+
         for(key in module.fields){
             if(key != 'id'){
                 if(!req.body[key]){
-                    return res.status(401).json({ error : true, msg : `Campos inválido(s) [${key}]` })
+                    return req.block(`Preencha o campo ${key}`);
                 }else{
                     obj_create[key] = req.body[key]
                 }
             }
         }
 
-        if(!module.checkCPF_CNPJ(obj_create.cpf_cnpj)){
-            return res.notAccept('O CPF ou CNPJ é inválido');
+        if(!Security.checkCPF_CNPJ(obj_create.cpf_cnpj)){
+            return res.notAccept('O CPF ou CNPJ inválido');
         }
 
         config.isDev && config.verbose ? console.log(obj_create) : '';
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+            return res.block('Formulário inválido');
         }else{
 
             const results = await models.Clientes.create(obj_create);
 
             if(results){
-                res.json({ error : false })
+                await res.sendOkResponse();
             }else{
-                res.status(500).json({ error : true, msg : 'Ocorreu um erro ao criar cliente' })
+                res.serverError('Ocorreu um erro ao criar cliente')
             }
 
         }
@@ -109,27 +98,27 @@ module.exports = () => {
                 console.log(key, cliente[key]);
                 if(key != 'id' && req.body[key]){
                     if(module.fields[key].allowNull != false && cliente[key].toString().empty()){
-                        return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
+                        return res.block(`Preencha o campo ${key}`);
                     }else{
                         cliente[key] = req.body[key]
                     }
                 }
             }
 
-            if(!module.checkCPF_CNPJ(cliente.cpf_cnpj)){
+            if(!Security.checkCPF_CNPJ(cliente.cpf_cnpj)){
                 return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
             const results = await cliente.save();
 
             if(results){
-                res.json({ error : false, results });
+                await res.sendData(results);
             }else{
-                res.status(400).json({ error : true, msg : 'Ocorreu um erro ao salvar o cliente' });
+                res.badRequest('Ocorreu um erro ao salvar o cliente');
             }
 
         }else{
-            res.status(500).json({ error : true, msg : 'Cliente não encontrado' })
+            res.serverError('Cliente não encontrado');
         }
 
     }
@@ -150,13 +139,14 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
+        .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        .get('/search/:search', sec.middlewares.csrf_check, module.searchClientes)
-        .get('/:id?', sec.middlewares.csrf_check, module.getClientes)
-        .post('/add', xss(), sec.middlewares.csrf_check, module.addCliente)
-        .put('/save/:id', xss(), sec.middlewares.csrf_check, module.saveCliente)
-        .delete('/del/:id', sec.middlewares.csrf_check, module.deleteCliente);
+        .use(sec.middlewares.csrf_check)
+        .get('/search/:search', module.searchClientes)
+        .get('/:id?', module.getClientes)
+        .post('/add', xss(), module.addCliente)
+        .put('/save/:id', sec.middlewares.sanitize_body, xss(), sec.middlewares.csrf_check, module.saveCliente)
+        .delete('/del/:id', module.deleteCliente);
 
     return router;
 

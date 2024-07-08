@@ -3,9 +3,12 @@ const models = require('../modules/models');
 
 const Security = require('../modules/Security');
 const Sequelize = require('../modules/database');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 const sec = new Security();
 const router = express.Router();
+
+const config = require('../config');
 
 module.exports = () => {
 
@@ -39,12 +42,15 @@ module.exports = () => {
 
         let obj_create = {};
         let fields = models.FormasPagamentos.rawAttributes;
-
-        if(Object.keys(fields).length!=Object.keys(fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }
         
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block('Formulário não aceito');
+        }
 
         for(key in fields){
             if(key != 'id'){
@@ -121,12 +127,12 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
-        //.use(sec.responses.setResponses)
+        .use(sec.middlewares.auth_check)
+        .use(sec.responses.setResponses)
         .get('/search/:search', module.searchFormaPagamento)
         .get('/:id?', module.getFormaPagamento)
-        .post('/add', module.addFormaPagamento)
-        .put('/save/:id', module.saveFormaPagamento)
+        .post('/add', xss(), module.addFormaPagamento)
+        .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveFormaPagamento)
         .delete('/del/:id', module.deleteFormaPagamento);
 
     return router;

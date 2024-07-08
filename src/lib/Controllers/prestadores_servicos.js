@@ -7,25 +7,13 @@ const sec = new Security();
 const router = express.Router();
 
 const config = require('../config');
-const { xss } = require('express-xss-sanitizer');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 module.exports = () => {
 
     var module = {};
 
     module.fields = models.PrestadoresServicos.rawAttributes
-
-    module.checkCPF_CNPJ = (cpf_cnpj) => {
-        
-        if(!cpf_cnpj) return false;
-
-        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
-            return false
-        }
-
-        return true
-
-    }
 
     module.searchPrestadoresServicos = async (req, res, next) => {
 
@@ -52,12 +40,15 @@ module.exports = () => {
     module.addPrestadoreServico = async (req, res, next) => {
 
         let obj_create = {}
-
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
-        }
         
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.PrestadoresServicos.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         for(key in module.fields){
             if(key != 'id'){
@@ -69,7 +60,7 @@ module.exports = () => {
             }
         }
 
-        if(!module.checkCPF_CNPJ(obj_create.cpf_cnpj)){
+        if(!Security.checkCPF_CNPJ(obj_create.cpf_cnpj)){
             return res.notAccept('O cpf ou cnpj é inválido');
         }
 
@@ -110,7 +101,7 @@ module.exports = () => {
                 }
             }
 
-            if(!module.checkCPF_CNPJ(prestador_servico.cpf_cnpj)){
+            if(!Security.checkCPF_CNPJ(prestador_servico.cpf_cnpj)){
                 return res.notAccept('O cpf ou cnpj é inválido');
             }
 
@@ -147,11 +138,10 @@ module.exports = () => {
         .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
         .use(sec.middlewares.csrf_check)
-        .use(sec.middlewares.sanitize_body)
         .get('/search/:search', module.searchPrestadoresServicos)
         .get('/:id?', module.getPrestadoresServicos)
         .post('/add', xss(), module.addPrestadoreServico)
-        .put('/save/:id', xss(), module.savePrestadoreServico)
+        .put('/save/:id', sec.middlewares.sanitize_body, xss(), module.savePrestadoreServico)
         .delete('/del/:id', module.deletePrestadoreServico);
 
     return router;

@@ -2,9 +2,12 @@ const express = require('express');
 const models = require('../modules/models');
 
 const Security = require('../modules/Security');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 const sec = new Security();
 const router = express.Router();
+
+const config = require('../config');
 
 String.prototype.empty = function(){
 
@@ -74,7 +77,7 @@ module.exports = () => {
             include : [{
                 model : models.Produtos,
                 required : false,
-                attributes : ['id', 'nome', 'descricao'],
+                attributes : ['id', 'nome', 'descricao', [models.sequelize.literal('entrada - saida'), 'estoque']],
                 as : 'produto_nome'
             }],
             order : [['produto_nome', 'nome', 'ASC']]
@@ -91,12 +94,15 @@ module.exports = () => {
     module.addEstoqueProdutoFinal = async (req, res, next) => {
 
         let obj_create = {}
-
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }
         
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.EstoqueProdutoFinal.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         for(key in module.fields){
             if(key != 'id'){
@@ -132,6 +138,8 @@ module.exports = () => {
         const special_fields = ['id', 'entrada', 'saida'];
 
         req.body.datecreated = new Date();
+
+        console.log(req.body);
 
         if(estoque_produto_final){
 
@@ -186,7 +194,7 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
+        .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
         .get('/search/:search', module.searchEstoqueProdutoFinal)
         .get('/:id?', module.getEstoqueProdutoFinal)

@@ -2,6 +2,7 @@ const { exec } = require('child_process');
 //const modules = ['xyz', 'http','https','sequelize','cookie-parser','express-session','cors','helmet','path','fs','socket.io','compression','native-barcode-scanner','pdfkit','express-xss-sanitizer','child_process','express-fileupload'];
 
 const modules = [];
+const config = require('./lib/config');
 
 const fs = require('fs');
 
@@ -53,8 +54,8 @@ async function install_dependencies(module_name, auto_install=false){
     
         }catch(err){
     
-            console.error(err.code)
-            throw new Error(err);
+            console.error(err)
+            //throw new Error(err);
     
         }
 
@@ -64,6 +65,22 @@ async function install_dependencies(module_name, auto_install=false){
 
     return installed;
 
+}
+
+modules.forEach(async (module_name, i) => {
+    await install_dependencies(module_name, config.install_deps.auto_install);
+    if(i == modules.length-1 && config.install_deps.run_app_after_check){
+        await run_app()
+    }
+});
+
+async function run_app(){
+    const { stdout, stderr } = await exec(`start nodemon src\\main.js`);
+    if(stderr.read()){
+        console.error(stderr.read())
+    }else{
+        console.log(stdout.read())
+    }
 }
 
 module.exports = { install_dependencies, modules }

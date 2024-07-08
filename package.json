@@ -1,11 +1,11 @@
 {
   "name": "mimostiapi",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Mimos da tia PI",
   "main": "main.js",
   "scripts": {
     "start": "nodemon src/main.js",
-    "install_deps": "nodemon src/dependenciesCheck.js && nodemon src/main.js",
+    "install_deps": "nodemon src/dependenciesCheck.js",
     "dev": "nodemon src/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -4,9 +4,12 @@ const models = require('../modules/models');
 const Security = require('../modules/Security');
 const Sequelize = require('../modules/database');
 const moment = require('moment');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 const sec = new Security();
 const router = express.Router();
+
+const config = require('../config');
 
 moment.locale('pt-br');
 
@@ -84,12 +87,15 @@ module.exports = () => {
 
         let obj_create = {};
         let fields = models.Caixa.rawAttributes;
-
-        if(Object.keys(fields).length!=Object.keys(fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }
         
-        req.body.datecreated = moment().format('YYYY-MM-DD HH:mm:ss');
+        req.body.datecreated = moment().format('YYYY-MM-DD HH:mm:ss');1
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block('Formulário não aceito');
+        }
 
         for(key in fields){
             if(key != 'id'){
@@ -172,12 +178,15 @@ module.exports = () => {
     module.addCaixaTemp = async (req, res, next) => {
 
         let obj_create = {}
-
-        /*if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }*/
         
         req.body.datecreated = moment().format('YYYY-MM-DD HH:mm:ss');
+
+        req.body = sanitize(req.body);
+
+        /*if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.Caixa.tableName.toUpperCase()}] Formulário não aceito`);
+        }*/
 
         for(key in module.fields){
             if(key != 'id'){
@@ -351,17 +360,18 @@ module.exports = () => {
     }
 
     router
-        //.use(sec.middlewares.auth_check)
-        //.use(sec.responses.setResponses)
+        .use(sec.middlewares.auth_check)
+        .use(sec.responses.setResponses)
+        .use(sec.middlewares.csrf_check)
         .get('/search/:search', module.searchCaixa)
         .get('/temp/:id', module.getCaixaTemp)
         .get('/fechar/:id', module.fecharCaixa)
         .get('/abrir/:id', module.abrirCaixa)
         .get('/:id?', module.getCaixa)
-        .post('/temp/add', module.addCaixaTemp)
-        .post('/saida/:id', module.saidaCaixa)
-        .post('/add', module.addCaixa)
-        .put('/save/:id', module.saveCaixa)
+        .post('/temp/add', xss(), module.addCaixaTemp)
+        .post('/saida/:id', xss(), module.saidaCaixa)
+        .post('/add', xss(), module.addCaixa)
+        .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveCaixa)
         .delete('/del/:id', module.deleteCaixa);
 
     return router;

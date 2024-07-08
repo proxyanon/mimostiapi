@@ -9,7 +9,10 @@ const config = require('../config');
 const sec = new Security();
 const router = express.Router();
 
-const { xss } = require('express-xss-sanitizer');
+const { xss, sanitize } = require('express-xss-sanitizer');
+const fs = require('fs');
+const path = require('path');
+const md5 = require('md5');
 
 module.exports = () => {
 
@@ -195,22 +198,25 @@ module.exports = () => {
         req.body.codigo_barras = Security.generatebarcode(10);
         req.body.usuario = req.session.session_username
 
-        if(Object.keys(fields).length!=Object.keys(fields).length){
-            return res.status(401).json({ error : true, msg : 'Preecha todos os campos' })
-        }
+        req.body = sanitize(req.body);
+
+        /*if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block('Formulário não aceito');
+        }*/
 
         for(key in fields){
             if(key != 'id'){
                 if((module.fields[key].type == 'INTEGER' || module.fields[key].type == 'FLOAT') && (parseInt(req.body[key]) == NaN || parseInt(req.body[key]) == 0 || req.body[key] == null || req.body[key] == undefined)){
                     if(parseInt(req.body[key]) == 0 && key != 'desconto'){
-                        return res.status(400).json({ error : true, msg : `O campo ${key} precisa ser ${['categoria','secao','cor'].includes(key) ? 'selecionado' : 'preenchido'}` });
+                        return res.block(`O campo ${key} precisa ser ${['categoria','secao','cor'].includes(key) ? 'selecionado' : 'preenchido'}`);
                     }else if(key != 'desconto'){
-                        return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
+                        return res.block(`Preencha o campo ${key}`);
                     }else if(key == 'desconto' && parseInt(req.body[key]) < 0){
-                        return res.status(400).json({ error : true, msg : `O ${key} não pode ser menor que zero` });
+                        return res.block(`O ${key} não pode ser menor que zero`);
                     }
                 }else if(!req.body[key] && key != 'desconto'){
-                    return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
+                    return res.badRequest(`Preencha o campo ${key}`);
                 }else{
                     obj_create[key] = req.body[key]
                 }
@@ -218,11 +224,11 @@ module.exports = () => {
         }
 
         if(Object.keys(obj_create).length==0){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
+            return res.block('Preencha o formulário')
         }else{
 
             if(parseInt(produto_entrada) <= 0){
-                return res.status(400).json({ error : true, msg : 'A quantidade não pode ser menor ou igual a zero' });
+                return res.badRequest('A quantidade não pode ser menor ou igual a zero');
             }
 
             let results = null;
@@ -268,10 +274,6 @@ module.exports = () => {
         
         let obj_create = {}
         let fields = models.ProdutosSecoes.rawAttributes;
-
-        if(Object.keys(fields).length!=Object.keys(fields).length){
-            return res.status(401).json({ error : true, msg : 'Preencha o campo seção' })
-        }
 
         console.log(req.body);
 
@@ -410,6 +412,14 @@ module.exports = () => {
         const produto = await models.Produtos.findByPk(req.params.id);
 
         if(produto){
+
+            try{
+                if(produto['foto'] != 'defaultProduct.png'){
+                    fs.unlinkSync(path.join(__dirname, '..', '..', 'public', 'files', produto['foto']));
+                }
+            }catch(err){
+                config.verbose || config.isDev ? console.error(err) : '';
+            }
 
             produto['datecreated'] = new Date();
 

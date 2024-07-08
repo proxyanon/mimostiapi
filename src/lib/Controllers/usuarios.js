@@ -9,7 +9,7 @@ const config = require('../config');
 const sec = new Security();
 const router = express.Router();
 
-const { xss } = require('express-xss-sanitizer');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 module.exports = () => {
 
@@ -33,11 +33,12 @@ module.exports = () => {
 
         let obj_create = {}
 
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
-        }
-
         req.body.ativo = 1;
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.Usuarios.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         for(key in module.fields){
             if(key != 'id'){

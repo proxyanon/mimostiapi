@@ -7,25 +7,13 @@ const sec = new Security();
 const router = express.Router();
 
 const config = require('../config');
-const { xss } = require('express-xss-sanitizer');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 module.exports = () => {
 
     var module = {};
 
     module.fields = models.Vendedores.rawAttributes
-
-    module.checkCPF_CNPJ = (cpf_cnpj) => {
-
-        if(!cpf_cnpj) return false;
-        
-        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
-            return false
-        }
-
-        return true
-
-    }
 
     module.searchVendedores = async (req, res, next) => {
 
@@ -36,8 +24,10 @@ module.exports = () => {
         const results = await models.Vendedores.findAll({ 
             where : { nome : { [ models.sequelize.Op.substring ] : search }} 
         });
+
+        results.length > 0 ? await res.sendData(results, module.fields) : res.notFound('Nada encontrado', module.fields);
         
-        results.length > 0 ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
+        //results.length > 0 ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
 
     }
 
@@ -52,12 +42,15 @@ module.exports = () => {
     module.addVendedor = async (req, res, next) => {
 
         let obj_create = {}
-
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s)' })
-        }
         
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block('Formulário não aceito');
+        }
 
         for(key in module.fields){
             if(key != 'id'){
@@ -75,7 +68,7 @@ module.exports = () => {
             return res.notAccept('Requisição inválida');
         }else{
 
-            if(!module.checkCPF_CNPJ(obj_create.cpf)){
+            if(!Security.checkCPF_CNPJ(obj_create.cpf_cnpj)){
                 console.log(obj_create)
                 return res.notAccept('O CPF ou CNPJ é inválido');
             }
@@ -83,9 +76,9 @@ module.exports = () => {
             const results = await models.Vendedores.create(obj_create);
 
             if(results){
-                res.json({ error : false })
+                await res.sendOkresponse();
             }else{
-                res.status(500).json({ error : true, msg : 'Ocorreu um erro ao criar o ornecedor' })
+                res.serverError('Ocorreu um erro ao criar o fornecedor');
             }
 
         }
@@ -110,7 +103,7 @@ module.exports = () => {
                 }
             }
 
-            if(!module.checkCPF_CNPJ(vendedor.cpf)){
+            if(!Security.checkCPF_CNPJ(vendedor.cpf_cnpj)){
                 return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
@@ -147,11 +140,11 @@ module.exports = () => {
         .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
         .use(sec.middlewares.csrf_check)
-        .use(sec.middlewares.sanitize_body)
+        //.use(sec.middlewares.sanitize_body)
         .get('/search/:search', module.searchVendedores)
         .get('/:id?', module.getVendedores)
         .post('/add', xss(), module.addVendedor)
-        .put('/save/:id', xss(), module.saveVendedor)
+        .put('/save/:id', sec.middlewares.sanitize_body, xss(), module.saveVendedor)
         .delete('/del/:id', module.deleteVendedor);
 
     return router;

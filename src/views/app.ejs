@@ -111,6 +111,9 @@
                 height: calc(100% + 45%) !important;
             }
         }
+        .btn-group { margin-top: 25px; }
+        .btn-danger-custom { background-color: #dc3545; color: white; }
+        .btn-danger-custom:hover, .btn-danger-custom:focus { background-color: #bb2d3b; color : white }
     </style>
     
     <!-- APP CONTAINER MAIN -->
@@ -127,7 +130,6 @@
         
                 <!-- BUTTONS -->
                 <ul class="list-style-none mt-2 menuButtons">
-                    
                     <li>
                         <div class="dropdown">
                             <button class="btn btn-custom dropdown-toggle" type="button" id="dropDownCadastros" data-bs-toggle="dropdown" aria-expanded="false">
@@ -440,10 +442,16 @@
                         </div>
                         <div class="col">
                             <div class="form-group">
+                                <label for="fornecedor-instagram" class="form-label">Instagram</label>
+                                <input type="text" class="form-control" placeholder="instagram" id="fornecedor-instagram">
+                            </div>
+                        </div>
+                        <!-- <div class="col">
+                            <div class="form-group">
                                 <label for="fornecedor-instagram" class="form-label"></label>
                                 <input type="text" class="form-control" placeholder="Instagram" id="fornecedor-instagram">
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="row mt-4">
@@ -794,6 +802,7 @@
                 </div>
 
                 <!-- PRODUTOS -->
+                 
                 <div class="app-window" id="produtos">
 
                     <div style="text-align: left;">
@@ -847,114 +856,99 @@
                         </div>
                     </div>
 
-                    <div class="row mt-2">
-                        <div class="col">
-                            <div class="file-loading">
-                                <input id="prd-foto" name="prd-foto[]" type="file" class="file" data-allowed-file-extensions='["png", "jpg", "jpeg"]'>
-                            </div>
-                        </div>
-                    </div>
+                    <input type="hidden" id="produto-foto" value="defaultProduct.png">
+                    <input type="hidden" id="produto-id">
 
-                    <input type="hidden" id="produto-foto">
-
-                    <div class="row mt-4">
-                        <input type="hidden" id="produto-id">
-                        <div class="col">
+                    <div class="row">
+                        <div class="col-6">
                             <div class="row">
-                                <div class="col-6 mr-0">
-                                    <div class="form-group">
-                                        <label for="produto-secao" class="form-label">Seção</label>
-                                        <select id="produto-secao" class="form-select" aria-label="Secao" required>
-                                            <option selected disabled>-- escolha a seção do produto --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="btn-group mt-4" role="group" aria-label="Section buttons">
-                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_secao"><i class="fa fa-plus"></i></button>
-                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-secao" data-bs-target="#modal_secao" disabled><i class="fa fa-edit"></i></button>
+                                <div class="col-12">
+                                    <div class="file-loading">
+                                        <input id="prd-foto" name="prd-foto[]" type="file" class="file" data-allowed-file-extensions='["png", "jpg", "jpeg"]' accept=".png,.jpg,.jpeg">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-6">
                             <div class="row">
-                                <div class="col-6 mr-0">
-                                    <div class="form-group">
-                                        <label for="produto-categoria" class="form-label">Categoria</label>
-                                        <select id="produto-categoria" class="form-select" aria-label="Categoria" required>
-                                            <option selected disabled>-- escolha a categoria do produto --</option>
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="col">
-                                    <div class="btn-group mt-4" role="group" aria-label="Categoria buttons">
-                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_categoria"><i class="fa fa-plus"></i></button>
-                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-categoria" data-bs-target="#modal_categoria" disabled><i class="fa fa-edit"></i></button>
+                                    <div class="row">
+                                        <div class="col-4 mr-0">
+                                            <div class="form-group">
+                                                <label for="produto-secao" class="form-label">Seção</label>
+                                                <select id="produto-secao" class="form-select" aria-label="Secao" required>
+                                                    <option selected disabled>-- escolha a seção do produto --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" style="margin-left: -15px !important;margin-right: 10px !important;">
+                                            <div class="btn-group" role="group" aria-label="Section buttons">
+                                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_secao"><i class="fa fa-plus"></i></button>
+                                                <button class="btn btn-primary" data-bs-toggle="modal" id="edit-secao" data-bs-target="#modal_secao" disabled><i class="fa fa-edit"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 mr-0">
+                                            <div class="form-group">
+                                                <label for="produto-categoria" class="form-label">Categoria</label>
+                                                <select id="produto-categoria" class="form-select" aria-label="Categoria" required>
+                                                    <option selected disabled>-- escolha a categoria do produto --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" style="margin-left: -15px !important;margin-right: 10px !important;">
+                                            <div class="btn-group" role="group" aria-label="Categoria buttons">
+                                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_categoria"><i class="fa fa-plus"></i></button>
+                                                <button class="btn btn-primary" data-bs-toggle="modal" id="edit-categoria" data-bs-target="#modal_categoria" disabled><i class="fa fa-edit"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 mr-0 mt-3">
+                                            <div class="form-group">
+                                                <label for="produto-cor" class="form-label">Cor ou estampa</label>
+                                                <select id="produto-cor" class="form-select" aria-label="Cor" required>
+                                                    <option selected disabled>-- escolha a cor do produto --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-2 mt-3" style="margin-left: -15px !important;margin-right: 10px !important;">
+                                            <div class="btn-group" role="group" aria-label="Colors buttons">
+                                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_cor"><i class="fa fa-plus"></i></button>
+                                                <button class="btn btn-primary" data-bs-toggle="modal" id="edit-cor" data-bs-target="#modal_cor" disabled><i class="fa fa-edit"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 text-left mt-3">
+                                            <div class="form-group">
+                                                <label for="produto-nome" class="form-label">Nome do produto</label>
+                                                <input type="text" class="form-control" placeholder="Nome do produto" id="produto-nome" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <div class="form-group">
+                                                <label for="produto-preco" class="form-label">Preço R$</label>
+                                                <input type="number" class="form-control" min="1" placeholder="Preço do produto" id="produto-preco" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <div class="form-group">
+                                                <label for="produto-desconto" class="form-label">Desconto % <span class="fw-bold" id="desconto-produto"></span></label>
+                                                <input type="number" class="form-control" min="1" placeholder="Desconto do produto" id="produto-desconto">
+                                            </div>
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <div class="form-group">
+                                                <label for="produto-quantidade" class="form-label">Quantidade</label>
+                                                <input type="number" class="form-control" min="1" placeholder="Qtd. do produto" id="produto-quantidade">
+                                            </div>
+                                        </div>
+                                        <div class="col mt-3">
+                                            <div class="form-group">
+                                                <label for="produto-descricao" class="form-label">Descrição</label>
+                                                <input type="text" class="form-control" placeholder="Descrição do produto" id="produto-descricao" required>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="row">
-                                <div class="col-6 mr-0">
-                                    <div class="form-group">
-                                        <label for="produto-cor" class="form-label">Cor ou estampa</label>
-                                        <select id="produto-cor" class="form-select" aria-label="Cor" required>
-                                            <option selected disabled>-- escolha a cor do produto --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="btn-group mt-4" role="group" aria-label="Colors buttons">
-                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_cor"><i class="fa fa-plus"></i></button>
-                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-cor" data-bs-target="#modal_cor" disabled><i class="fa fa-edit"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col text-left">
-                            <div class="form-group">
-                                <label for="produto-nome" class="form-label">Nome do produto</label>
-                                <input type="text" class="form-control" placeholder="Nome do produto" id="produto-nome" required>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="produto-preco" class="form-label">Preço do produto R$</label>
-                                <input type="number" class="form-control" min="1" placeholder="Preço do produto" id="produto-preco" required>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="produto-desconto" class="form-label">Desconto do produto % <span class="fw-bold" id="desconto-produto"></span></label>
-                                <input type="number" class="form-control" min="1" placeholder="Desconto do produto" id="produto-desconto">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mt-2">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="produto-quantidade" class="form-label">Quantidade</label>
-                                <input type="number" class="form-control" min="1" placeholder="Qtd. do produto" id="produto-quantidade">
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="produto-descricao" class="form-label">Descrição</label>
-                                <input type="text" class="form-control" placeholder="Descrição do produto" id="produto-descricao" required>
-                            </div>
-                        </div>
-                        <!-- <div class="col">
-                            <div class="form-group">
-                                <label for="produto-codigo_barras" class="form-label">Codigo de barras</label>
-                                <input type="text" class="form-control" placeholder="Use o leitor ou digite manualmente" id="produto-codigo_barras" required>
-                            </div>
-                        </div> -->
                     </div>
 
                     <div class="row mt-3">
@@ -2003,7 +1997,7 @@
                     <div class="modal-title">Venda de produto</div>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="modal_lancar_caixa-id">
+                    <input type="hidden" id="modal_lancar_caixa-id" value="1">
                     <div class="form-group">
                         <label for="caixa_produto_search" class="mb-2"><i class="fa fa-search"></i> Pesquisar produto</label>
                         <input type="search" id="caixa_produto_search" data-bs-endpoint="produtos" data-bs-itemId="produto" class="form-control inpt-search" placeholder="Procurar produto(s)">
@@ -2060,6 +2054,23 @@
         </div>
     </div>
 
+    <!-- MODAL ERRORS HANDLER -->
+    <div class="modal" tabindex="-1" id="modal_error">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="modal_error-title"></div>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger form-control text-center p-2" id="model_error-content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger-custom" data-bs-dismiss="modal"><i class="fa fa-xmark"></i> Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- <footer class="footer"><small><span class="bold">Mimos da tia Pi</span> por Daniel Victor Freire Feitosa all rights reserved <i class="fa fa-copyright"></i> 2024-2024</small></footer> -->
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
@@ -2105,6 +2116,10 @@
                 // CHECK LAST WINDOW FROM LOCAL STORAGE
                 if(!localStorage.getItem('current_dashboard')){
                     localStorage.setItem('current_dashboard', 'clientes');
+                }
+
+                if(!localStorage.getItem('current_caixa') || (parseInt(localStorage.getItem('current_caixa')) == NaN || (parseInt(localStorage.getItem('current_caixa') <= 0)))){
+                    localStorage.setItem('current_caixa', 1);
                 }
 
                 // CALCULATE PERCENTUAL DISCOUNT TO REAL VALUE
@@ -2168,10 +2183,10 @@
                         timeout : 5000
                     },
                     images : {
-                        width : '50px',
-                        height : '50px'
+                        width : '30px',
+                        height : '30px'
                     },
-                    verbose : false
+                    verbose : true
                 };
 
                 // EVENTO DO LEITOR DE CODIGO DE BARRAS
@@ -2219,21 +2234,30 @@
                 function loadCaixaStorage(){
 
                     try{
+
+                        console.log(getCurrentCaixa())
                         
-                        api.getData({ endpoint : { path : 'caixa', id : null } })
+                        api.getData({ endpoint : { path : 'caixa', id : 1 } })
                             .then(resp => resp.json())
                             .then(results => {
                                 if(results.error){
-                                    show('caixa-select-error', results.msg, app_config.verbose)
                                     localStorage.setItem('current_caixa', 1);
+                                    show('caixa-select-error', results.msg, app_config.verbose)
                                     return
                                 }else{
     
                                     results = results.results;
+
+                                    console.log(results)
     
                                     for(let i = 0; i < results.length; i++){
-                                        localStorage.setItem('current_caixa', parseInt(results[i].id))
-                                        break
+                                        if(parseInt(results[i].id) != NaN || parseInt(results[i].id) > 0){
+                                            localStorage.setItem('current_caixa', parseInt(results[i].id))
+                                            break
+                                        }else{
+                                            localStorage.setItem('current_caixa', 1);
+                                            break;
+                                        }
                                     }
     
                                 }
@@ -2287,6 +2311,27 @@
                         $('#' + item_id).mask('(00) 0 0000-0000', options);
 
                     });
+                }
+
+                // TRANSLATE FIELD FILE PREVIEW AND OTHERS TEXTS
+                function translate(){
+                    [...document.querySelectorAll('.hidden-xs')].forEach((el) => { 
+                        const replaces = {'Remove' : 'Remover', 'Cancel' : 'Cancelar', 'Upload' : 'Carregar arquivo', 'Browse …' : 'Procurar', 'Drag & drop files here ...' : 'Arraste e solte arquivos aqui ...'};
+                        if(replaces[el.textContent] != undefined){
+                            el.textContent = replaces[el.textContent];
+                        }
+                    })
+                    $('.file-caption-name.form-control.kv-fileinput-caption').attr('placeholder', 'Selcionar arquivo ...');
+                    $('.file-drop-zone-title').text('Arraste e solte algum arquivo aqui ...');
+                }
+
+                function showModalError(title, content){
+
+                    $('#modal_error-title').html(`<i class="fa fa-exclamation-triangle"></i> ${title}`)
+                    $('#model_error-content').text(content);
+                    
+                    $('#modal_error').modal('show');
+
                 }
 
                 // SET LISTENER TO ANY ELEMENTS
@@ -2409,6 +2454,39 @@
                         
                         return false;
 
+                    }
+                    
+                    if(getCurrentDashboard() == 'produtos'){
+
+                        const codigos_barras = [];
+                        const produtos_nomes = [];
+
+                        results.forEach(result => { codigos_barras.push(result.codigo_barras); produtos_nomes.push(result.nome) });
+
+                        let index = 0, newArr = [], newArrNome = [];
+                        let length = codigos_barras.length; // to get length of array
+                        
+                        function findDuplicates(arr, arrNome) {
+                            for (let i = 0; i < length - 1; i++) {
+                                for (let j = i + 1; j < length; j++) {
+                                    if (arr[i] === arr[j]) {
+                                        newArr[index] = arr[i];
+                                        newArrNome[index] = arrNome[i];
+                                        index++;
+                                    }
+                                }
+                            }
+                            return newArr.toString() + ' | Produto: ' + newArrNome.toString();
+                        }
+
+                        function hasDuplicates(array) {
+                            return (new Set(array)).size !== array.length;
+                        }
+
+                        if(hasDuplicates(codigos_barras)){
+                            showModalError('Alerta produtos com códigos de barras iguais', `Existe mais de um produto cadastrado com esse código de barras: ${findDuplicates(codigos_barras, produtos_nomes)}`);
+                        }
+                        
                     }
 
                     results.forEach((data, i) => {
@@ -2543,6 +2621,16 @@
                                 break;
 
                                 case 'foto':
+                                    if(!data[column] || data[column] == '' || data[column] == null){
+                                        app_config.verbose ? console.log('[+] Nenhuma imagem foi carregada para o registro substituido automaticamente') : '';
+                                        data[column] = 'defaultProduct.png';
+                                    }else if(!['jpg', 'png', 'jpeg'].includes(data[column].split('.')[data[column].split('.').length-1])){
+                                        app_config.verbose ? console.warn(`[x] Tentativa de upload de shell ou bypass de extenção detectado no aqruivo -> ${data[column]} substituido automaticamente`) : '';
+                                        data[column] = 'defaultProduct.png';
+                                    }else if(data[column].includes('/') || data[column].includes('\\') || data[column].includes('..') || data[column].includes('../') || data[column].includes('..\\')){
+                                        app_config.verbose ? console.warn(`[x] Possível LFI detectado no arquivo -> ${data[column]} substituido automaticamente`) : '';
+                                        data[column] = 'defaultProduct.png';
+                                    }
                                     tds += `<td><img src="public/files/${data[column]}" width="${app_config.images.width}" height="${app_config.images.height}" style="border-radius:4px;padding:0px !important;margin: 0px !important;"></td>` + '\n';
                                 break;
 
@@ -2594,7 +2682,7 @@
                                             try{
                                                 
                                                 
-                                                app_config.verbose ? console.log(`#${item_name}-${column}`) : '';
+                                                //app_config.verbose ? console.log(`#${item_name}-${column}`) : '';
 
                                                 let field_form = document.querySelector(`#${item_name}-${column}`);
                                                 let field_type = field_form.tagName;
@@ -2771,6 +2859,12 @@
                                     document.querySelector('#caixa_valor_view').innerHTML = '';
                                 }*/
 
+                                if(getCurrentDashboard() == 'contas_pagar' && results.length <= 0){
+                                    showModalError('Erro ao carregar fornecedores', 'Você precisa adicionar fornecedores para usar o contas a pagar');
+                                }else if(getCurrentDashboard() == 'contas_receber' && results.length <= 0){
+                                    showModalError('Erro ao carregar clientes', 'Você precisa adicionar clientes para usar o contas a receber');
+                                }
+
                                 results.forEach((data) => {
                                     options += `<option value="${data.id}">${data.nome}</option>` + '\n'; 
                                 });
@@ -2814,6 +2908,7 @@
                                         }
                                     }else if(data.value && name == 'caixa'){
                                         try{
+                                            console.log(data);
                                             document.querySelector('#btn-abrir-caixa').removeAttribute('disabled');
                                             document.querySelector('#edit-caixa').removeAttribute('disabled');
                                             localStorage.setItem('current_caixa', data.value);
@@ -3071,6 +3166,9 @@
 
                 // GET CURRENT CASHIER
                 function getCurrentCaixa(){
+                    if(!localStorage.getItem('current_caixa') || parseInt(localStorage.getItem('current_caixa')) == NaN || parseInt(localStorage.getItem('current_caixa')) <= 0){
+                        localStorage.setItem('current_caixa', 1);
+                    }
                     return localStorage.getItem('current_caixa');
                 }
 
@@ -3115,15 +3213,21 @@
                                     });
                                 }
 
-                                if(getCurrentDashboard() == 'estoque_produto_final' || getCurrentDashboard() == 'produtos'){
+                                if(getCurrentDashboard() == 'estoque_produto_final' || getCurrentDashboard() == 'produtos' || getCurrentDashboard() == 'estoque_material_producao'){
 
                                     results.forEach((data) => {
 
+                                        let estoque = 0;
+
                                         if(!data.estoque_produto_final && getCurrentDashboard() == 'produtos'){
-                                            data.estoque_produto_final.estoque = 0;
+                                            data = {estoque_produto_final : { estoque : 0 }}
                                         }
 
-                                        let estoque = getCurrentDashboard() == 'estoque_produto_final' ? parseInt(data.entrada) - parseInt(data.saida) : parseInt(data.estoque_produto_final.estoque);
+                                        if(getCurrentDashboard() == 'estoque_produto_final'){
+                                            estoque = parseInt(data.produto_nome.estoque);
+                                        }else{
+                                            estoque = getCurrentDashboard() == 'estoque_material_producao' ? parseInt(data.entrada) - parseInt(data.saida) : parseInt(data.estoque_produto_final.estoque);
+                                        }
 
                                         //console.log(estoque);
 
@@ -3208,7 +3312,8 @@
                 // GET CAIXA
                 function getCaixa(caixa_id){
 
-                    if(!caixa_id){
+                    if(parseInt(caixa_id) == NaN || parseInt(caixa_id) <= 0 ){
+                        caixa_id = 1;
                         show('caixa-select-error', 'Erro ao selecionar um caixa', app_config.errors.timeout)
                         return
                     }
@@ -3426,6 +3531,13 @@
 
                         case 'produtos':
                             getDataTables(null, 'produto', true);
+                            try{
+                                translate()
+                                $('#prd-foto').on('filecleared', function(e){ translate() }) // This event is triggered after the files in the preview are cleared.
+                                /*$('#prd-foto').on('fileclear', function(e, files){ translate() })*/ // This event is triggered after a batch of files are selected and displayed in the preview. Additional parameters available are: files: the file stack array (or empty object if not available).
+                            }catch(err){
+                                app_config.verbose ? console.error(err) : '';
+                            }
                         break;
 
                         case 'funcionarios':
@@ -3966,17 +4078,15 @@
                             if(results.error){
                                 show('modal_saida_caixa-error', results.msg, app_config.errors.timeout);
                             }else{
-                                getCaixa();
-                                $('#modal_saida_caixa').modal('hide')
+                                getCaixa(getCurrentCaixa());
+                                clearForms();
+                                $('#modal_saida_caixa').modal('hide');
                             }
 
                         })
                         .catch(err => {
                             app_config.verbose ? console.error(err) : '';
                         });
-                    
-                    clearForms();
-
                 });
 
                 // REPORTS LISTENERS
@@ -4327,9 +4437,32 @@
                         let btn_del = e.currentTarget;
                         let endpoint = localStorage.getItem('current_dashboard');
 
-                        let params = { field_name : btn_del.getAttribute('id').split('-')[1], endpoint };
+                        if(!btn_del){
+                            show(`${getCurrentDashboard()}-error`, 'Botão de deletar inválido contate o suporte');
+                            return;
+                        }
 
-                        let data = prepareDelete(params);
+                        let params;
+                        let data;
+
+                        try{
+                        
+                            params = { field_name : btn_del.getAttribute('id').split('-')[1], endpoint };
+                            data = prepareDelete(params);
+                        
+                        }catch(err){
+                        
+                            app_config.verbose ? console.error(err) : '';
+
+                            show(`${getCurrentDashboard()}-error`, 'Ocorreu um erro ao preparar o item para deletar');
+                            return;
+                        
+                        }
+
+                        if(!data){
+                            show(`${getCurrentDashboard()}-error`, 'Os dados são inválidos para deletar');
+                            return;
+                        }
 
                         api.deleteItem(data)
                             .then(resp => resp.json())
@@ -4375,7 +4508,7 @@
                     let search = search_.value;
 
                     if(search.empty()){
-                        loadDashboardPage(localStorage.getItem('current_dashboard'));
+                        loadDashboardPage(getCurrentDashboard());
                         return;
                     }
 
@@ -4394,7 +4527,8 @@
                                     app_config.verbose ? console.log(results) : '';
 
                                     if(results.length > 0){
-                                        alert('Existe mais de um produto cadastrado com esse código de barras');
+                                        showModalError('Alerta', 'Existe mais de um produto cadastrado com esse código de barras');
+                                        //alert('Existe mais de um produto cadastrado com esse código de barras');
                                     }
 
                                     document.querySelector('#modal_lancar_caixa-produto_id').value = results[0].id;
@@ -4441,6 +4575,7 @@
 
                     let btn = e.currentTarget;
                     let btn_id = btn.id.replace('save-', '');
+
                     let current_dashboard = getCurrentDashboard();
                     let checkAdd = true;
                     let checkSave = true;
@@ -4455,6 +4590,35 @@
                         checkSave = false;
                         show(`${btn_id}-error`, 'Selecione algum produto', app_config.errors.timeout);
                         return;
+                    }else if(current_dashboard == 'estoque_material_producao' && document.querySelector(`#${btn_id}-id`).value == '' || parseInt(document.querySelector(`#${btn_id}-id`).value) == NaN){
+                        checkAdd = false;
+                        checkSave = false;
+                        show(`${btn_id}-error`, 'Selecione algum produto', app_config.errors.timeout);
+                        return;
+                    }else if(current_dashboard == 'estoque_material_producao'){
+                        if(checkSave){
+                            
+                            let saveData = prepareData(btn_id, current_dashboard);
+
+                            api.saveData(saveData)
+                                .then(resp => resp.json())
+                                .then(results => {
+                                    
+                                    app_config.verbose ? console.log('[+] RESULTS SAVE ==>', results) : '';
+
+                                    if(!results.error){
+                                        clearForms();
+                                        loadDashboardPage(getCurrentDashboard());
+                                    }else{
+                                        show(`${btn_id}-error`, results.msg, app_config.errors.timeout);
+                                    }
+
+                                })
+                                .catch(err => {
+                                    app_config.verbose ? console.error(err) : '';
+                                });
+
+                        }
                     }
 
                     if(current_dashboard == 'produtos'){
@@ -4465,14 +4629,17 @@
                                 if(results.error){
                                     show(`${btn_id}-error`, results.msg, app_config.errors.timeout);
                                     checkAdd = false;
+                                    checkSave = false;
                                 }else{
                                     document.querySelector('#produto-foto').value = results.filename;
                                     checkAdd = true;
+                                    checkSave = true;
                                 }
 
                             })
                             .catch(err => {
                                 checkAdd = false;
+                                checkSave = false;
                                 app_config.verbose ? console.error(err) : '';
                             })
                     }else if(getCurrentDashboard() == 'produtos'){
@@ -4484,23 +4651,26 @@
 
                     app_config.verbose ? console.log(item_id, item_data) : '';
 
-                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber', 'pago', 'valor_pago'];
+                    let allowNullKeys = ['id', 'descricao', 'endpoint', 'form_data', 'produto', 'contas_pagar', 'contas_receber', 'pago', 'valor_pago', 'entrada', 'saida'];
 
                     if(current_dashboard == 'produtos'){
 
                         if(Object.keys(item_data.form_data).length == 0){
-                            show(`${btn_id}-error`, ``, app_config.errors.timeout);
+                            show(`${btn_id}-error`, `teste`, app_config.errors.timeout);
                             checkAdd = false;
+                            checkSave = false;
                         }
 
                         Object.keys(item_data.form_data).forEach(key => {
 
                             if(!allowNullKeys.includes(key)){
                                 if(key == 'desconto' && item_data.form_data[key] >= 0){
-                                    checkAdd = true
+                                    checkAdd = true;
+                                    checkSave = true;
                                 }else if(key != 'desconto' && (item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0)){
                                     show(`${btn_id}-error`, `Preencha o campo ${key} 1`, app_config.errors.timeout);
                                     checkAdd = false;
+                                    checkSave = false;
                                 }
                             }
 
@@ -4549,15 +4719,20 @@
 
                     }else{
 
+                        console.log(getCurrentDashboard());
+
                         Object.keys(item_data.form_data).forEach(key => {
 
                             if(!allowNullKeys.includes(key)){
-                                if(key == 'desconto' && item_data.form_data[key] >= 0){
+                                
+                                app_config.verbose ? console.log(key, item_data.form_data[key]) : '';
+                                
+                                if(key == 'desconto' && parseInt(item_data.form_data[key]) >= 0){
                                     checkSave = true
-                                }else if(key != 'desconto' && (item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0)){
+                                }else if(key != 'desconto' && (item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key] == null || item_data.form_data[key] == undefined)){
                                     show(`${btn_id}-error`, `Preencha o campo ${key}`, app_config.errors.timeout);
                                     checkSave = false;
-                                }else if(item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0){
+                                }else if((item_data.form_data[key] == null || !item_data.form_data[key] || item_data.form_data[key] == '' || item_data.form_data[key].length == 0)){
                                     show(`${btn_id}-error`, `Preencha o campo ${key}`, app_config.errors.timeout);
                                     checkSave = false;
                                 }
@@ -4566,7 +4741,7 @@
                         });
 
                         if(!checkSave){
-                            show(`${btn_id}-error`, 'Ocorreu um erro ao salvar o registro', app_config.errors.timeout);
+                            show(`${btn_id}-error`, 'Ocorreu um erro ao salvar o registro (js)', app_config.errors.timeout);
                             return;
                         }else{
 
@@ -4580,7 +4755,7 @@
 
                                     if(!results.error){
                                         loadDashboardPage(getCurrentDashboard());
-                                        clearForms(true);
+                                        clearForms(getCurrentDashboard() == 'produtos' ? true : false);
                                     }else{
                                         show(`${btn_id}-error`, results.msg, app_config.errors.timeout);
                                     }

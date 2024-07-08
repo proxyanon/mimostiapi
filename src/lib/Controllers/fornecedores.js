@@ -5,26 +5,15 @@ const Security = require('../modules/Security');
 
 const sec = new Security();
 const router = express.Router();
+const config = require('../config');
 
-const { xss } = require('express-xss-sanitizer');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 module.exports = () => {
 
     var module = {};
 
     module.fields = models.Fornecedores.rawAttributes
-
-    module.checkCPF_CNPJ = (cpf_cnpj) => {
-        
-        if(!cpf_cnpj) return false;
-
-        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
-            return false
-        }
-
-        return true
-
-    }
 
     module.searchFornecedores = async (req, res, next) => {
 
@@ -51,12 +40,15 @@ module.exports = () => {
     module.addFornecedor = async (req, res, next) => {
 
         let obj_create = {}
-
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Preencha todos os campos' })
-        }
         
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.Fornecedores.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         for(key in module.fields){
             if(key != 'id'){
@@ -68,7 +60,7 @@ module.exports = () => {
             }
         }
 
-        if(!module.checkCPF_CNPJ(obj_create.cpf_cnpj)){
+        if(!Security.checkCPF_CNPJ(obj_create.cpf_cnpj)){
             return res.notAccept('O CPF ou CNPJ é inválido');
         }
 
@@ -109,7 +101,7 @@ module.exports = () => {
                 }
             }
 
-            if(!module.checkCPF_CNPJ(fornecedor.cpf_cnpj)){
+            if(!Security.checkCPF_CNPJ(fornecedor.cpf_cnpj)){
                 return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
@@ -148,9 +140,9 @@ module.exports = () => {
         .use(sec.responses.setResponses)
         .get('/search/:search', module.searchFornecedores)
         .get('/:id?', module.getFornecedores)
-        .post('/add', xss(), sec.middlewares.csrf_check, module.addFornecedor)
-        .put('/save/:id', xss(), sec.middlewares.csrf_check, module.saveFornecedor)
-        .delete('/del/:id', sec.middlewares.csrf_check, module.deleteFornecedor);
+        .post('/add', xss(), module.addFornecedor)
+        .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveFornecedor)
+        .delete('/del/:id', module.deleteFornecedor);
 
     return router;
 

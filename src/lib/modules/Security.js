@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { sanitize } = require('express-xss-sanitizer');
 const path = require('path');
+const fs = require('fs');
 
 class Security {
 
@@ -70,6 +71,81 @@ class Security {
         
     }
 
+    static checkFields(fields = undefined){
+        let hasFields = fields !== undefined && typeof fields == 'object' ? true : false;
+        return hasFields;
+    }
+
+    static checkBody(body, fields){
+
+        //return true;
+
+        if(typeof body != 'object' || typeof fields != 'object'){
+            return false;
+        }
+
+        let bodyKeys = Object.keys(body);
+        let fieldsKeys = Object.keys(fields);
+        
+        if(fieldsKeys.includes('id')){
+            let fieldIdIndex = fieldsKeys.indexOf('id');
+            fieldsKeys.splice(fieldIdIndex, 1);
+        }
+
+        console.log('fields', fieldsKeys, fieldsKeys.length);
+        console.log('body', bodyKeys, bodyKeys.length);
+
+        if(fieldsKeys.length != bodyKeys.length){
+            return false;
+        }
+
+        return true;
+
+    }
+
+    static checkCPF_CNPJ(cpf_cnpj){
+        
+        if(!cpf_cnpj) return false;
+
+        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
+            return false
+        }
+
+        return true
+
+    }
+
+    static logInfo(content, error = false){
+        if(!error){
+            config.verbose || config.isDev ? console.log(content) : '';
+        }else{
+            config.verbose || config.isDev ? console.error(content) : '';
+        }
+    }
+
+    logInfoIntoFile(log_data = ''){
+
+        if(!log_data || log_data == '' || log_data == null || log_data == undefined || log_data == 0){
+            Security.logInfo('Log data cannot be empty', true);
+            return;
+        }
+
+        let log_filename = config.logs.filename;
+        let log_path = path.join(__dirname, '..', '..', 'logs', log_filename)
+
+        try{
+            if(fs.existsSync(log_path)){
+                fs.appendFileSync(log_path, log_data)
+            }else{
+                fs.writeSync(log_path, log_data);
+            }
+            Security.logInfo('Loging data...')
+        }catch(err){
+            Security.logInfo(`[LOG ERROR] ${err}`, true);
+        }
+
+    }
+
     responses = {
 
         unauthorized : (res, msg) => {
@@ -80,9 +156,7 @@ class Security {
             
             res.notAccept = function(msg, fields = undefined){
                 
-                let hasFields = fields == undefined ? false : true;
-                
-                if(hasFields){
+                if(Security.checkFields(fields)){
                     return res.status(403).json({ error : true, msg, fields : Object.keys(fields) });
                 }else{
                     return res.status(403).json({ error : true, msg });
@@ -91,10 +165,8 @@ class Security {
             }
 
             res.badRequest = function(msg, fields = undefined){
-
-                let hasFields = fields == undefined ? false : true;
                 
-                if(hasFields){
+                if(Security.checkFields(fields)){
                     return res.status(400).json({ error : true, msg, fields : Object.keys(fields) });
                 }else{
                     return res.status(400).json({ error : true, msg });
@@ -104,30 +176,28 @@ class Security {
 
             res.serverError = function(msg, fields = undefined){
                 
-                let hasFields = fields == undefined ? false : true;
-                
-                if(hasFields){
+                if(Security.checkFields(fields)){
                     return res.status(500).json({ error : true, msg, fields : Object.keys(fields) });
+                }else{
+                    return res.status(500).json({ error : true, msg });
                 }
 
-                return res.status(500).json({ error : true, msg });
             }
 
             res.block = function(msg, fields = undefined){
-
-                let hasFields = fields == undefined ? false : true;
                 
-                if(hasFields){
+                if(Security.checkFields(fields)){
                     return res.status(401).json({ error : true, msg, fields : Object.keys(fields) });
+                }else{
+                    return res.status(401).json({ error : true, msg });
                 }
 
-                return res.status(401).json({ error : true, msg });
             }
 
             res.success = function(data = undefined, fields = undefined){
 
                 let checkData = data != undefined && typeof data == 'object' && Object.values(data).length > 0 ? true : false;
-                let hasFields = fields != undefined ? true : false;
+                let hasFields = Security.checkFields(fields);
 
                 if(checkData && hasFields){
                     return res.json({ error : false, results : data, fields : Object.keys(module.fields) })
@@ -140,26 +210,33 @@ class Security {
             }
 
             res.notFound = function(msg, fields = undefined) {
-
-                let hasFields = fields == undefined ? false : true;
                 
-                if(hasFields){
+                if(Security.checkFields(fields)){
                     return res.status(404).json({ error : true, msg, fields : Object.keys(fields) });
+                }else{
+                    return res.status(404).json({ error : true, msg });
                 }
-                
-                return res.status(404).json({ error : true, msg });
             
             }
 
-            res.sendOkResponse = function(fields = undefined){
+            res.sendData = async function(results, fields = undefined){
 
-                let hasFields = fields == undefined ? false : true;
-                
-                if(hasFields){
-                    return res.status(200).json({ error : false, fields : Object.keys(fields) });
+                if(Security.checkFields(fields)){
+                    return res.status(200).json({ error : false, results, fields : Object.keys(fields) });
+                }else{
+                    return res.status(200).json({ error : false, results });
                 }
 
-                return res.status(200).json({ error : false });
+            }
+
+            res.sendOkResponse = async function(fields = undefined){
+                
+                if(Security.checkFields(fields)){
+                    return res.status(200).json({ error : false, fields : Object.keys(fields) });
+                }else{
+                    return res.status(200).json({ error : false });
+                }
+
             
             }
 
@@ -273,6 +350,8 @@ class Security {
                 config.isDev || config.verbose ? console.log(req.params) : null;
 
                 if(req.method == 'PUT' && !req.params.id){
+                    console.log(req.method)
+                    console.log(req.params)
                     return res.status(400).json({ error : true, msg : '[Security.js] You have to specify ID to save' })
                 }
 

@@ -2,9 +2,12 @@ const express = require('express');
 const models = require('../modules/models');
 
 const Security = require('../modules/Security');
+const { xss, sanitize } = require('express-xss-sanitizer');
 
 const sec = new Security();
 const router = express.Router();
+
+const config = require('../config');
 
 module.exports = () => {
 
@@ -41,7 +44,7 @@ module.exports = () => {
         if(results){
             res.json({ error : false, results, fields : Object.keys(module.fields) })
         }else{
-            res.status(500).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) })
+            res.serverError('Nada encontrado', module.fields);
         }
 
     }
@@ -49,12 +52,15 @@ module.exports = () => {
     module.addEstoqueMaterialProducao = async (req, res, next) => {
 
         let obj_create = {}
-
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }
         
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.EstoqueMaterialProducao.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         for(key in module.fields){
             if(key != 'id'){
@@ -71,7 +77,7 @@ module.exports = () => {
         console.log(obj_create);
 
         if(Object.keys(obj_create).length==0){
-            res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 3' })
+            res.block('Preencha o formulário completo');
         }else{
 
             const results = await models.EstoqueMaterialProducao.create(obj_create);
@@ -105,8 +111,12 @@ module.exports = () => {
                 }
             }
 
-            if(parseInt(estoque_material_producao['entrada']) < parseInt(estoque_material_producao['saida'])){
-                return res.status(401).json({ error : true, msg : 'A saída não pode ser maior que a entrada' });
+            if((parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida'])) <= 0){
+                return req.block('O estoque não pode ser menor que zero digite uma saída menor ou uma entrada maior');
+            }
+
+            if((parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida'])) <= estoque_material_producao['entrada']){
+                return res.block('A saída não pode ser maior que a entrada');
             }
 
             estoque_material_producao['estoque'] = parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida']);
@@ -116,11 +126,11 @@ module.exports = () => {
             if(results){
                 res.json({ error : false, results })
             }else{
-                res.status(400).json({ error : true, msg : 'Ocorreu um erro ao salvar o estoque' });
+                res.block('Ocorreu um erro ao salvar o estoque');
             }
 
         }else{
-            res.status(500).json({ error : true, msg : 'Estoque não encontrado' })
+            res.serverError('Estoque não encontrado')
         }
 
     }
@@ -135,7 +145,7 @@ module.exports = () => {
             res.json({ error : false, results });
 
         }else{
-            res.status(500).json({ error : true, msg : 'Ocorreu um erro ao deletar' })
+            res.serverError('Ocorreu um erro ao deletar');
         }
 
     }
@@ -145,8 +155,8 @@ module.exports = () => {
         .use(sec.responses.setResponses)
         .get('/search/:search', module.searchEstoqueMaterialProducao)
         .get('/:id?', module.getEstoqueMaterialProducao)
-        .post('/add', module.addEstoqueMaterialProducao)
-        .put('/save/:id', module.saveEstoqueMaterialProducao)
+        .post('/add', xss(), module.addEstoqueMaterialProducao)
+        .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveEstoqueMaterialProducao)
         .delete('/del/:id', module.deleteEstoqueMaterialProducao);
 
     return router;

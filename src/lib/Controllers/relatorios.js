@@ -32,16 +32,6 @@ module.exports = () => {
 
     var module = {};
 
-    module.checkCPF_CNPJ = (cpf_cnpj) => {
-        
-        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
-            return false
-        }
-
-        return true
-
-    }
-
     module.getDataAtual = (datecreated = undefined) => {
 
         let today = datecreated ? new Date(datecreated) : new Date();
@@ -437,7 +427,7 @@ module.exports = () => {
 
         }
 
-        if(!module.checkCPF_CNPJ(req.body.cpf_cnpj)){
+        if(!Security.checkCPF_CNPJ(req.body.cpf_cnpj)){
             checkObj.check = false;
             checkObj.msg = 'CPF ou CPNJ inválido(s)';
         }

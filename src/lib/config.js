@@ -93,8 +93,19 @@ const config = module.exports = {
 
         accepted_ext : ['.png', '.jpg', '.jpeg'],
         accepted_mime_types : ['image/jpeg', 'image/png', 'image/jpg'],
-        upload_path : path.join(__dirname, '..', 'public', 'files')
+        upload_path : path.join(__dirname, '..', 'public', 'files'),
+        max_file_size : 1024 * 1024 * 5,
+        max_files : 1
 
+    },
+
+    install_deps : {
+        run_app_after_check : false,
+        auto_install : true
+    },
+
+    logs : {
+        filename : 'mimostiapi.log'
     },
 
     isDev : true,

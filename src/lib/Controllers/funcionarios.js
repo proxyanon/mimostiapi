@@ -7,23 +7,13 @@ const sec = new Security();
 const router = express.Router();
 
 const config = require('../config');
-const { xss } = require('express-xss-sanitizer')
+const { xss, sanitize } = require('express-xss-sanitizer')
 
 module.exports = () => {
 
     var module = {};
 
     module.fields = models.Funcionarios.rawAttributes
-
-    module.checkCPF_CNPJ = (cpf_cnpj) => {
-        
-        if(cpf_cnpj.length < 14 || cpf_cnpj.length > 18){
-            return false
-        }
-
-        return true
-
-    }
 
     module.searchFuncionarios = async (req, res, next) => {
 
@@ -50,12 +40,15 @@ module.exports = () => {
     module.addFuncionario = async (req, res, next) => {
 
         let obj_create = {}
-
-        if(Object.keys(module.fields).length!=Object.keys(module.fields).length){
-            return res.status(401).json({ error : true, msg : 'Campo(s) inválido(s) 1' })
-        }
         
         req.body.datecreated = new Date();
+
+        req.body = sanitize(req.body);
+
+        if(!Security.checkBody(req.body, module.fields)){
+            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
+            return res.block(`[${models.Funcionarios.tableName.toUpperCase()}] Formulário não aceito`);
+        }
 
         config.isDev && config.verbose ? console.log(req.body) : '';
 
@@ -77,7 +70,7 @@ module.exports = () => {
 
             config.isDev && config.verbose ? console.log(obj_create) : '';
 
-            if(!module.checkCPF_CNPJ(obj_create.cpf_cnpj)){
+            if(!Security.checkCPF_CNPJ(obj_create.cpf_cnpj)){
                 return res.notAccept('O CPF ou CNPJ é inválido');
             }
 
@@ -112,7 +105,7 @@ module.exports = () => {
                 }
             }
 
-            if(!module.checkCPF_CNPJ(funcionario.cpf_cnpj)){
+            if(!Security.checkCPF_CNPJ(funcionario.cpf_cnpj)){
                 return res.notAccept('O CPF ou CNPJ é inválido');
             }
 

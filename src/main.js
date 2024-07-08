@@ -30,7 +30,9 @@ const express = require('express'),
     BarcodeScanner = require('native-barcode-scanner'), // scanner barcodes
     PDFDocument = require('pdfkit'), // PDF creation
     { xss } = require('express-xss-sanitizer'), // XSS middleware
-    { exec } = require('child_process'); // exec to start chrome
+    { exec } = require('child_process'),
+    multer = require('multer'),
+    md5 = require('md5'); // exec to start chrome
 
 app.set('view engine', 'ejs'); // SET VIEW ENGINE IN THIS CASE EJS
 app.set('views', path.join(__dirname, 'views')); // VIEWS PATH
@@ -83,7 +85,67 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     app.use('/app', routes.app);
 
     // UPLOAD IMAGES ROUTE
-    app.use('/api/v1/upload', routes.upload);
+    //app.use('/api/v1/upload', routes.upload);
+
+    app.post('/api/v1/upload', async (req, res, next) => {
+    
+        const storage = multer.diskStorage({
+            destination: function (req, file, cb) {
+                cb(null, path.join(__dirname, 'public', 'files'));
+            },
+            filename: function (req, file, cb) {
+                cb(null, md5(file.originalname) + path.extname(file.originalname))
+            } 
+        });
+    
+        const fileFilter = (req, file, cb) => {
+    
+            if(!config.uploads.accepted_ext.includes(path.extname(file.originalname))){
+                return res.json({ error : true, msg : 'Arquivo não aceito' });
+            }
+    
+            if(!config.uploads.accepted_mime_types.includes(file.mimetype)){
+                return res.json({ error : true, msg : 'Tipo de arquivo inválido' });
+            }
+    
+            cb(null, true);
+    
+        }
+    
+        multer({ storage, limits : config.uploads.max_file_size, fileFilter }).single('foto')(req, res, error => { 
+        
+            if(!req.file){
+                return res.json({ error : false, filename : 'defaultProduct.png' });
+            }
+
+            const fileChecksum = md5(fs.readFileSync(req.file.path));
+            const fileList = fs.readdirSync(path.join(__dirname, 'public', 'files'));
+
+            let fileExists = false;
+
+            for(let i = 0; i < fileList.length; i++){
+                
+                let checksum = md5(fs.readFileSync(path.join(__dirname, 'public', 'files', fileList[i])));
+
+                console.log(fileChecksum, checksum);
+
+                if(fileChecksum == checksum){
+                    fileExists = true;
+                    break;
+                }
+
+            }
+
+            if(fileExists){
+                res.json({ error : false, filename : req.file.filename, msg : 'O arquivo já existe' });
+            }else{
+                res.json({ error : false, filename : req.file.filename });
+            }
+
+        
+        });
+    
+    })
 
     // api routes (CRUD ROUTES)
     app.use('/api/v1/usuarios', routes.usuarios);
@@ -103,6 +165,10 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     // api routes (REPORTS AND PRINT ROUTES)
     app.use('/api/v1/relatorios', routes.relatorios);
     app.use('/api/v1/etiquetas', routes.etiquetas);
+
+    app.use('/test', async (req, res, next) => { // LOGIN VIEW
+        return res.render('test');
+    })
 
     if(config.isDev){
         
@@ -222,12 +288,12 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
 
         config.server.start_chrome ? start_chrome() : (config.isDev || config.verbose ? console.log(`${config.colors.bright}${config.colors.fg.red}[-] Chrome not started automatily`, config.colors.reset) : '');
         
-        /*async function gen_password(){
+        async function gen_password(){
             const bcrypt = require('bcrypt');
             console.log(await bcrypt.hash('admtiapi', 10))
         }
 
-        gen_password();*/
+        gen_password();
 
     });
 
