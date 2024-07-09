@@ -146,6 +146,30 @@ class Security {
 
     }
 
+    static checkIntFloat(field_type, field_value){
+
+        if(field_type == 'INTEGER'){
+
+            if(parseInt(field_value) == NaN || parseInt(field_value) <= 0){
+                return false;
+            }else{
+                return true;
+            }
+
+        }else if(field_type == 'FLOAT'){
+
+            if(parseFloat(field_value) == NaN || parseFloat(field_value) <= 0){
+                return false;
+            }else{
+                return true;
+            }
+
+        }else{
+            return false;
+        }
+
+    }
+
     responses = {
 
         unauthorized : (res, msg) => {

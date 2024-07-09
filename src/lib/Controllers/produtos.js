@@ -207,7 +207,18 @@ module.exports = () => {
 
         for(key in fields){
             if(key != 'id'){
-                if((module.fields[key].type == 'INTEGER' || module.fields[key].type == 'FLOAT') && (parseInt(req.body[key]) == NaN || parseInt(req.body[key]) == 0 || req.body[key] == null || req.body[key] == undefined)){
+                if(['INTEGER', 'FLOAT'].includes(module.fields[key]) && Security.checkIntFloat(module.fields[key].type, req.body[key]) && key != 'desconto'){
+                    return res.block(`O campo ${key} precisa ser ${['categoria','secao','cor'].includes(key) ? 'selecionado' : 'preenchido'}`);
+                }else if(key == 'desconto' && parseFloat(req.body[key]) < 0){
+                    return res.block(`O desconto não pode ser menor que zero`);
+                }else if(key != 'desconto' && (!req.body[key] || req.body[key] == '' || req.body[key] == null || req.body[key] == undefined)){
+                    return res.block(`Preencha o campo ${key}`);
+                }else if(key == 'desconto'){
+                    obj_create[key] = parseFloat(req.body[key])
+                }else{
+                    obj_create[key] = req.body[key];
+                }
+                /*if((module.fields[key].type == 'INTEGER' || module.fields[key].type == 'FLOAT') && (parseInt(req.body[key]) == NaN || parseInt(req.body[key]) == 0 || req.body[key] == null || req.body[key] == undefined)){
                     if(parseInt(req.body[key]) == 0 && key != 'desconto'){
                         return res.block(`O campo ${key} precisa ser ${['categoria','secao','cor'].includes(key) ? 'selecionado' : 'preenchido'}`);
                     }else if(key != 'desconto'){
@@ -219,7 +230,7 @@ module.exports = () => {
                     return res.badRequest(`Preencha o campo ${key}`);
                 }else{
                     obj_create[key] = req.body[key]
-                }
+                }*/
             }
         }
 
