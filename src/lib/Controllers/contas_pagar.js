@@ -83,7 +83,7 @@ module.exports = () => {
 
         for(key in module.fields){
             if(key != 'id'){
-                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
+                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (module.fields[key].allowNull != false) && (req.body[key] != null || req.body[key] != undefined)){
                     obj_create[key] = req.body[key];
                 }else if(module.fields[key].type == 'BOOLEAN'){
                     obj_create[key] = Boolean(req.body[key]);
@@ -131,12 +131,12 @@ module.exports = () => {
 
             for(key in module.fields){
                 if(key != 'id'){
-                    if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
+                    if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (module.fields[key].allowNull != false)  && (req.body[key] != null || req.body[key] != undefined)){
                     
                         if(key == 'valor_pago'){
                             ContasPagar[key] = parseFloat(ContasPagar[key]) + parseFloat(req.body[key]);
                         }else{
-                            ContasPagar[key] = parseFloat(req.body[key]);
+                            ContasPagar[key] = module.fields[key].type == 'FLOAT' ? parseFloat(req.body[key]) : parseInt(req.body[key]);
                         }
                     }else if(module.fields[key].type == 'BOOLEAN'){
                         ContasPagar[key] = Boolean(req.body[key]);
