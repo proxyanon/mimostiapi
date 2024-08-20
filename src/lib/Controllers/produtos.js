@@ -207,13 +207,13 @@ module.exports = () => {
 
         for(key in fields){
             if(key != 'id'){
-                if(['INTEGER', 'FLOAT'].includes(module.fields[key]) && Security.checkIntFloat(module.fields[key].type, req.body[key]) && key != 'desconto'){
+                if(['INTEGER', 'FLOAT'].includes(module.fields[key]) && Security.checkIntFloat(module.fields[key].type, req.body[key]) && module.fields[key] != null && key != 'desconto'){
                     return res.block(`O campo ${key} precisa ser ${['categoria','secao','cor'].includes(key) ? 'selecionado' : 'preenchido'}`);
-                }else if(key == 'desconto' && parseFloat(req.body[key]) < 0){
+                }else if(key == 'desconto' && parseFloat(req.body[key] && module.fields[key].allowNull != null) < 0){
                     return res.block(`O desconto não pode ser menor que zero`);
-                }else if(key != 'desconto' && (!req.body[key] || req.body[key] == '' || req.body[key] == null || req.body[key] == undefined)){
+                }else if(key != 'desconto' && (!req.body[key] || req.body[key] == '' || req.body[key] == null || req.body[key] == undefined) && module.fields[key].allowNull != null){
                     return res.block(`Preencha o campo ${key}`);
-                }else if(key == 'desconto'){
+                }else if(key == 'desconto' && module.fields[key].allowNull != null){
                     obj_create[key] = parseFloat(req.body[key])
                 }else{
                     obj_create[key] = req.body[key];
@@ -290,7 +290,7 @@ module.exports = () => {
 
         for(key in fields){
             if(key != 'id'){
-                if(!req.body[key]){
+                if(!req.body[key] && module.fields[key].allowNull != null){
                     return res.status(401).json({ error : true, msg : `Campo(s) inválido(s) [${key}]` })
                 }else{
                     obj_create[key] = req.body[key]

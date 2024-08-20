@@ -54,7 +54,7 @@ module.exports = () => {
 
         for(key in module.fields){
             if(key != 'id'){
-                if(!req.body[key]){
+                if(!req.body[key] && module.fields[key].allowNull != null){
                     return res.status(400).json({ error : true, msg : `Preencha o campo ${key}` });
                 }else{
                     obj_create[key] = req.body[key]

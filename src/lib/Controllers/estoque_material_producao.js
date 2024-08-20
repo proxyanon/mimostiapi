@@ -64,9 +64,9 @@ module.exports = () => {
 
         for(key in module.fields){
             if(key != 'id'){
-                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && (req.body[key] != null || req.body[key] != undefined)){
+                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && module.fields[key].allowNull != false && (req.body[key] != null || req.body[key] != undefined)){
                     obj_create[key] = req.body[key]
-                }else if(!req.body[key]){
+                }else if(!req.body[key] && module.fields[key] != null){
                     return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
                 }else{
                     obj_create[key] = req.body[key]
