@@ -1,0 +1,22 @@
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+[req_distinguished_name]
+C = BR
+ST = PE
+L = Arcoverde
+O = Mimos tia pi
+OU = MyDivision
+CN = test.net
+[v3_req]
+keyUsage = keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = test.net
+DNS.2 = tiapi.com
+DNS.3 = localhost
+IP.1 = 127.0.0.1
+IP.2 = 10.0.0.92
+IP.3 = 169.254.174.123

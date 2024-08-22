@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrf_token %>">
+    <title>Mimos tia pi - Login</title>
+    <link rel="icon" href="public/img/logo.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background: linear-gradient(to bootom, rgb(216, 216, 214) 5%, rgb(133, 133, 124), rgb(106, 106, 104) 10%);
+        }
+        .login-form {
+            padding: 10px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background:linear-gradient(rgb(161, 0, 108), rgb(130, 58, 106), rgb(161, 0, 108));
+            color: white;
+            height: 310px;
+        }
+        .login-form:hover{
+            background:linear-gradient(rgb(232, 40, 168), rgb(183, 74, 146), rgb(103, 24, 76));
+        }
+        .footer {
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            padding: 5px;
+            color: white;
+            /*background: linear-gradient(rgb(201, 155, 102), rgb(255,178,91), rgb(61, 43, 22));*/
+            background: linear-gradient(rgb(239, 49, 176), rgb(151, 47, 117), rgb(150, 34, 110)) ;
+            text-align: center;
+            height: 35px;
+            font-family: monospace;
+            border-radius: 0px !important;
+        }
+        .bold { font-weight: bold; }
+        .text-right { text-align: right; }
+        .btn-custom-bg {
+            border: 1px solid rgb(60, 126, 60);
+            background: linear-gradient(to right, rgb(100, 219, 100), rgb(60, 126, 60), rgb(51, 161, 51), rgba(255,255,255,.5) 140%) !important;
+            padding: 10px;
+        }
+        button:hover {
+            background: linear-gradient(to left, rgb(127, 245, 127), rgb(60, 126, 60), rgb(60, 137, 60), rgba(255,255,255,.5) 140%) !important;
+        }
+        #error-msg { display: none; }
+    </style>
+</head>
+<body>
+    
+    <section class="container-fluid">
+
+        <div class="row d-flex justify-content-center">
+
+            <div class="mt-5"></div>
+            <div class="mt-5"></div>
+
+            <div class="col-3 mt-5 login-form">
+                <div class="form-group mt-2 p-2">
+                    <label for="usuario" class="mb-2"><i class="fa fa-user"></i> Usuário:</label>
+                    <input type="text" id="usuario" class="form-control" placeholder="Digite seu usuário">
+                </div>
+                <div class="form-group mt-2 p-2">
+                    <label for="senha" class="mb-2"><i class="fa fa-lock"></i> Senha:</label>
+                    <input type="password" id="senha" class="form-control" placeholder="Digite sua senha">
+                </div>
+
+                <div class="alert alert-danger w-100 py-0 text-center mt-2 mb-2" id="error-msg">
+                    <span>Ocorreu um erro</span>
+                </div>
+                
+                <button class="btn btn-success btn-custom-bg form-control mt-4" id="btn-login">Entrar <i class="fa fa-sign-in"></i></button>
+                
+                <div class="form-group text-center mt-3 d-sm-lg">
+                    <!-- <label for="loginRememberLastInteraction"><small>Lembrar de mim uma próxima vez?</small></label>
+                    <input type="checkbox" class="form-check-input" id="loginRememberLastInteraction">   -->
+                </div>
+                
+            </div>
+
+
+        </div>
+
+    </section>
+    
+
+    <footer class="footer"><small><span class="bold">Mimos da tia Pi</span> por Daniel Victor Freire Feitosa all rights reserved <i class="fa fa-copyright"></i> 2024-2024</small></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+    <script type="module">
+        
+        
+        import { Api } from './public/js/Api.class.js'
+
+        window.addEventListener('load', () => {
+
+            if(document.readyState == 'complete'){
+
+                String.prototype.empty = function(){
+
+                    var str = this;
+
+                    if(!str || !str.length) return true;
+
+                    return false;
+
+                }
+
+                Array.prototype.in_array = function(needle){
+
+                    var haystack = this;
+
+                    return Object.values(haystack).includes(needle)
+
+                }
+
+                const csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const allDocument = [...document.querySelectorAll('*')]
+
+                const usuario = document.querySelector('#usuario');
+                const senha = document.querySelector('#senha');
+                const errorMsg = document.querySelector('#error-msg');
+                const btnLogin = document.querySelector('#btn-login');
+
+                const api = new Api({
+                    csrf_token : csrf_token,
+                    endpoint : '/api/v1'
+                })
+                
+                allDocument.forEach(el => {
+                    
+                    el.show = () => {
+                        if(el.classList.contains('d-none')){
+                            el.classList.remove('d-none')
+                        }else{
+                            el.style.display = 'block'
+                        }
+                    }
+
+                    el.hide = () => {
+                        el.style.display = 'none'
+                    }
+
+                    if(el.tagName == 'input'){
+                        el.clear = () => {
+                            el.value = ''
+                        }
+                    }
+
+                })
+
+                document.addEventListener('keydown', (e) => {
+
+                    if(e.key == 'Enter'){
+                        btnLogin.click()
+                    }
+
+                })
+
+                function showErrorMessage(msg){
+                    errorMsg.show()
+                    errorMsg.textContent = msg;
+                }
+
+                btnLogin.addEventListener('click', () => {
+
+                    if(usuario.value.empty()){
+                        showErrorMessage('Preencha o usuário');
+                        return;
+                    }
+
+                    if(senha.value.empty()){
+                        showErrorMessage('Preencha a senha');
+                        return;
+                    }
+
+                    api.login(usuario.value, senha.value)
+                        .then(resp => resp.json())
+                        .then(result => {
+
+                            if(result.error){                
+                                showErrorMessage(result.msg);
+                            }else{
+                             
+                                errorMsg.hide();
+                                window.location.href = result.redirect;
+                                
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error('[API ERROR]', err)
+                        })
+                })
+
+            }
+
+        });
+
+    </script>
+</body>
+</html>
