@@ -64,7 +64,7 @@ module.exports = () => {
 
         for(key in module.fields){
             if(key != 'id'){
-                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && module.fields[key].allowNull != false && (req.body[key] != null || req.body[key] != undefined)){
+                if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && module.fields[key].allowNull == false && (req.body[key] != null || req.body[key] != undefined)){
                     obj_create[key] = req.body[key]
                 }else if(!req.body[key] && module.fields[key] != null){
                     return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
@@ -103,7 +103,7 @@ module.exports = () => {
             for(key in module.fields){
                 console.log(key, estoque_material_producao[key]);
                 if(key != 'id' && req.body[key]){
-                    if(module.fields[key].allowNull != false && estoque_material_producao[key].toString().empty()){
+                    if(module.fields[key].allowNull == false && estoque_material_producao[key].toString().empty()){
                         return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
                     }else{
                         estoque_material_producao[key] = req.body[key]
@@ -112,7 +112,7 @@ module.exports = () => {
             }
 
             if((parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida'])) <= 0){
-                return req.block('O estoque não pode ser menor que zero digite uma saída menor ou uma entrada maior');
+                return res.block('O estoque não pode ser menor que zero digite uma saída menor ou uma entrada maior');
             }
 
             if((parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida'])) <= estoque_material_producao['entrada']){

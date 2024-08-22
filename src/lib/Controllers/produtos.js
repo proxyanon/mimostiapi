@@ -439,7 +439,7 @@ module.exports = () => {
             for(key in module.fields){
                 config.isDev || config.verbose ? console.log(key, produto[key]) : '';
                 if(key != 'id' && req.body[key] && key != 'desconto'&& module.fields[key].allowNull != null){
-                    if(module.fields[key].allowNull != false && produto[key].toString().empty()){
+                    if(module.fields[key].allowNull == false && produto[key].toString().empty()){
                         return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
                     }else{
                         produto[key] = req.body[key]

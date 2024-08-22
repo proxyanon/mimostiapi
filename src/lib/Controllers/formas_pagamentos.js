@@ -89,7 +89,7 @@ module.exports = () => {
             for(key in module.fields){
                 console.log(key, FormaPagamento[key]);
                 if(key != 'id' && req.body[key]){
-                    if(module.fields[key].allowNull != false && FormaPagamento[key].toString().empty()){
+                    if(module.fields[key].allowNull == false && FormaPagamento[key].toString().empty()){
                         return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
                     }else{
                         FormaPagamento[key] = req.body[key]

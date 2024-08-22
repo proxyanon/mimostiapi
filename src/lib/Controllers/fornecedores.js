@@ -93,7 +93,7 @@ module.exports = () => {
             for(key in module.fields){
                 console.log(key, fornecedor[key]);
                 if(key != 'id' && req.body[key]){
-                    if(module.fields[key].allowNull != false && fornecedor[key].toString().empty()){
+                    if(module.fields[key].allowNull == false && fornecedor[key].toString().empty()){
                         return res.status(401).json({ error : true, msg : `Preencha o campo ${key}` });
                     }else{
                         fornecedor[key] = req.body[key]

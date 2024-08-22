@@ -54,16 +54,17 @@ module.exports = () => {
 
         for(key in module.fields){
             if(key != 'id'){
-                if(!req.body[key] && module.fields[key].allowNull != false){
-                    return req.block(`Preencha o campo ${key}`);
+                if(!req.body[key] && module.fields[key].allowNull == false){
+                    if(key == 'cpf_cnpj'){
+                        if(!Security.checkCPF_CNPJ(req.body[key])){
+                            return res.block('O CPF ou CNPJ inválido');
+                        }
+                    }
+                    return res.block(`Preencha o campo ${key}`);
                 }else{
                     obj_create[key] = req.body[key]
                 }
             }
-        }
-
-        if(!Security.checkCPF_CNPJ(obj_create.cpf_cnpj)){
-            return res.notAccept('O CPF ou CNPJ inválido');
         }
 
         config.isDev && config.verbose ? console.log(obj_create) : '';
@@ -97,7 +98,7 @@ module.exports = () => {
             for(key in module.fields){
                 console.log(key, cliente[key]);
                 if(key != 'id' && req.body[key]){
-                    if(module.fields[key].allowNull != false && cliente[key].toString().empty()){
+                    if(module.fields[key].allowNull == false && cliente[key].toString().empty()){
                         return res.block(`Preencha o campo ${key}`);
                     }else{
                         cliente[key] = req.body[key]

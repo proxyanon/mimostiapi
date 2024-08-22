@@ -147,7 +147,7 @@ module.exports = () => {
                 if(!special_fields.includes(key)){
                     if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && module.fields[key].allowNull != null && (req.body[key] != null || req.body[key] != undefined)){
                         estoque_produto_final[key] = module.fields[key].type == 'FLOAT' ? parseFloat(req.body[key]) : parseInt(req.body[key]);
-                    }else if(!req.body[key] && module.fields[key].allowNull != false){
+                    }else if(!req.body[key] && module.fields[key].allowNull == false){
                         return res.status(401).json({ error : true, msg : `Campos inválido(s) [${key}]` })
                     }else{
                         estoque_produto_final[key] = req.body[key]
