@@ -1550,6 +1550,7 @@
                                 <thead class="table-dark text-center">
                                     <tr>
                                         <th scope="col">Selecionar</th>
+                                        <th scope="col">Foto</th>
                                         <th scope="col">Produto</th>
                                         <th scope="col">Seção</th>
                                         <th scope="col">Categoria</th>
@@ -2399,6 +2400,9 @@
 
                 // FORMAT PERCENT
                 function formatPercent(value){
+                    if(value == 'Não registrado'){
+                        return '0%';
+                    }
                     let percent = parseFloat(value).toFixed(2).split('.')[1] == '00' ? parseInt(value) : parseFloat(value).toFixed(2);
                     return `${percent}%`;
                 }
@@ -2523,7 +2527,7 @@
 
                         table_columns.forEach((column, c_index)  => {
 
-                            app_config.verbose ? console.log(column, c_index) : '';
+                            //app_config.verbose ? console.log(column, c_index) : '';
 
                             data[column] = checkEmptyString(data[column]);
 
@@ -2532,7 +2536,7 @@
                                 case 'id':
 
                                     if(getCurrentDashboard() == 'etiquetas'){
-                                        tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar</label></td>` + '\n';
+                                        tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" value="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${data.id}" placeholder="Qtd."></label></td>` + '\n';
                                     }else{
                                         tds += `<td>${i+1}</td>` + '\n';
                                     }
@@ -2844,6 +2848,8 @@
                     
                     }else{
 
+                        let etiquetas_obj = [];
+
                         // BOTAO DE SELECIONAR TUDO NAS ETIQUETAS
                         document.querySelector('#etiquetas-btn-select-all').addEventListener('click', (e) => {
 
@@ -2857,23 +2863,54 @@
                                 if(!isChecked){
                                     document.querySelector('#etiquetas-produtos').value = '';
                                     document.querySelector('#etiquetas-ids').value = '';
+                                    [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.setAttribute('disabled', true) });
+                                    etiquetas_obj = [];
+                                }else{
+                                    [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.removeAttribute('disabled') });
                                 }
                             
                             })
 
                         });
 
-                        [...document.querySelectorAll('.btn-check')].forEach(btnCheck => {
+                        /*[...document.querySelectorAll('.btn-check')].forEach((btnCheck) => {
+
+                            document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${btnCheck.getAttribute('data-bs-id')}"]`).removeAttribute('disabled');
 
                             let hiddenField = document.querySelector('#etiquetas-ids');
 
-                            //console.log(hiddenField.value.includes(btnCheck.value), hiddenField.value, btnCheck.getAttribute('data-bs-id'))
-
-                            if(hiddenField.value.includes(btnCheck.getAttribute('data-bs-id'))){
+                            if(hiddenField.value.includes(`"produto":${btnCheck.getAttribute('data-bs-id')}`)){
                                 $(btnCheck).click();
                                 btnCheck.checked = true;
+                                console.log('aqui')
+                                //document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${btnCheck.getAttribute('data-bs-id')}"]`).removeAttribute('disabled');
+                                
                             }
 
+                        });*/
+
+                        setListener([...document.querySelectorAll('.btn-quantidade-etiquetas')], 'input', e => {
+
+                            let produto_id = e.currentTarget.getAttribute('data-bs-id');
+                            let quantidade = 0;
+                            let nome = null;
+                            let quantidade_atual = e.currentTarget.value;
+                            let field = document.querySelector('#etiquetas-produtos');
+                            let hiddenField = document.querySelector('#etiquetas-ids');
+
+                            etiquetas_obj.forEach(etiqueta => {
+
+                                if(etiqueta.produto == produto_id){
+                                    nome = etiqueta.nome;
+                                    quantidade = etiqueta.quantidade;
+                                    return; 
+                                }
+
+                            });
+                            
+                            if(!field.value.empty()){
+                                field.value = field.value.replaceAll(`${nome}x${quantidade}`, `${nome}x${quantidade_atual}`)
+                            }
                         });
 
                         setListener([...document.querySelectorAll('.btn-add-etiquetas')], 'click', e => {
@@ -2882,6 +2919,7 @@
                             let hiddenField = document.querySelector('#etiquetas-ids');
                             let field = document.querySelector('#etiquetas-produtos');
                             let isChecked = e.currentTarget.checked;
+                            let quantidade = document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${produto_id}"]`);
                             
                             api.getData({ endpoint : { path : 'produtos', id : produto_id } })
                                 .then(resp => resp.json())
@@ -2892,22 +2930,31 @@
                                     }else{
 
                                         let produto = results.results;
+                                        let quantidade_atual = document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${produto.id}"]`).value;
                                         
                                         if(isChecked){
 
-                                            if(field.value.empty()){
-                                                hiddenField.value = produto.id;
-                                                field.value = produto.nome;
+                                            etiquetas_obj.push({ produto : produto.id, quantidade : parseInt(quantidade.value), nome : produto.nome });
+                                            hiddenField.value = JSON.stringify(etiquetas_obj);
+
+                                            if(field.value.empty()){    
+                                                field.value = `${produto.nome}x${quantidade.value}`;
                                             }else{
-                                                hiddenField.value = `${hiddenField.value},${produto.id}`;
-                                                field.value =  `${field.value},${produto.nome}`;
+                                                field.value = `${field.value},${produto.nome}x${quantidade.value}`;
                                                 //field.value = !field.value.includes(produto.nome) ? `${field.value},${produto.nome}` : field.value;
                                             }
 
+                                            document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${produto.id}"]`).removeAttribute('disabled');
+
                                         }else{
 
-                                            hiddenField.value = `${field.value.includes(',') ? hiddenField.value.replace(','+produto.id, '') : hiddenField.value.replace(produto.id, '')}`;
-                                            field.value = `${field.value.includes(',') ? field.value.replace(','+produto.nome, '') : field.value.replace(produto.nome, '')}`;
+                                            let etiquetas_obj_string = etiquetas_obj.map(JSON.stringify);
+                                            let obj_index = etiquetas_obj.indexOf(`'{"produto":${produto.id},"quantidade":${quantidade.value},"nome":${produto.nome}}'`);
+                                            etiquetas_obj.splice(obj_index, 1);
+                                            hiddenField.value = JSON.stringify(etiquetas_obj);
+                                            field.value = `${field.value.includes(',') ? field.value.replaceAll(','+`${produto.nome}x${quantidade.value}`, '') : field.value.replaceAll(`${produto.nome}x${quantidade.value}`, '')}`;
+
+                                            document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${produto.id}"]`).setAttribute('disabled', true);
 
                                         }
                                         
@@ -2918,8 +2965,10 @@
                                 app_config.verbose ? console.error(err) : '';
                             })
 
-                        })
+                        });
 
+                    
+                        [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((input) => { input.setAttribute('disabled', true) });
                     }
 
                     if(callback && typeof callback == 'function'){
@@ -4490,7 +4539,9 @@
                     let produtos = document.querySelector('#etiquetas-ids').value;
                     let etiquetas_alert_error = document.querySelector('#etiquetas-error');
 
-                    if(produtos.empty()){
+                    produtos = JSON.parse(produtos);
+
+                    if(!produtos.length){
                         show('etiquetas-error', 'Você precisa selecionar algum produto');
                         return;
                     }else{

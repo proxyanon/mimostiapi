@@ -215,13 +215,15 @@ module.exports = () => {
             res.notAccept('Selecione algum produto');
         }
 
+        let produtos = [];
+
         console.log(req.body);
 
         req.body.produtos.forEach((produto,i) => {
-            if(parseInt(produto) == NaN){
+            if(parseInt(produto.produto) == NaN){
                 return res.notAccept(`O produto selecionado ${produto} não existe`)
             }else{
-                req.body.produtos[i] = parseInt(produto);
+                produtos.push(parseInt(produto.produto));
             }
         })
 
@@ -243,7 +245,7 @@ module.exports = () => {
                 required : false,
                 attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
             }],
-            where : { id : { [models.sequelize.Op.in] : req.body.produtos } }
+            where : { id : { [models.sequelize.Op.in] : produtos } }
         });
         const filename = path.join(__dirname, '..', '..', 'public', 'pdfs', `${Security.makeid(10)}.pdf`);
 
@@ -256,25 +258,33 @@ module.exports = () => {
         let row_int = 0;
         
         results.forEach((row, i) => {
-            
-            doc.font('Helvetica').fontSize(9).text(row.nome, pos_x, pos_y + 15, { width : 140, align : 'center' });
-            doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y + 30);
-            doc.font('Helvetica').fontSize(9).text('CN: ' + row.codigo_barras, pos_x, pos_y + 55, { width : 140, align : 'center' });
-            
-            //doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y);
-            
-            if(row_int == 3){
-                row_int = 0;
-            }
 
-            if(row_int < 2){
-                pos_x += 175;
-            }else{
-                pos_x = 30;
-                pos_y += 45;
-            }
+            req.body.produtos.forEach(produto => {
 
-            row_int += 1;
+                for(let i = 0; i < produto.quantidade; i++){
+
+                    doc.font('Helvetica').fontSize(9).text(row.nome, pos_x, pos_y + 15, { width : 140, align : 'center' });
+                    doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y + 30);
+                    doc.font('Helvetica').fontSize(9).text('CN: ' + row.codigo_barras, pos_x, pos_y + 55, { width : 140, align : 'center' });
+                    
+                    //doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y);
+                    
+                    if(row_int == 3){
+                        row_int = 0;
+                    }
+        
+                    if(row_int < 2){
+                        pos_x += 175;
+                    }else{
+                        pos_x = 30;
+                        pos_y += 55;
+                    }
+        
+                    row_int += 1;
+
+                }
+
+            });
             
         });
         
