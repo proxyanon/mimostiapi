@@ -1,7 +1,8 @@
 **ADM Mimos tia pi**
 
+# start an **mysql** service
+
 ```batch
-start \xampp\mysql_start.bat
 npm i -s
 npm start
 ```
