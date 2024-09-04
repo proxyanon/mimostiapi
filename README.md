@@ -1,6 +1,6 @@
-**ADM Mimos tia pi**
+# **ADM Mimos tia pi**
 
-# start an **mysql** service
+- start an **mysql** service
 
 ```batch
 npm i -s
