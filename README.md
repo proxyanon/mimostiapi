@@ -1,6 +1,7 @@
 # **ADM Mimos tia pi 2.1.1**
 
-- First start an ```mysql``` service
+- Pre-requisites: ```node.js``` and ```mysql``` server
+- First start an ```mysql``` service and run commands bellow
 
 ```batch
 npm i -s
