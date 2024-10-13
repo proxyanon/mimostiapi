@@ -259,28 +259,36 @@ module.exports = () => {
         
         results.forEach((row, i) => {
 
+            console.log(`id: ${row.id}\nnome: ${row.nome}`);
+
             req.body.produtos.forEach(produto => {
+
+                console.log('produto', produto);
 
                 for(let i = 0; i < produto.quantidade; i++){
 
-                    doc.font('Helvetica').fontSize(9).text(row.nome, pos_x, pos_y + 15, { width : 140, align : 'center' });
-                    doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y + 30);
-                    doc.font('Helvetica').fontSize(9).text('CN: ' + row.codigo_barras, pos_x, pos_y + 55, { width : 140, align : 'center' });
-                    
-                    //doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y);
-                    
-                    if(row_int == 3){
-                        row_int = 0;
+                    if(produto.produto == row.id){
+
+                        doc.font('Helvetica').fontSize(9).text(row.nome, pos_x, pos_y + 15, { width : 140, align : 'center' });
+                        doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y + 30);
+                        doc.font('Helvetica').fontSize(9).text('CN: ' + row.codigo_barras, pos_x, pos_y + 55, { width : 140, align : 'center' });
+                        
+                        //doc.font(path.join(__dirname, '..', '..', 'public', 'fonts', 'LibreBarcode39-Regular.ttf')).fontSize(30).text(row.codigo_barras, pos_x, pos_y);
+                        
+                        if(row_int == 3){
+                            row_int = 0;
+                        }
+            
+                        if(row_int < 2){
+                            pos_x += 175;
+                        }else{
+                            pos_x = 30;
+                            pos_y += 55;
+                        }
+            
+                        row_int += 1;
+
                     }
-        
-                    if(row_int < 2){
-                        pos_x += 175;
-                    }else{
-                        pos_x = 30;
-                        pos_y += 55;
-                    }
-        
-                    row_int += 1;
 
                 }
 

@@ -2231,6 +2231,9 @@
                     endpoint : '/api/v1'
                 });
 
+                const buttonsChecked = [];
+                const etiquetas_obj = [];
+
                 // GET ACTIVE PDVS AND STORAGE FIRTS PDV ID
                 function loadCaixaStorage(){
 
@@ -2536,7 +2539,20 @@
                                 case 'id':
 
                                     if(getCurrentDashboard() == 'etiquetas'){
-                                        tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" value="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${data.id}" placeholder="Qtd."></label></td>` + '\n';
+                                        console.log(buttonsChecked);
+                                        if(buttonsChecked.includes(parseInt(data.id))){
+
+                                            let prd_id = parseInt(data.id);
+
+                                            etiquetas_obj.forEach((etiqueta) => {
+                                                if(prd_id == parseInt(etiqueta.produto)){
+                                                    tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${etiqueta.produto}" id="btncheck${data[column]}" autocomplete="off" checked><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${etiqueta.produto}" placeholder="Qtd." value="${etiqueta.quantidade}"></label></td>` + '\n';
+                                                }
+                                            });
+
+                                        }else{
+                                            tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${data.id}" placeholder="Qtd." value="1"></label></td>` + '\n';
+                                        }
                                     }else{
                                         tds += `<td>${i+1}</td>` + '\n';
                                     }
@@ -2601,10 +2617,12 @@
                                     if(getCurrentDashboard() == 'caixa'){
                                         tds += `<td>${data[column]}</td>` + '\n';
                                     }else{
-                                        if(!checkKey(data, 'estoque_produto_final')){
+                                        if(data['estoque_produto_final'] == null){
+                                            data['estoque_produto_final'] = {};
                                             data['estoque_produto_final'].estoque = 'Qtd. idisponível';
+                                        }else{
+                                            tds += `<td>${data['estoque_produto_final'].estoque}</td>` + '\n';
                                         }
-                                        tds += `<td>${data['estoque_produto_final'].estoque}</td>` + '\n';
                                     }
                                 break;
 
@@ -2628,7 +2646,7 @@
                                         data['saida'] = 'Não disponível';
                                     }
 
-                                    if(dat['entrada'] == 'Não disponível' && data['saida'] == 'Não disponível'){
+                                    if(data['entrada'] == 'Não disponível' && data['saida'] == 'Não disponível'){
                                         _estoque = 'Não disponível';
                                     }else{
                                         _estoque = parseInt(data['entrada']) - parseInt(data['saida']);
@@ -2848,8 +2866,6 @@
                     
                     }else{
 
-                        let etiquetas_obj = [];
-
                         // BOTAO DE SELECIONAR TUDO NAS ETIQUETAS
                         document.querySelector('#etiquetas-btn-select-all').addEventListener('click', (e) => {
 
@@ -2865,8 +2881,11 @@
                                     document.querySelector('#etiquetas-ids').value = '';
                                     [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.setAttribute('disabled', true) });
                                     etiquetas_obj = [];
+                                    buttonsChecked = [];
                                 }else{
                                     [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.removeAttribute('disabled') });
+                                    buttonsChecked.push(parseInt(btnCheck.getAttribute('data-bs-id')));
+                                    //loadDashboardPage(currentDashboard());
                                 }
                             
                             })
@@ -2892,33 +2911,50 @@
                         setListener([...document.querySelectorAll('.btn-quantidade-etiquetas')], 'input', e => {
 
                             let produto_id = e.currentTarget.getAttribute('data-bs-id');
-                            let quantidade = 0;
+                            let quantidade = e.currentTarget.value;
                             let nome = null;
-                            let quantidade_atual = e.currentTarget.value;
+                            let quantidade_atual = null;
                             let field = document.querySelector('#etiquetas-produtos');
                             let hiddenField = document.querySelector('#etiquetas-ids');
 
-                            etiquetas_obj.forEach(etiqueta => {
+                            etiquetas_obj.map(etiqueta => {
 
-                                if(etiqueta.produto == produto_id){
+                                console.log('e.currentTarget.value', e.currentTarget.value);
+                                console.log('etiqueta', etiqueta);
+                                console.log('produto_id', etiqueta.produto);
+                                console.log('quantidade', quantidade);
+
+                                if(parseInt(etiqueta.produto) == parseInt(produto_id)){
                                     nome = etiqueta.nome;
-                                    quantidade = etiqueta.quantidade;
-                                    return; 
+                                    quantidade = parseInt(e.currentTarget.value);
+                                    etiqueta.quantidade = quantidade;
+                                    return etiqueta;
                                 }
 
                             });
                             
                             if(!field.value.empty()){
-                                field.value = field.value.replaceAll(`${nome}x${quantidade}`, `${nome}x${quantidade_atual}`)
+                                if(field.value.split(`${nome}x`)[1].includes(',')){
+                                    quantidade_atual = field.value.split(`${nome}x`)[1].split(',')[0];
+                                }else{
+                                    quantidade_atual = field.value.split(`${nome}x`)[1].split('')[0];
+                                }
+                            }else{
+                                quantidade_atual = field.value.split(`${nome}x`)[1];
+                            }
+
+                            if(!field.value.empty()){
+                                field.value = field.value.replaceAll(`${nome}x${quantidade_atual}`, `${nome}x${quantidade}`);
                             }
                         });
 
-                        setListener([...document.querySelectorAll('.btn-add-etiquetas')], 'click', e => {
+                        setListener([...document.querySelectorAll('.btn-add-etiquetas')], 'click', (e) => {
                             
                             let produto_id = e.currentTarget.getAttribute('data-bs-id');
                             let hiddenField = document.querySelector('#etiquetas-ids');
                             let field = document.querySelector('#etiquetas-produtos');
                             let isChecked = e.currentTarget.checked;
+                            let btnId = e.id;
                             let quantidade = document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${produto_id}"]`);
                             
                             api.getData({ endpoint : { path : 'produtos', id : produto_id } })
@@ -2936,6 +2972,7 @@
 
                                             etiquetas_obj.push({ produto : produto.id, quantidade : parseInt(quantidade.value), nome : produto.nome });
                                             hiddenField.value = JSON.stringify(etiquetas_obj);
+                                            buttonsChecked.push(parseInt(produto.id));
 
                                             if(field.value.empty()){    
                                                 field.value = `${produto.nome}x${quantidade.value}`;
@@ -2950,7 +2987,8 @@
 
                                             let etiquetas_obj_string = etiquetas_obj.map(JSON.stringify);
                                             let obj_index = etiquetas_obj.indexOf(`'{"produto":${produto.id},"quantidade":${quantidade.value},"nome":${produto.nome}}'`);
-                                            etiquetas_obj.splice(obj_index, 1);
+                                            etiquetas_obj.splice(obj_index, etiquetas_obj.length-1);
+                                            buttonsChecked.splice(obj_index, buttonsChecked.length-1);
                                             hiddenField.value = JSON.stringify(etiquetas_obj);
                                             field.value = `${field.value.includes(',') ? field.value.replaceAll(','+`${produto.nome}x${quantidade.value}`, '') : field.value.replaceAll(`${produto.nome}x${quantidade.value}`, '')}`;
 
@@ -4536,10 +4574,10 @@
 
                 btn_etiquetas.addEventListener('click', (e) => {
 
-                    let produtos = document.querySelector('#etiquetas-ids').value;
+                    //let produtos = document.querySelector('#etiquetas-ids').value;
                     let etiquetas_alert_error = document.querySelector('#etiquetas-error');
 
-                    produtos = JSON.parse(produtos);
+                    let produtos = etiquetas_obj;
 
                     if(!produtos.length){
                         show('etiquetas-error', 'Você precisa selecionar algum produto');
@@ -4645,11 +4683,6 @@
                     let endpoint = search_.getAttribute('data-bs-endpoint');
                     let item_name = search_.getAttribute('data-bs-itemId');
                     let search = search_.value;
-
-                    if(search.empty()){
-                        loadDashboardPage(getCurrentDashboard());
-                        return;
-                    }
 
                     api.searchData({ endpoint, search })
                         .then(resp => resp.json())

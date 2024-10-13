@@ -281,6 +281,8 @@ class Api {
         this.setDefaultHeaders();
         this.buildURL('etiquetas/imprimir');
 
+        console.log('produtos', produtos);
+
         this.setBody({ produtos : produtos });
         
         return fetch(this.url, {
