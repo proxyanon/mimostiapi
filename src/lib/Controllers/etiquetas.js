@@ -83,7 +83,7 @@ module.exports = () => {
                     required : false,
                     attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
                 }],
-                order : [['produtos_seco', 'id'], ['produtos_cor', 'nome']] 
+                order : [['nome', 'ASC']]
             });
 
         }else{

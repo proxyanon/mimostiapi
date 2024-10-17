@@ -2546,12 +2546,12 @@
 
                                             etiquetas_obj.forEach((etiqueta) => {
                                                 if(prd_id == parseInt(etiqueta.produto)){
-                                                    tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${etiqueta.produto}" id="btncheck${data[column]}" autocomplete="off" checked><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${etiqueta.produto}" placeholder="Qtd." value="${etiqueta.quantidade}"></label></td>` + '\n';
+                                                    tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${etiqueta.produto}" id="btncheck${data[column]}" autocomplete="off" checked="true"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${etiqueta.produto}" placeholder="Qtd." value="${etiqueta.quantidade}"></label></td>` + '\n';
                                                 }
                                             });
 
                                         }else{
-                                            tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${data.id}" placeholder="Qtd." value="1"></label></td>` + '\n';
+                                            tds += `<td><input type="checkbox" class="btn-check btn-add-etiquetas" data-bs-id="${data.id}" id="btncheck${data[column]}" autocomplete="off"><label class="btn btn-outline-primary" for="btncheck${data[column]}">Selecionar <input type="number" min="1" class="form-control text-center p-0 m-0 btn-quantidade-etiquetas" data-bs-id="${data.id}" placeholder="Qtd." value="1" disabled></label></td>` + '\n';
                                         }
                                     }else{
                                         tds += `<td>${i+1}</td>` + '\n';
@@ -2866,26 +2866,32 @@
                     
                     }else{
 
+                        [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { 
+                            if(buttonsChecked.includes(parseInt(btn.getAttribute('data-bs-id')))){
+                                btn.removeAttribute('disabled');
+                            }
+                        });
+
+
                         // BOTAO DE SELECIONAR TUDO NAS ETIQUETAS
                         document.querySelector('#etiquetas-btn-select-all').addEventListener('click', (e) => {
 
                             let isChecked = e.currentTarget.checked;
 
-                            [...document.querySelectorAll('.btn-check')].forEach(btnCheck => {
-                            
-                                $(btnCheck).click();
-                                btnCheck.checked = isChecked;
+                            [...document.querySelectorAll('.btn-add-etiquetas')].forEach(btnCheck => {
 
-                                if(!isChecked){
+                                if(!buttonsChecked.includes(parseInt(btnCheck.getAttribute('data-bs-id')))){
+                                    $(btnCheck).click();
+                                }
+
+                                if(isChecked){
+                                    [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.removeAttribute('disabled') });
+                                }else{
                                     document.querySelector('#etiquetas-produtos').value = '';
                                     document.querySelector('#etiquetas-ids').value = '';
                                     [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.setAttribute('disabled', true) });
                                     etiquetas_obj = [];
                                     buttonsChecked = [];
-                                }else{
-                                    [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.removeAttribute('disabled') });
-                                    buttonsChecked.push(parseInt(btnCheck.getAttribute('data-bs-id')));
-                                    //loadDashboardPage(currentDashboard());
                                 }
                             
                             })
@@ -2974,7 +2980,7 @@
                                             hiddenField.value = JSON.stringify(etiquetas_obj);
                                             buttonsChecked.push(parseInt(produto.id));
 
-                                            if(field.value.empty()){    
+                                            if(field.value.empty()){
                                                 field.value = `${produto.nome}x${quantidade.value}`;
                                             }else{
                                                 field.value = `${field.value},${produto.nome}x${quantidade.value}`;
@@ -3006,7 +3012,7 @@
                         });
 
                     
-                        [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((input) => { input.setAttribute('disabled', true) });
+                        //[...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((input) => { input.setAttribute('disabled', true) });
                     }
 
                     if(callback && typeof callback == 'function'){
@@ -4684,61 +4690,66 @@
                     let item_name = search_.getAttribute('data-bs-itemId');
                     let search = search_.value;
 
-                    api.searchData({ endpoint, search })
-                        .then(resp => resp.json())
-                        .then(results => {
-                            
-                            let fields = results.fields;
+                    if(search == null || search == '' || search == ' ' || search == undefined){
+                        getDataTables(null, getCurrentDashboard());
+                    }else{
 
-                            if(!results.error){
+                        api.searchData({ endpoint, search })
+                            .then(resp => resp.json())
+                            .then(results => {
+                                
+                                let fields = results.fields;
 
-                                results = results.results;
+                                if(!results.error){
 
-                                if(inpt_id.includes('caixa')){
+                                    results = results.results;
 
-                                    app_config.verbose ? console.log(results) : '';
+                                    if(inpt_id.includes('caixa')){
 
-                                    if(results.length > 0){
-                                        showModalError('Alerta', 'Existe mais de um produto cadastrado com esse código de barras');
-                                        //alert('Existe mais de um produto cadastrado com esse código de barras');
+                                        app_config.verbose ? console.log(results) : '';
+
+                                        if(results.length > 0){
+                                            showModalError('Alerta', 'Existe mais de um produto cadastrado com esse código de barras');
+                                            //alert('Existe mais de um produto cadastrado com esse código de barras');
+                                        }
+
+                                        document.querySelector('#modal_lancar_caixa-produto_id').value = results[0].id;
+                                        $('#modal_lancar_caixa-produto_id').trigger('change');
+
+                                    }else{
+
+                                        app_config.verbose ? console.log(results, fields) : '';
+
+                                        loadTable(results, {
+                                            table_name : `${endpoint}-table`,
+                                            table_columns : fields,
+                                            item_name : item_name
+                                        });
+
                                     }
 
-                                    document.querySelector('#modal_lancar_caixa-produto_id').value = results[0].id;
-                                    $('#modal_lancar_caixa-produto_id').trigger('change');
-
                                 }else{
 
-                                    app_config.verbose ? console.log(results, fields) : '';
+                                    if(inpt_id.includes('caixa')){
 
-                                    loadTable(results, {
-                                        table_name : `${endpoint}-table`,
-                                        table_columns : fields,
-                                        item_name : item_name
-                                    });
+                                    }else{
+
+                                        loadTable([], {
+                                            table_name : `${endpoint}-table`,
+                                            table_columns : fields,
+                                            item_name : item_name
+                                        })
+
+                                    }
+                                    
 
                                 }
 
-                            }else{
-
-                                if(inpt_id.includes('caixa')){
-
-                                }else{
-
-                                    loadTable([], {
-                                        table_name : `${endpoint}-table`,
-                                        table_columns : fields,
-                                        item_name : item_name
-                                    })
-
-                                }
-                                
-
-                            }
-
-                        })
-                        .catch(err => {
-                            app_config.verbose ? console.error(err) : '';
-                        })
+                            })
+                            .catch(err => {
+                                app_config.verbose ? console.error(err) : '';
+                            })
+                        }
 
                 });
 
