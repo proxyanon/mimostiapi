@@ -2925,14 +2925,10 @@
 
                             etiquetas_obj.map(etiqueta => {
 
-                                console.log('e.currentTarget.value', e.currentTarget.value);
-                                console.log('etiqueta', etiqueta);
-                                console.log('produto_id', etiqueta.produto);
-                                console.log('quantidade', quantidade);
-
                                 if(parseInt(etiqueta.produto) == parseInt(produto_id)){
                                     nome = etiqueta.nome;
-                                    quantidade = parseInt(e.currentTarget.value);
+                                    console.log('INT quantidade', parseInt(quantidade))
+                                    quantidade = isNaN(parseInt(quantidade)) || quantidade == '' || quantidade == null || quantidade == ' ' || quantidade == undefined || quantidade.toString().empty() ? 1 : parseInt(quantidade);
                                     etiqueta.quantidade = quantidade;
                                     return etiqueta;
                                 }
@@ -2948,6 +2944,8 @@
                             }else{
                                 quantidade_atual = field.value.split(`${nome}x`)[1];
                             }
+
+                            console.log('quantidade atual', quantidade_atual);
 
                             if(!field.value.empty()){
                                 field.value = field.value.replaceAll(`${nome}x${quantidade_atual}`, `${nome}x${quantidade}`);
