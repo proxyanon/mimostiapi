@@ -2231,8 +2231,8 @@
                     endpoint : '/api/v1'
                 });
 
-                const buttonsChecked = [];
-                const etiquetas_obj = [];
+                let buttonsChecked = [];
+                let etiquetas_obj = [];
 
                 // GET ACTIVE PDVS AND STORAGE FIRTS PDV ID
                 function loadCaixaStorage(){
@@ -2880,16 +2880,14 @@
 
                             [...document.querySelectorAll('.btn-add-etiquetas')].forEach(btnCheck => {
 
-                                if(!buttonsChecked.includes(parseInt(btnCheck.getAttribute('data-bs-id')))){
-                                    $(btnCheck).click();
-                                }
+                                $(btnCheck).click();
 
                                 if(isChecked){
                                     [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.removeAttribute('disabled') });
                                 }else{
                                     document.querySelector('#etiquetas-produtos').value = '';
                                     document.querySelector('#etiquetas-ids').value = '';
-                                    [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.setAttribute('disabled', true) });
+                                    [...document.querySelectorAll('.btn-quantidade-etiquetas')].forEach((btn) => { btn.setAttribute('disabled', true); });
                                     etiquetas_obj = [];
                                     buttonsChecked = [];
                                 }
@@ -2974,9 +2972,11 @@
                                         
                                         if(isChecked){
 
-                                            etiquetas_obj.push({ produto : produto.id, quantidade : parseInt(quantidade.value), nome : produto.nome });
-                                            hiddenField.value = JSON.stringify(etiquetas_obj);
-                                            buttonsChecked.push(parseInt(produto.id));
+                                            if(!buttonsChecked.includes(parseInt(produto.id))){
+                                                etiquetas_obj.push({ produto : produto.id, quantidade : parseInt(quantidade.value), nome : produto.nome });
+                                                hiddenField.value = JSON.stringify(etiquetas_obj);
+                                                buttonsChecked.push(parseInt(produto.id));
+                                            }
 
                                             if(field.value.empty()){
                                                 field.value = `${produto.nome}x${quantidade.value}`;
@@ -2989,17 +2989,77 @@
 
                                         }else{
 
+                                            let obj_index = -1;
                                             let etiquetas_obj_string = etiquetas_obj.map(JSON.stringify);
-                                            let obj_index = etiquetas_obj.indexOf(`'{"produto":${produto.id},"quantidade":${quantidade.value},"nome":${produto.nome}}'`);
-                                            etiquetas_obj.splice(obj_index, etiquetas_obj.length-1);
-                                            buttonsChecked.splice(obj_index, buttonsChecked.length-1);
+                                            let filtered_etiquetas_obj = etiquetas_obj.find((item, i) => {
+                                                if(item.nome == produto.nome){
+                                                    obj_index = i;
+                                                    return item;
+                                                }
+                                            })
+                                            
+                                            console.log(obj_index);
+
+                                            etiquetas_obj = etiquetas_obj.map((prd, index) => {
+                                                if(parseInt(obj_index) != parseInt(index)){
+                                                    return prd;
+                                                }
+                                            });
+
+                                            let etiquetas_obj_filtered = [];
+                                            let etiquetas_obj_filtered_index = 0;
+
+                                            let buttonChecked_filtered = [];
+                                            let buttonChecked_filtered_index = 0;
+
+                                            etiquetas_obj.filter((value) => {
+                                                if(value || value != undefined || typeof value == 'object'){
+                                                    etiquetas_obj_filtered[etiquetas_obj_filtered_index] = value;
+                                                    etiquetas_obj_filtered_index += 1;
+                                                }
+                                            });
+
+                                            etiquetas_obj = etiquetas_obj_filtered;
+
+                                            buttonsChecked = buttonsChecked.map((value, index) => {
+                                                if(parseInt(obj_index) != parseInt(index)){
+                                                    buttonChecked_filtered[buttonChecked_filtered_index] = value;
+                                                    buttonChecked_filtered_index += 1;
+                                                }
+                                            })
+
+                                            buttonsChecked = buttonChecked_filtered;
+                                            
                                             hiddenField.value = JSON.stringify(etiquetas_obj);
-                                            field.value = `${field.value.includes(',') ? field.value.replaceAll(','+`${produto.nome}x${quantidade.value}`, '') : field.value.replaceAll(`${produto.nome}x${quantidade.value}`, '')}`;
+                                            if(field.value.includes(',')){
+                                                field.value.split(',').forEach((f) => {
+                                                    if(f == field.value.split(',')[0]){
+                                                        field.value = field.value.replaceAll(`${produto.nome}x${quantidade.value},`, '');
+                                                    }else{
+                                                        field.value = field.value.replaceAll(`,${produto.nome}x${quantidade.value}`, '');
+                                                    }
+                                                })
+                                            }else{
+                                                field.value = field.value.replaceAll(`${produto.nome}x${quantidade.value}`, '');
+                                            }
+                                            
+                                            if(document.querySelector('#etiquetas-btn-select-all').checked){
+                                                document.querySelector('#etiquetas-btn-select-all').checked = false;
+                                            }
 
                                             document.querySelector(`.btn-quantidade-etiquetas[data-bs-id="${produto.id}"]`).setAttribute('disabled', true);
 
                                         }
-                                        
+
+                                        let allChecked = [...document.querySelectorAll('.btn-add-etiquetas')].map((btn) => {
+                                            return parseInt(btn.getAttribute('data-bs-id'));
+                                        });
+
+                                        console.log(allChecked.sort(), buttonsChecked.sort(), etiquetas_obj);
+
+                                        if(buttonsChecked.sort().toString() == allChecked.sort().toString()){
+                                            document.querySelector('#etiquetas-btn-select-all').checked = true;
+                                        }
                                     }
 
                                     })
