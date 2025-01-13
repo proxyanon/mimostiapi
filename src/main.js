@@ -87,24 +87,45 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     // UPLOAD IMAGES ROUTE
     //app.use('/api/v1/upload', routes.upload);
 
+    const uploadFile = (req, res, next) => {        
+
+        try{
+            const storage = multer.diskStorage({
+                destination: function(req, file, cb) { 
+                    fileFilter(req, file, cb)
+                    cb(null, path.join(__dirname, 'public', 'files'))
+                },
+                filename: function(req, file, cb){
+                    fileFilter(req, file, cb)
+                    cb(null, md5(file.originalname) + path.extname(file.originalname))
+                }
+            })
+        }catch(Error){
+            if(config.)
+            return res.status(500).json({ error : true, msg : 'Ocorreu um erro na função que faz o upload de arquivos' });
+        }
+
+    }
+
     app.post('/api/v1/upload', async (req, res, next) => {
     
-        const storage = multer.diskStorage({
-            destination: function (req, file, cb) {
-                cb(null, path.join(__dirname, 'public', 'files'));
-            },
-            filename: function (req, file, cb) {
-                cb(null, md5(file.originalname) + path.extname(file.originalname))
-            } 
-        });
+        try{
+            uploadFile()
+        }catch(Error){
+            console.log(`[x] Error ao fazer upload do arquivo`)
+        }finally{
+            return res.status(500).json({ error : true, msg : 'Ocorreu um error ao fazer upload do arquivo' })
+        }
     
         const fileFilter = (req, file, cb) => {
     
             if(!config.uploads.accepted_ext.includes(path.extname(file.originalname))){
+                cb(new Error("Tipo de arquivo inválido"))
                 return res.json({ error : true, msg : 'Arquivo não aceito' });
             }
     
             if(!config.uploads.accepted_mime_types.includes(file.mimetype)){
+                cb(new Error("Tipo de arquivo inválido"))
                 return res.json({ error : true, msg : 'Tipo de arquivo inválido' });
             }
     
