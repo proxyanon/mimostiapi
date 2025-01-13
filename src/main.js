@@ -101,8 +101,11 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
                 }
             })
         }catch(Error){
-            if(config.)
-            return res.status(500).json({ error : true, msg : 'Ocorreu um erro na função que faz o upload de arquivos' });
+            if(config.server.throwException){
+                throw new Error("Não foi possível fazer upload do arquivo fechando servidor")
+            }else{
+                return res.status(500).json({ error : true, msg : 'Ocorreu um erro na função que faz o upload de arquivos' });
+            }
         }
 
     }
@@ -119,17 +122,25 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     
         const fileFilter = (req, file, cb) => {
     
-            if(!config.uploads.accepted_ext.includes(path.extname(file.originalname))){
-                cb(new Error("Tipo de arquivo inválido"))
-                return res.json({ error : true, msg : 'Arquivo não aceito' });
+            try{
+                if(!config.uploads.accepted_ext.includes(path.extname(file.originalname))){
+                    cb(new Error("Tipo de arquivo inválido"))
+                    return res.json({ error : true, msg : 'Arquivo não aceito' });
+                }
+        
+                if(!config.uploads.accepted_mime_types.includes(file.mimetype)){
+                    cb(new Error("Tipo de arquivo inválido"))
+                    return res.json({ error : true, msg : 'Tipo de arquivo inválido' });
+                }
+        
+                cb(null, true);
+            }catch(Error){
+                if(config.server.throwException){
+                    throw new Error("Arquivo inválido saindo do servidor");
+                }else{
+                    cb(null, true);
+                }
             }
-    
-            if(!config.uploads.accepted_mime_types.includes(file.mimetype)){
-                cb(new Error("Tipo de arquivo inválido"))
-                return res.json({ error : true, msg : 'Tipo de arquivo inválido' });
-            }
-    
-            cb(null, true);
     
         }
     

@@ -65,7 +65,9 @@ const config = module.exports = {
             },
             resave : false,
             saveUninitialized : true,
-        }
+        },
+
+        throwException : false
 
     },
 
