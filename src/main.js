@@ -325,7 +325,7 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
             console.log(await bcrypt.hash('admtiapi', 10))
         }
 
-        gen_password();
+        //gen_password();
 
     });
 

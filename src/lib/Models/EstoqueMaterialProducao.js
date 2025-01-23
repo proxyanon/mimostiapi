@@ -16,6 +16,14 @@ const Model = db.define('estoque_material_producao', {
         type : Sequelize.INTEGER,
         allowNull : false
     },
+    marca : {
+        type : Sequelize.STRING,
+        allowNull : true
+    },
+    /*rsfoto : {
+        type : Sequelize.STRING,
+        allowNull : true
+    },*/
     unidade : {
         type : Sequelize.INTEGER,
         allowNull : true

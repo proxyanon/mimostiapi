@@ -975,7 +975,7 @@
                                 <aside class="flot-right">
                                     <div class="row">
                                         <div class="col-lg-10 col-sm-9" style="margin-left:-1%">
-                                            <input type="search" id="estoque_material_producao-search" data-bs-endpoint="estoque_material_producao" data-bs-itemId="estoque_material_producao" class="form-control w-100 inpt-search" placeholder="Procurar no estoque">
+                                            <input type="search" id="estoque_material_producao_search" data-bs-endpoint="estoque_material_producao" data-bs-itemId="estoque_material_producao" class="form-control w-100 inpt-search" placeholder="Procurar no estoque">
                                         </div>
                                         <div class="col">
                                             <i class="fa fa-search d-aboslute btn-search"></i>
@@ -994,6 +994,7 @@
                                         <th scope="col">#</th>
                                         <th scope="col">Especificação</th>
                                         <th scope="col">Cor/Estampa</th>
+                                        <th scope="col">Marca</th>
                                         <th scope="col">Unidade</th>
                                         <th scope="col">Entrada</th>
                                         <th scope="col">Saída</th>
@@ -1042,13 +1043,19 @@
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label for="estoque_material_producao-unidade" class="form-label">Unidade em metros</label>
-                                <input type="number" class="form-control" placeholder="Unidade" id="estoque_material_producao-unidade">
+                                <label for="estoque_material_producao-marca" class="form-label">Marca</label>
+                                <input type="text" class="form-control" placeholder="marca" id="estoque_material_producao-marca">
                             </div>
                         </div>
                     </div>
 
                     <div class="row mt-2">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque_material_producao-unidade" class="form-label">Unidade em metros</label>
+                                <input type="number" class="form-control" placeholder="Unidade" id="estoque_material_producao-unidade">
+                            </div>
+                        </div>
                         <div class="col">
                             <div class="form-group">
                                 <label for="estoque_material_producao-entrada" class="form-label">Entrada</label>
@@ -3311,7 +3318,7 @@
                     [...document.querySelectorAll('input,select')].forEach(input =>{
 
                         if(input.getAttribute('id') && input.getAttribute('type') != 'file'){
-                            if(input.getAttribute('id').includes(`${table_name}-`) && !input.getAttribute('id').includes('table')){
+                            if(input.getAttribute('id').includes(`${table_name}-`) && !input.getAttribute('id').includes('table') && !input.getAttribute('id').includes('relatorio')){
                             
                                 let column_name = input.getAttribute('id').split('-')[1];
                                 let column_data = input.value;
@@ -3368,6 +3375,8 @@
                         }
 
                     });
+
+                    console.log(data);
 
                     data.endpoint = endpoint;
                     data.form_data = data;
@@ -4827,15 +4836,15 @@
                     if(current_dashboard == 'caixa'){
                         current_dashboard = 'caixa/temp';
                     }else if(current_dashboard == 'estoque_produto_final' && (document.querySelector(`#${btn_id}-id`).value == '' || parseInt(document.querySelector(`#${btn_id}-id`).value) == NaN)){
-                        checkAdd = false;
+                        checkAdd = true;
                         checkSave = false;
-                        show(`${btn_id}-error`, 'Selecione algum produto', app_config.errors.timeout);
-                        return;
+                        //show(`${btn_id}-error`, 'Selecione algum produto', app_config.errors.timeout);
+                        //return;
                     }else if(current_dashboard == 'estoque_material_producao' && document.querySelector(`#${btn_id}-id`).value == '' || parseInt(document.querySelector(`#${btn_id}-id`).value) == NaN){
-                        checkAdd = false;
+                        checkAdd = true;
                         checkSave = false;
-                        show(`${btn_id}-error`, 'Selecione algum produto', app_config.errors.timeout);
-                        return;
+                        //show(`${btn_id}-error`, 'Selecione algum produto', app_config.errors.timeout);
+                        //return;
                     }else if(current_dashboard == 'estoque_material_producao'){
                         if(checkSave){
                             
