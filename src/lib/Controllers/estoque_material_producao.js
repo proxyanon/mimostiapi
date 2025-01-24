@@ -49,6 +49,14 @@ module.exports = () => {
 
     }
 
+    /**
+     * 
+     * @async
+     * @param {express.request} req 
+     * @param {express.response} res 
+     * @param {any} next
+     * @returns {express.response}
+     */
     module.addEstoqueMaterialProducao = async (req, res, next) => {
 
         let obj_create = {}

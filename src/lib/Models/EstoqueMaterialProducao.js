@@ -1,6 +1,10 @@
 const Sequelize = require('sequelize');
 const db = require('../modules/database');
 
+/**
+ * 
+ * @constant {db.define} {Model}
+ */
 const Model = db.define('estoque_material_producao', {
     id : {
         type : Sequelize.INTEGER,
@@ -45,4 +49,8 @@ const Model = db.define('estoque_material_producao', {
     }
 })
 
+/**
+ *
+ * @var {Model} {module1.exports}
+ */
 module.exports = Model;
