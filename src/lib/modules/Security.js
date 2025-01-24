@@ -146,27 +146,21 @@ class Security {
 
     }
 
-    static checkIntFloat(field_type, field_value){
+    /**
+     * 
+     * @param {any} module_field
+     * @param {String} key
+     * @returns {Boolean}
+     */
+    static checkIntFloat(module_field, key){
 
-        if(field_type == 'INTEGER'){
-
-            if(parseInt(field_value) == NaN || parseInt(field_value) <= 0){
-                return false;
-            }else{
-                return true;
-            }
-
-        }else if(field_type == 'FLOAT'){
-
-            if(parseFloat(field_value) == NaN || parseFloat(field_value) <= 0){
-                return false;
-            }else{
-                return true;
-            }
-
-        }else{
-            return false;
+        if(module_field[key].type == 'INTEGER'){
+            return parseInt(module_field[key]) == NaN || parseInt(field_value) < 0;
+        }else if(module_field[key].type == 'FLOAT'){
+            return parseFloat(module_field[key]) == NaN || parseFloat(module_field[key]) < 0;
         }
+
+        return false;
 
     }
 

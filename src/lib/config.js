@@ -110,6 +110,10 @@ const config = module.exports = {
         filename : 'mimostiapi.log'
     },
 
+    numeric : {
+        max_float_digits : 2
+    },
+
     isDev : true,
     verbose : true
 

@@ -65,12 +65,17 @@ module.exports = () => {
         for(key in module.fields){
             if(key != 'id'){
                 if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && module.fields[key].allowNull == false && (req.body[key] != null || req.body[key] != undefined)){
-                    console.log(module.fields[key].type)
-                    obj_create[key] = req.body[key]
+                    
+                    if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && !Security.checkIntFloat(module.fields, key)){
+                        return res.notAccept(`Valor inválido para o campo ${key} (${module.fields[key]}) ${module.fields[key].type == 'FLOAT' ? 'Você precisa digitar um valor real ex: 10,25' : 'Você precisa digitar um número inteiro ex: 1'}`)
+                    }
+
+                    obj_create[key] = sanitize(req.body[key])
+                
                 }else if(!req.body[key] && module.fields[key] != null){
-                    return res.status(401).json({ error : true, msg : 'Campos inválido(s) 2' })
+                    return res.unauthorized(res, 'Campos com valores inválido(s) ou vazio(s) - cod 666');
                 }else{
-                    obj_create[key] = req.body[key]
+                    obj_create[key] = sanitize(req.body[key])
                 }
             }
         }

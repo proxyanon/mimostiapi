@@ -20,25 +20,28 @@ const Model = db.define('estoque_material_producao', {
         type : Sequelize.STRING,
         allowNull : true
     },
-    /*rsfoto : {
+    foto : {
         type : Sequelize.STRING,
+        allowNull : true,
+        defaultValue : 'defaultProduct.png'
+    },
+    /*unidade : {
+        type : Sequelize.INTEGER,
         allowNull : true
     },*/
-    unidade : {
-        type : Sequelize.INTEGER,
-        allowNull : true
-    },
     entrada : {
-        type : Sequelize.INTEGER,
+        type : Sequelize.FLOAT,
         allowNull : false
     },
     saida : {
-        type : Sequelize.INTEGER,
-        allowNull : true
+        type : Sequelize.FLOAT,
+        allowNull : true,
+        defaultValue: 0.0
     },
     datecreated : {
         type : Sequelize.DATE,
-        allowNull : false
+        allowNull : false,
+        defaultValue : new Date()
     }
 })
 
