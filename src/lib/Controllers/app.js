@@ -1,7 +1,15 @@
 const express = require('express');
 const Security = require('../modules/Security');
 
+/**
+ * 
+ * @constant {class<Security>} sec
+ */
 const sec = new Security();
+/**
+ * 
+ * @param {express.Router} router
+ */
 const router = express.Router();
 
 module.exports = () => {

@@ -10,11 +10,21 @@ const router = express.Router();
 const config = require('../config');
 
 module.exports = () => {
-
+    /**
+     * 
+     * @var {Object} module
+     */
     var module = {};
 
     module.fields = models.EstoqueMaterialProducao.rawAttributes
 
+    /**
+     * 
+     * @param {express.request} req 
+     * @param {express.response} res
+     * @param {any} next
+     * @returns {VoidFunction}
+     */
     module.searchEstoqueMaterialProducao = async (req, res, next) => {
 
         if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
