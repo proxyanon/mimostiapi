@@ -12,6 +12,11 @@ const Model = db.define('estoque_material_producao', {
         allowNull : false,
         primaryKey : true
     },
+    foto : {
+        type : Sequelize.STRING,
+        allowNull : true,
+        defaultValue : 'defaultProduct.png'
+    },
     especificacao : {
         type : Sequelize.STRING,
         allowNull : false
@@ -23,12 +28,7 @@ const Model = db.define('estoque_material_producao', {
     marca : {
         type : Sequelize.STRING,
         allowNull : true
-    },
-    foto : {
-        type : Sequelize.STRING,
-        allowNull : true,
-        defaultValue : 'defaultProduct.png'
-    },
+    },    
     /*unidade : {
         type : Sequelize.INTEGER,
         allowNull : true

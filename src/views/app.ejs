@@ -802,7 +802,7 @@
                 </div>
 
                 <!-- PRODUTOS -->
-                 
+
                 <div class="app-window" id="produtos">
 
                     <div style="text-align: left;">
@@ -992,12 +992,13 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th scope="col">#</th>
+                                        <th scope="col">Foto</th>
                                         <th scope="col">Especificação</th>
                                         <th scope="col">Cor/Estampa</th>
                                         <th scope="col">Marca</th>
                                         <!-- <th scope="col">Unidade</th> -->
-                                        <th scope="col">Entrada</th>
-                                        <th scope="col">Saída</th>
+                                        <th scope="col">Entrada em mêtros</th>
+                                        <th scope="col">Saída em mêtros</th>
                                         <th scope="col">Data do registro</th>
                                         <th scope="col">Estoque</th>
                                     </tr>
@@ -1017,6 +1018,17 @@
                     <div class="row mt-4">
 
                         <input type="hidden" id="estoque_material_producao-id">
+                        <input type="hidden" id="estoque_material_producao-foto" value="defaultProduct.png">
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="file-loading">
+                                        <input id="emp-foto" name="emp-foto[]" type="file" class="file" data-allowed-file-extensions='["png", "jpg", "jpeg"]' accept=".png,.jpg,.jpeg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col">
                             <div class="form-group">
                                 <label for="estoque_material_producao-especificacao" class="form-label">Especificação</label>
@@ -2751,6 +2763,11 @@
                                     tds += `<td><img src="public/files/${data[column]}" width="${app_config.images.width}" height="${app_config.images.height}" style="border-radius:4px;padding:0px !important;margin: 0px !important;"></td>` + '\n';
                                 break;
 
+                                case 'entrada':
+                                case 'saida':
+                                    tds += `<td>${data[column]}m</td>`;
+                                break;
+
                                 default:
                                     tds += `<td>${data[column]}</td>` + '\n';
                                 break;
@@ -2842,8 +2859,10 @@
                                                             const dataTransfer = new DataTransfer();
                                                             dataTransfer.items.add(productPhoto);
 
-                                                            document.querySelector('#prd-foto').files = dataTransfer.files;
-                                                            $('#prd-foto').trigger('change');
+                                                            let currentSelector = `#${currentDashboard() == 'produtos' ?  'prd' : 'emp'}-foto`;
+                                                            
+                                                            document.querySelector(currentSelector).files = dataTransfer.files;
+                                                            $(currentSelector).trigger('change');
 
                                                         }
 
