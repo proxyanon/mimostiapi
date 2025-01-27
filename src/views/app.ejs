@@ -2834,7 +2834,7 @@
                                                     }else if(column.includes('entrada') || column.includes('saida')){
                                                         field_form.value = 0;
                                                     }else if(column == 'quantidade'){
-                                                        field_form.value = data['estoque_produto_final'] != null ? data['estoque_produto_final'].estoque : 0;
+                                                        field_form.value = typeof(data['estoque_produto_final']) != undefined && Object.keys(data['estoque_produto_final']).includes('estoque') ? data['estoque_produto_final'].estoque : 'Indisponivél';
                                                     }else if(column == 'foto'){
 
                                                         const fetchImage = async url => {
@@ -2842,7 +2842,7 @@
                                                             const response = await fetch(`public/files/${url}`);
                                                             const blob = await response.blob();
 
-                                                            app_config.verbose ? console.log(blob) : '';
+                                                            app_config.verbose ? console.log(`Blob generated from ${url} ->\n${blob}\n\n`) : '';
 
                                                             return blob
 
@@ -2859,7 +2859,11 @@
                                                             const dataTransfer = new DataTransfer();
                                                             dataTransfer.items.add(productPhoto);
 
-                                                            let currentSelector = `#${currentDashboard() == 'produtos' ?  'prd' : 'emp'}-foto`;
+                                                            let fields_inputs_names = {
+                                                                "produtos" : "prd",
+                                                                "estoque_material_producao" : "emp"
+                                                            };
+                                                            const currentSelector = `#${fields_inputs_names[getCurrentDashboard()]}-foto`;
                                                             
                                                             document.querySelector(currentSelector).files = dataTransfer.files;
                                                             $(currentSelector).trigger('change');
