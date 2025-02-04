@@ -1062,10 +1062,12 @@
                     </div>
 
                     <div class="row mt-2">
-                        <div class="col">
+                        <div class="col-8 mr-0">
                             <div class="form-group">
-                                <label for="estoque_material_producao-unidade" class="form-label">Unidade em metros</label>
-                                <input type="number" class="form-control" placeholder="Unidade" id="estoque_material_producao-unidade">
+                                <label for="estoque_material_producao-unidade" class="form-label">Unidade</label>
+                                <select id="estoque_material_producao-unidade" class="form-select" aria-label="Unidade" required>
+                                    <option selected disabled>-- escolha o tipo de unidade do produto --</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col">
@@ -2721,9 +2723,9 @@
                                     tds += `<td>${data['formas_pagamento'].nome}</td>` + '\n';
                                 break;
 
-                                case 'unidade':
+                                /*case 'unidade':
                                     tds += `<td>${formatUnity(data[column])}</td>` + '\n';
-                                break;
+                                break;*/
 
                                 case 'cliente_id':
                                     if(!checkKey(data, 'cliente')){
@@ -3531,6 +3533,7 @@
                                         case 'categoria':
                                         case 'secao':
                                         case 'cor':
+                                        case 'unidade':
 
                                             loadSelectOptions(field, {
                                                 placeholder : '-- selecione a opção --',
