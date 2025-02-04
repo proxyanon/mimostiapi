@@ -31,7 +31,7 @@ const Model = db.define('estoque_material_producao', {
      * @property {INT} {unidade} {allowNull : false}
      * @property {FLOAT} {entrada} {allowNull : false}
      * @property {FLOAT} {saida} {allowNull : true, defaultValue: 0.0}
-     * @property {DATE} {now_datecreated} {allowNull : false, defaultValue : now_date}
+     * @property {DATE} {datecreated} {allowNull : false, defaultValue : now_date}
      */
     id : {
         type : Sequelize.INTEGER,
@@ -69,7 +69,7 @@ const Model = db.define('estoque_material_producao', {
         allowNull : true,
         defaultValue: 0.0
     },
-    now_datecreated : {
+    datecreated : {
         type : Sequelize.DATE,
         allowNull : false,
         defaultValue : now_date
