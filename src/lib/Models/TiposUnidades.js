@@ -11,13 +11,12 @@
 /**
  * 
  * @constant {class} {Sequelize}
+ * @constant {object} {db}
+ * @constant {object} {now_date}
  */
 const Sequelize = require('sequelize');
-/**
- * 
- * @constant {object} {db}
- */
 const db = require('../modules/database');
+const now_date = new Date();
 
 /**
  * 
@@ -25,7 +24,10 @@ const db = require('../modules/database');
  */
 const Model = db.define('estoque_material_producao', {
     /**
+     * 
      * @property {INTEGER} {id} {autoIncrement : true, allowNull : false, primaryKey : true}
+     * @property {STRING} {nome} {allowNull : false}
+     * @property {DATE} {datecreated} {allowNull : false, defaultValue : now_date}
      */
     id : {
         type : Sequelize.INTEGER,
@@ -33,20 +35,14 @@ const Model = db.define('estoque_material_producao', {
         allowNull : false,
         primaryKey : true
     },
-    /**
-     * @property {STRING} {nome} {allowNull : false}
-     */
     nome : {
         type : Sequelize.STRING,
         allowNull : false,
     },
-    /**
-     * @property {DATE} {datecreated} {allowNull : false, defaultValue : new Date()}
-     */
     datecreated : {
         type : Sequelize.DATE,
         allowNull : false,
-        defaultValue : new Date()
+        defaultValue : now_date
     }
 })
 

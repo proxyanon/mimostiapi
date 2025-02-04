@@ -8,14 +8,31 @@
  * @package mimostiapi
  */
 
+/**
+ * @constant {class} {Sequelize}
+ * @constant {object} {db}
+ * @constant {object} {now_date}
+ */
 const Sequelize = require('sequelize');
 const db = require('../modules/database');
+const now_date = new Date();
 
 /**
  * 
- * @constant {method} {Model}
+ * @constant {object} {Model}
  */
 const Model = db.define('estoque_material_producao', {
+    /**
+     * @property {INTEGER} {id} {autoIncrement : true, allowNull : false, primaryKey : true}
+     * @property {STRING} {foto} {allowNull : true, defaultValue : 'defaultProduct.png'}
+     * @property {STRING} {especificacao} {allowNull : false}
+     * @property {INTEGER} {cor} {allowNull : false}
+     * @property {STRING} {marca} {allowNull : true}
+     * @property {INT} {unidade} {allowNull : false}
+     * @property {FLOAT} {entrada} {allowNull : false}
+     * @property {FLOAT} {saida} {allowNull : true, defaultValue: 0.0}
+     * @property {DATE} {now_datecreated} {allowNull : false, defaultValue : now_date}
+     */
     id : {
         type : Sequelize.INTEGER,
         autoIncrement : true,
@@ -52,15 +69,15 @@ const Model = db.define('estoque_material_producao', {
         allowNull : true,
         defaultValue: 0.0
     },
-    datecreated : {
+    now_datecreated : {
         type : Sequelize.DATE,
         allowNull : false,
-        defaultValue : new Date()
+        defaultValue : now_date
     }
 })
 
 /**
  *
- * @var {Model} {module1.exports}
+ * @constant {Model} {module.exports}
  */
 module.exports = Model;
