@@ -1,13 +1,3 @@
-/**
- * 
- * @author Daniel Victor Freire
- * @version 2.1.2
- * @description Modelo da tabela de estoque de material de produção
- * @file EstoqueMaterialProducao.js
- * @copyright Mimos tia Pi 2025
- * @package mimostiapi
- */
-
 const Sequelize = require('sequelize');
 const db = require('../modules/database');
 
@@ -38,10 +28,16 @@ const Model = db.define('estoque_material_producao', {
     marca : {
         type : Sequelize.STRING,
         allowNull : true
-    },    
+    },
     unidade : {
         type : Sequelize.INT,
-        allowNull : false
+        allowNull : false,
+        defaultValue : 1
+    },
+    unidade : {
+        type : Sequelize.INT,
+        allowNull : false,
+        defaultValue : "m"
     },
     entrada : {
         type : Sequelize.FLOAT,
@@ -50,7 +46,7 @@ const Model = db.define('estoque_material_producao', {
     saida : {
         type : Sequelize.FLOAT,
         allowNull : true,
-        defaultValue: 0.0
+        defaultValue: 0
     },
     datecreated : {
         type : Sequelize.DATE,

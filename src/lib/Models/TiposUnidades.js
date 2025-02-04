@@ -16,42 +16,25 @@ const db = require('../modules/database');
  * @constant {method} {Model}
  */
 const Model = db.define('estoque_material_producao', {
+    /**
+     * @property {INTEGER} {id} {autoIncrement : true, allowNull : false, primaryKey : true}
+     */
     id : {
         type : Sequelize.INTEGER,
         autoIncrement : true,
         allowNull : false,
         primaryKey : true
     },
-    foto : {
+    /**
+     * @property {STRING} {nome} {allowNull : false}
+     */
+    nome : {
         type : Sequelize.STRING,
-        allowNull : true,
-        defaultValue : 'defaultProduct.png'
+        allowNull : false,
     },
-    especificacao : {
-        type : Sequelize.STRING,
-        allowNull : false
-    },
-    cor : {
-        type : Sequelize.INTEGER,
-        allowNull : false
-    },
-    marca : {
-        type : Sequelize.STRING,
-        allowNull : true
-    },    
-    unidade : {
-        type : Sequelize.INT,
-        allowNull : false
-    },
-    entrada : {
-        type : Sequelize.FLOAT,
-        allowNull : false
-    },
-    saida : {
-        type : Sequelize.FLOAT,
-        allowNull : true,
-        defaultValue: 0.0
-    },
+    /**
+     * @property {DATE} {datecreated} {allowNull : false, defaultValue : new Date()}
+     */
     datecreated : {
         type : Sequelize.DATE,
         allowNull : false,
