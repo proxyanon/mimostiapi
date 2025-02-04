@@ -1,3 +1,13 @@
+/**
+ * 
+ * @author Daniel Victor Freire
+ * @version 2.1.2
+ * @description Modelo da tabela de unidade
+ * @file Unidades.js
+ * @copyright Mimos tia Pi 2025
+ * @package mimostiapi
+ */
+
 const Sequelize = require('sequelize');
 const db = require('../modules/database');
 

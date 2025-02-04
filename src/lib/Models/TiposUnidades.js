@@ -2,13 +2,21 @@
  * 
  * @author Daniel Victor Freire
  * @version 2.1.2
- * @description Modelo da tabela de estoque de material de produção
- * @file EstoqueMaterialProducao.js
+ * @description Modelo da tabela de tipo de unidade
+ * @file TipoUnidades.js
  * @copyright Mimos tia Pi 2025
  * @package mimostiapi
  */
 
+/**
+ * 
+ * @constant {class} {Sequelize}
+ */
 const Sequelize = require('sequelize');
+/**
+ * 
+ * @constant {class} {db}
+ */
 const db = require('../modules/database');
 
 /**
