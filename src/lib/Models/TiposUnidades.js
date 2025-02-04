@@ -15,13 +15,13 @@
 const Sequelize = require('sequelize');
 /**
  * 
- * @constant {class} {db}
+ * @constant {object} {db}
  */
 const db = require('../modules/database');
 
 /**
  * 
- * @constant {method} {Model}
+ * @constant {object} {Model}
  */
 const Model = db.define('estoque_material_producao', {
     /**
@@ -52,6 +52,6 @@ const Model = db.define('estoque_material_producao', {
 
 /**
  *
- * @var {Model} {module1.exports}
+ * @constant {Model} {module.exports}
  */
 module.exports = Model;
