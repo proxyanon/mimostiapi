@@ -40,14 +40,9 @@ const Model = db.define('estoque_material_producao', {
         allowNull : true
     },
     unidade : {
-        type : Sequelize.INT,
+        type : Sequelize.INTEGER,
         allowNull : false,
         defaultValue : 1
-    },
-    unidade : {
-        type : Sequelize.INT,
-        allowNull : false,
-        defaultValue : "m"
     },
     entrada : {
         type : Sequelize.FLOAT,

@@ -59,10 +59,10 @@ module.exports = () => {
                 model : models.Produtos,
                 required : false,
                 attributes : ['id', 'nome', 'descricao'],
-                as : 'produto_nome'
+                as : 'nome_produto'
             }],
             where : { especificacao : { [models.sequelize.Op.substring] : search } },
-            order : [['produto_nome', 'nome', 'ASC']]
+            order : [['nome_produto', 'nome', 'ASC']]
         })
 
         console.log(search, Object.values(results).length, results);

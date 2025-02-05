@@ -16,14 +16,13 @@ module.exports = () => {
      */
     var module = {};
 
-    module.fields = models.EstoqueMaterialProducao.rawAttributes
+    module.fields = models.EstoqueMaterialProducao.rawAttributes;
 
     /**
-     * 
-     * @param {express.request} req 
-     * @param {express.response} res
-     * @param {any} next
-     * @returns {VoidFunction}
+     * @param {express.Request} req 
+     * @param {express.Response} res
+     * @param {Function} next
+     * @returns {void}
      */
     module.searchEstoqueMaterialProducao = async (req, res, next) => {
 
@@ -40,11 +39,20 @@ module.exports = () => {
 
     }
 
+    /**
+     * @param {express.request} req 
+     * @param {express.response} res
+     * @param {function} next
+     */
     module.getEstoqueMaterialProducao = async (req, res, next) => {
 
         const results = await models.EstoqueMaterialProducao.findAll({ 
             include : [{
                 model : models.ProdutosCor,
+                required : false,
+                attributes : ['id', 'nome']
+            },{
+                model : models.Unidades,
                 required : false,
                 attributes : ['id', 'nome']
             }],
@@ -62,10 +70,10 @@ module.exports = () => {
     /**
      * 
      * @async
-     * @param {express.request} req 
-     * @param {express.response} res 
-     * @param {any} next
-     * @returns {express.response}
+     * @param {object} req 
+     * @param {object} res 
+     * @param {object} next
+     * @returns {object}
      */
     module.addEstoqueMaterialProducao = async (req, res, next) => {
 
