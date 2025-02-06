@@ -1062,14 +1062,22 @@
                     </div>
 
                     <div class="row mt-2">
-                        <div class="col-8 mr-0">
-                            <div class="form-group">
-                                <label for="estoque_material_producao-unidade" class="form-label">Unidade</label>
-                                <select id="estoque_material_producao-unidade" class="form-select" aria-label="Unidade" required>
-                                    <option selected disabled>-- escolha o tipo de unidade do produto --</option>
-                                </select>
+                        <div class="row">
+                                <div class="col-8 mr-0">
+                                    <div class="form-group">
+                                        <label for="estoque_material_producao-unidade" class="form-label">Unidade</label>
+                                        <select id="estoque_material_producao-unidade" class="form-select" aria-label="Unidade" required>
+                                            <option selected disabled>-- escolha o tipo de unidade --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="btn-group mt-4" role="group" aria-label="Colors buttons">
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_unidade"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" id="edit-unidade" data-bs-target="#modal_unidade" disabled><i class="fa fa-edit"></i></button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
                         <div class="col">
                             <div class="form-group">
                                 <label for="estoque_material_producao-entrada" class="form-label">Entrada</label>
@@ -1970,6 +1978,29 @@
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-trash"></i> Fechar</button>
                     <button class="btn btn-success" id="btn-add-cor"><i class="fa fa-save"></i> Salvar</button>
                     <div class="d-none alert alert-danger" id="modal_cor-error"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="modal_unidade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Adicionar unidade</div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modal_unidade-id">
+                    <div class="form-group">
+                        <label for="modal_unidade-nome" class="form-label">Cor</label>
+                        <input type="text" id="modal_unidade-nome" class="form-control" placeholder="Unidade (m/M/metrôs | cm/CM/centimétros | etc...)">
+                    </div>
+                    <div class="alert alert-danger mt-3 text-center p-1 d-none" id="modal_unidade-error"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa fa-trash"></i> Fechar</button>
+                    <button class="btn btn-success" id="btn-add-unidade"><i class="fa fa-save"></i> Salvar</button>
+                    <div class="d-none alert alert-danger" id="modal_unidade-error"></div>
                 </div>
             </div>
         </div>
@@ -3854,13 +3885,27 @@
                     }
     
                 });
-    
+                
+                /**
+                *
+                * @function loadDashboard
+                * @param {string} currentDashboard
+                * @returns {void}
+                *
+                *
+                * @function initFieldsMasks
+                * @returns {void}
+                */
                 loadDashboardPage(currentDashboard); // LOAD LAST STORAGE DASHBOARD
                 initFieldsMasks(); // INIT FIELDS MASKS
 
                 $('#modal_saida_caixa-saida').maskMoney();
 
                 // ADD SECTION IN PRODUCTS FORM
+                /**
+                *
+                * @event #btn-add-secao
+                */
                 document.querySelector('#btn-add-secao').addEventListener('click', (e) => {
 
                     let secao_id = document.querySelector('#modal_secao-id').value;
@@ -3881,6 +3926,12 @@
 
                         data.id = secao_id;
 
+                        /**
+                        *
+                        * @async
+                        * @method api
+                        * @returns {Promise<void>}
+                        */
                         api.saveData(data)
                             .then(resp => resp.json())
                             .then(results => {
@@ -3911,6 +3962,12 @@
 
                     }else{
 
+                        /**
+                        *
+                        * @async
+                        * @method
+                        * @returns {Promise<void>}
+                        */
                         api.createData(data)
                             .then(resp => resp.json())
                             .then(results => {
@@ -3944,6 +4001,10 @@
                 });
 
                 // ADD CATEGORIE IN PRODUCTS FORM
+                /**
+                *
+                * @event #btn-add-categoria
+                */
                 document.querySelector('#btn-add-categoria').addEventListener('click', (e) => {
 
                     let categoria_id = document.querySelector('#modal_categoria-id').value;
@@ -3966,6 +4027,12 @@
 
                         data.id = secao_id;
 
+                        /**
+                        *
+                        * @async
+                        * @method api
+                        * @returns {Promise<void>}
+                        */
                         api.saveData(data)
                             .then(resp => resp.json())
                             .then(results => {
@@ -3991,6 +4058,12 @@
 
                     }else{
 
+                        /**
+                        *
+                        * @async
+                        * @method
+                        * @returns {Promise<void>}
+                        */
                         api.createData(data)
                             .then(resp => resp.json())
                             .then(results => {
@@ -4019,41 +4092,47 @@
                 });
 
                 // ADD COLOR IN PRODUCTS FORM
-                document.querySelector('#btn-add-cor').addEventListener('click', (e) => {
+                document.querySelector('#btn-add-unidade').addEventListener('click', (e) => {
 
-                    let cor_id = document.querySelector('#modal_cor-id').value;
-                    let cor_nome = document.querySelector('#modal_cor-nome').value;
+                    let unidade_id = document.querySelector('#modal_unidade-id').value;
+                    let unidade_nome = document.querySelector('#modal_unidade-nome').value;
 
                     let data = {};
 
-                    if(!cor_nome){
-                        show('modal_cor-error', 'Preencha os campos');
+                    if(!unidade_nome){
+                        show('modal_unidade-error', 'Preencha os campos');
                         return;
                     }
 
-                    data.nome = cor_nome;
-                    data.endpoint = 'produtos/cor';
+                    data.nome = unidade_nome;
+                    data.endpoint = 'produtos/unidades';
                     data.form_data = data;
 
                     if(cor_id){
 
                         data.id = secao_id;
 
+                        /**
+                        *
+                        * @async
+                        * @method
+                        * @returns {Promise<void>}
+                        */
                         api.saveData(data)
                             .then(resp => resp.json())
                             .then(results => {
     
                                 if(results.error){
-                                    show('modal_cor-error', results.msg, 4000);
+                                    show('modal_unidade-error', results.msg, 4000);
                                 }else{
 
-                                    loadSelectOptions('cor', {
-                                        placeholder : '-- selecione a opção --',
-                                        selectElementName : getCurrentDashboard() == 'produtos' ? 'produto-cor' : 'estoque_material_producao-cor'
+                                    loadSelectOptions('unidade', {
+                                        placeholder : '-- selecione o tipo de unidade --',
+                                        selectElementName : getCurrentDashboard() == 'produtos' ? 'produto-cor' : 'estoque_material_producao-unidade'
                                     });
                                     
-                                    $('#modal_cor').val('');
-                                    $('#modal_cor').modal('hide');
+                                    $('#modal_unidade').val('');
+                                    $('#modal_unidade').modal('hide');
 
                                 }
     
@@ -4064,6 +4143,12 @@
 
                     }else{
 
+                        /**
+                        *
+                        * @async
+                        * @method
+                        * @returns {Promise<void>}
+                        */
                         api.createData(data)
                             .then(resp => resp.json())
                             .then(results => {
@@ -4079,6 +4164,116 @@
 
                                     $('#modal_cor').val('');
                                     $('#modal_cor').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                app_config.verbose ? console.error(err) : '';
+                            });
+
+                    }
+
+                });
+
+                /**
+                *
+                * @event #btn-add-unidade
+                */
+                document.querySelector('#btn-add-unidade').addEventListener('click', (e) => {
+
+                    /**
+                    *
+                    * @var {Elment} unidade_id
+                    * @var {Elment} unidade_nome
+                    * @var {object} data
+                    */
+                    let unidade_id = document.querySelector('#modal_unidade-id').value;
+                    let unidade_nome = document.querySelector('#modal_unidade-nome').value;
+
+                    let data = {};
+
+                    if(!unidade_nome){
+                        /**
+                        *
+                        * @function
+                        * @argument {string} element_id
+                        * @argument {string} text
+                        * @argument {number} [timeout]
+                        * @returns {void}
+                        */
+                        show('modal_unidade-error', 'Preencha os campos');
+                        return;
+                    }
+
+                    data.nome = cor_unidade;
+                    data.endpoint = 'produtos/unidades';
+                    data.form_data = data;
+
+                    if(unidade_id){
+
+                        data.id = secao_id;
+
+                        /**
+                        *
+                        * @async
+                        * @method
+                        * @returns {Promise<void>}
+                        */
+                        api.saveData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_unidade-error', results.msg, 4000);
+                                }else{
+
+                                    loadSelectOptions('unidade', {
+                                        placeholder : '-- selecione a opção --',
+                                        selectElementName : getCurrentDashboard() == 'produtos' ? 'produto-cor' : 'estoque_material_producao-unidade'
+                                    });
+                                    
+                                    $('#modal_unidade').val('');
+                                    $('#modal_unidade').modal('hide');
+
+                                }
+    
+                            })
+                            .catch(err => {
+                                app_config.verbose ? console.error(err) : '';
+                            });
+
+                    }else{
+
+                        /**
+                        *
+                        * @async
+                        * @method
+                        * @returns {Promise<void>}
+                        */
+                        api.createData(data)
+                            .then(resp => resp.json())
+                            .then(results => {
+    
+                                if(results.error){
+                                    show('modal_unidade-error', results.msg, app_config.errors.timeout);
+                                }else{
+                                    
+                                    /**
+                                    *
+                                    * @function
+                                    * @param {string} name
+                                    * @param {object} params
+                                    * @returns {void}
+                                    *
+                                    */
+                                    loadSelectOptions('unidade', {
+                                        placeholder : '-- selecione o tipo de unidade --',
+                                        selectElementName : getCurrentDashboard() == 'produtos' ? 'produto-cor' : 'estoque_material_producao-unidade'
+                                    });
+
+                                    $('#modal_unidade').val('');
+                                    $('#modal_unidade').modal('hide');
 
                                 }
     

@@ -10,25 +10,25 @@
 /**
  * Importa os modelos necessários para a associação de tabelas.
  * 
- * @typedef {import('sequelize').Sequelize} Sequelize
- * @typedef {import('../Models/Usuarios')} Usuarios
- * @typedef {import('../Models/Clientes')} Clientes
- * @typedef {import('../Models/Fornecedores')} Fornecedores
- * @typedef {import('../Models/Vendedores')} Vendedores
- * @typedef {import('../Models/PrestadoresServicos')} PrestadoresServicos
- * @typedef {import('../Models/Funcionarios')} Funcionarios
- * @typedef {import('../Models/Produtos')} Produtos
- * @typedef {import('../Models/ProdutosCategorias')} ProdutosCategorias
- * @typedef {import('../Models/ProdutosSecoes')} ProdutosSecoes
- * @typedef {import('../Models/ProdutosCor')} ProdutosCor
- * @typedef {import('../Models/EstoqueMaterialProducao')} EstoqueMaterialProducao
- * @typedef {import('../Models/EstoqueProdutoFinal')} EstoqueProdutoFinal
- * @typedef {import('../Models/Caixa')} Caixa
- * @typedef {import('../Models/CaixaTemp')} CaixaTemp
- * @typedef {import('../Models/ContasPagar')} ContasPagar
- * @typedef {import('../Models/ContasReceber')} ContasReceber
- * @typedef {import('../Models/FormasPagamento')} FormasPagamentos
- * @typedef {import('../Models/Unidades')} Unidades
+ * @requires sequelize
+ * @requires ../Models/Usuarios
+ * @requires ../Models/Clientes
+ * @requires ../Models/Fornecedores
+ * @requires ../Models/Vendedores
+ * @requires ../Models/PrestadoresServicos
+ * @requires ../Models/Funcionarios
+ * @requires ../Models/Produtos
+ * @requires ../Models/ProdutosCategorias
+ * @requires ../Models/ProdutosSecoes
+ * @requires ../Models/ProdutosCor
+ * @requires ../Models/EstoqueMaterialProducao
+ * @requires ../Models/EstoqueProdutoFinal
+ * @requires ../Models/Caixa
+ * @requires ../Models/CaixaTemp
+ * @requires ../Models/ContasPagar
+ * @requires ../Models/ContasReceber
+ * @requires ../Models/FormasPagamento
+ * @requires ../Models/Unidades
  */
 
 /**
@@ -75,7 +75,7 @@ Unidades = require('../Models/Unidades');
 /**
  * Define as associações entre os modelos.
  * 
- * @function
+ * @function module:models
  */
 
 ProdutosCategorias.belongsTo(ProdutosSecoes, { foreignKey: 'secao', allowNull: false });
@@ -145,6 +145,6 @@ ContasReceber.belongsTo(Clientes, { foreignKey : 'cliente_id', allowNull : false
 ContasReceber.belongsTo(FormasPagamentos, { foreignKey : 'forma_pagamento', allowNull : false });
 
 /**
- * @var {object}
+ * @var {object} models
  */
 module.exports = { Usuarios,Clientes,Fornecedores,Vendedores,Funcionarios,Produtos,ProdutosSecoes,ProdutosCategorias,ProdutosCor,EstoqueMaterialProducao,EstoqueProdutoFinal,Caixa,CaixaTemp,ContasPagar,ContasReceber,FormasPagamentos,Unidades,PrestadoresServicos,sequelize }
