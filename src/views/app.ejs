@@ -1078,13 +1078,13 @@
                                     </div>
                                 </div>
                             </div>
-                        <div class="col">
+                        <div class="col mt-2">
                             <div class="form-group">
                                 <label for="estoque_material_producao-entrada" class="form-label">Entrada</label>
                                 <input type="number" class="form-control" placeholder="Entrada" id="estoque_material_producao-entrada">
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col mt-2">
                             <div class="form-group">
                                 <label for="estoque_material_producao-saida" class="form-label">Saída</label>
                                 <input type="number" class="form-control" placeholder="Saída" id="estoque_material_producao-saida">
@@ -4041,6 +4041,14 @@
                                     show('modal_categoria-error', results.msg, 4000);
                                 }else{
 
+                                    /**
+                                    *
+                                    * @function loadSelectOptions
+                                    * @argument {str} categoria
+                                    * @argument {object} params
+                                    * @return {void}
+                                    *
+                                    */
                                     loadSelectOptions('categoria', {
                                         placeholder : '-- selecione a opção --',
                                         selectElementName : 'produto-categoria'
