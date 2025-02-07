@@ -7,51 +7,6 @@
  * @copyright Mimos tia Pi 2025
  */
 
-/**
- * Importa os modelos necessários para a associação de tabelas.
- * 
- * @requires sequelize
- * @requires ../Models/Usuarios
- * @requires ../Models/Clientes
- * @requires ../Models/Fornecedores
- * @requires ../Models/Vendedores
- * @requires ../Models/PrestadoresServicos
- * @requires ../Models/Funcionarios
- * @requires ../Models/Produtos
- * @requires ../Models/ProdutosCategorias
- * @requires ../Models/ProdutosSecoes
- * @requires ../Models/ProdutosCor
- * @requires ../Models/EstoqueMaterialProducao
- * @requires ../Models/EstoqueProdutoFinal
- * @requires ../Models/Caixa
- * @requires ../Models/CaixaTemp
- * @requires ../Models/ContasPagar
- * @requires ../Models/ContasReceber
- * @requires ../Models/FormasPagamento
- * @requires ../Models/Unidades
- */
-
-/**
- * @type {Sequelize}
- * @type {Usuarios}
- * @type {Clientes}
- * @type {Fornecedores}
- * @type {Vendedores}
- * @type {PrestadoresServicos}
- * @type {Funcionarios}
- * @type {Produtos}
- * @type {ProdutosCategorias}
- * @type {ProdutosSecoes}
- * @type {ProdutosCor}
- * @type {EstoqueMaterialProducao}
- * @type {EstoqueProdutoFinal}
- * @type {Caixa}
- * @type {CaixaTemp}
- * @type {ContasPagar}
- * @type {ContasReceber}
- * @type {FormasPagamentos}
- * @type {Unidades}
- */
 const sequelize = require('sequelize'),
 Usuarios = require('../Models/Usuarios'),
 Clientes = require('../Models/Clientes'),
@@ -71,35 +26,6 @@ ContasPagar = require('../Models/ContasPagar'),
 ContasReceber = require('../Models/ContasReceber'),
 FormasPagamentos = require('../Models/FormasPagamento'),
 Unidades = require('../Models/Unidades');
-
-/**
- * Define as associações entre os modelos.
- * 
- * @function module:models
- */
-
-ProdutosCategorias.belongsTo(ProdutosSecoes, { foreignKey: 'secao', allowNull: false });
-ProdutosCategorias.belongsTo(Produtos, { foreignKey: 'id' });
-
-Produtos.belongsTo(ProdutosCategorias, { foreignKey: 'categoria', allowNull: false });
-Produtos.belongsTo(ProdutosSecoes, { foreignKey: 'secao', allowNull: false });
-Produtos.belongsTo(ProdutosCor, { foreignKey: 'cor', allowNull: false });
-Produtos.belongsTo(EstoqueProdutoFinal, { foreignKey: 'id', allowNull: false });
-
-EstoqueMaterialProducao.belongsTo(ProdutosCor, { foreignKey: 'cor', allowNull: false });
-EstoqueMaterialProducao.belongsTo(Unidades, { foreignKey: 'unidade', allowNull: false });
-
-EstoqueProdutoFinal.belongsTo(Produtos, { foreignKey: 'produto', as: 'nome_produto', allowNull: false });
-
-CaixaTemp.belongsTo(Caixa, { foreignKey: 'caixa_id', allowNull: false });
-CaixaTemp.belongsTo(Produtos, { foreignKey: 'produto_id', allowNull: false });
-CaixaTemp.belongsTo(FormasPagamentos, { foreignKey: 'forma_pagamento_id', allowNull: false });
-
-ContasPagar.belongsTo(Fornecedores, { foreignKey: 'fornecedor_id', allowNull: false });
-ContasPagar.belongsTo(FormasPagamentos, { foreignKey: 'forma_pagamento', allowNull: false });
-
-ContasReceber.belongsTo(Clientes, { foreignKey: 'cliente_id', allowNull: false });
-ContasReceber.belongsTo(FormasPagamentos, { foreignKey: 'forma_pagamento', allowNull: false });
 
 /**
  * Exporta os modelos e a instância do Sequelize.
@@ -130,7 +56,7 @@ ContasReceber.belongsTo(FormasPagamentos, { foreignKey: 'forma_pagamento', allow
 ProdutosCategorias.belongsTo(Produtos, { foreignKey : 'id' });
 
 EstoqueMaterialProducao.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
-EstoqueMaterialProducao.belongsTo(Unidades, { foreignKey : 'unidade', allowNull : false });
+EstoqueMaterialProducao.belongsTo(Unidades, { foreignKey : 'unidade' });
 //EstoqueProdutoFinal.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
 EstoqueProdutoFinal.belongsTo(Produtos, { foreignKey : 'produto', as : 'produto_nome', allowNull : false });
 
