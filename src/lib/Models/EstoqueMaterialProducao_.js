@@ -2,19 +2,16 @@
  * 
  * @author Daniel Victor Freire
  * @version 2.1.2
- * @description Modelo da tabela de unidade
- * @file Unidades.js
+ * @description Modelo da tabela de estoque de material de produção
+ * @file EstoqueMaterialProducao.js
  * @copyright Mimos tia Pi 2025
  * @package mimostiapi
  */
 
 const Sequelize = require('sequelize');
 const db = require('../modules/database');
+const now_date = new Date();
 
-/**
- * 
- * @constant {method} {Model}
- */
 const Model = db.define('estoque_material_producao', {
     id : {
         type : Sequelize.INTEGER,
@@ -38,11 +35,14 @@ const Model = db.define('estoque_material_producao', {
     marca : {
         type : Sequelize.STRING,
         allowNull : true
-    },
+    },    
     unidade : {
         type : Sequelize.INTEGER,
         allowNull : false,
-        defaultValue : 1
+        references: {
+            model: 'EstoqueMaterialProducao',
+            key: 'id',
+        },
     },
     entrada : {
         type : Sequelize.FLOAT,
@@ -56,12 +56,8 @@ const Model = db.define('estoque_material_producao', {
     datecreated : {
         type : Sequelize.DATE,
         allowNull : false,
-        defaultValue : new Date()
+        defaultValue : now_date
     }
 })
 
-/**
- *
- * @var {Model} {module.exports}
- */
 module.exports = Model;

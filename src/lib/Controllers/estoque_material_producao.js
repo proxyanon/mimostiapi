@@ -10,49 +10,31 @@ const router = express.Router();
 const config = require('../config');
 
 module.exports = () => {
-    /**
-     * 
-     * @var {Object} module
-     */
+
     var module = {};
 
-    module.fields = models.EstoqueMaterialProducao.rawAttributes;
+    module.fields = models.EstoqueMaterialProducao.rawAttributes
 
-    /**
-     * @param {express.Request} req 
-     * @param {express.Response} res
-     * @param {Function} next
-     * @returns {void}
-     */
     module.searchEstoqueMaterialProducao = async (req, res, next) => {
 
         if(!req.params.search){ res.notAccept('Nada digitado', module.fields) };
 
         const { search } = req.params;
-            
-        const results = await models.EstoqueMaterialProducao.findAll({ 
+
+        const results = await models.EstoqueMaterialProducao.findAll({
             where : { especificao : { [ models.sequelize.Op.substring ] : search }},
             order : [['especificao', 'ASC']]
         });
-        
+
         results.length > 0 ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.status(404).json({ error : true, msg : 'Nada encontrado', fields : Object.keys(module.fields) });
 
     }
 
-    /**
-     * @param {express.request} req 
-     * @param {express.response} res
-     * @param {function} next
-     */
     module.getEstoqueMaterialProducao = async (req, res, next) => {
 
-        const results = await models.EstoqueMaterialProducao.findAll({ 
+        const results = await models.EstoqueMaterialProducao.findAll({
             include : [{
                 model : models.ProdutosCor,
-                required : false,
-                attributes : ['id', 'nome']
-            },{
-                model : models.Unidades,
                 required : false,
                 attributes : ['id', 'nome']
             }],
@@ -67,41 +49,27 @@ module.exports = () => {
 
     }
 
-    /**
-     * 
-     * @async
-     * @param {object} req 
-     * @param {object} res 
-     * @param {object} next
-     * @returns {object}
-     */
     module.addEstoqueMaterialProducao = async (req, res, next) => {
 
         let obj_create = {}
-        
+
         req.body.datecreated = new Date();
 
         req.body = sanitize(req.body);
 
         if(!Security.checkBody(req.body, module.fields)){
             config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
-            return res.block(`[${models.EstoqueMaterialProducao.tableName.toUpperCase()}] Formulário não aceito`);
+            return res.block(`[${models.EstoqueMaterialProducao.tableName.toUpperCase()}] FormulÃ¡rio nÃ£o aceito`);
         }
 
         for(key in module.fields){
             if(key != 'id'){
                 if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && module.fields[key].allowNull == false && (req.body[key] != null || req.body[key] != undefined)){
-                    
-                    if((module.fields[key].type == 'FLOAT' || module.fields[key].type == 'INTEGER') && !Security.checkIntFloat(module.fields, key)){
-                        return res.notAccept(`Valor inválido para o campo ${key} (${module.fields[key]}) ${module.fields[key].type == 'FLOAT' ? 'Você precisa digitar um valor real ex: 10,25' : 'Você precisa digitar um número inteiro ex: 1'}`)
-                    }
-
-                    obj_create[key] = sanitize(req.body[key])
-                
+                    obj_create[key] = req.body[key]
                 }else if(!req.body[key] && module.fields[key] != null){
-                    return res.unauthorized(res, 'Campos com valores inválido(s) ou vazio(s) - cod 666');
+                    return res.status(401).json({ error : true, msg : 'Campos invÃ¡lido(s) 2' })
                 }else{
-                    obj_create[key] = sanitize(req.body[key])
+                    obj_create[key] = req.body[key]
                 }
             }
         }
@@ -109,7 +77,7 @@ module.exports = () => {
         console.log(obj_create);
 
         if(Object.keys(obj_create).length==0){
-            res.block('Preencha o formulário completo');
+            res.block('Preencha o formulÃ¡rio completo');
         }else{
 
             const results = await models.EstoqueMaterialProducao.create(obj_create);
@@ -129,7 +97,7 @@ module.exports = () => {
         const estoque_material_producao = await models.EstoqueMaterialProducao.findByPk(req.params.id)
 
         if(estoque_material_producao){
-            
+
             estoque_material_producao['datecreated'] = new Date();
 
             for(key in module.fields){
@@ -144,11 +112,11 @@ module.exports = () => {
             }
 
             if((parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida'])) <= 0){
-                return res.block('O estoque não pode ser menor que zero digite uma saída menor ou uma entrada maior');
+                return res.block('O estoque nÃ£o pode ser menor que zero digite uma saÃ­da menor ou uma entrada maior');
             }
 
             if((parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida'])) <= estoque_material_producao['entrada']){
-                return res.block('A saída não pode ser maior que a entrada');
+                return res.block('A saÃ­da nÃ£o pode ser maior que a entrada');
             }
 
             estoque_material_producao['estoque'] = parseInt(estoque_material_producao['entrada']) - parseInt(estoque_material_producao['saida']);
@@ -162,7 +130,7 @@ module.exports = () => {
             }
 
         }else{
-            res.serverError('Estoque não encontrado')
+            res.serverError('Estoque nÃ£o encontrado')
         }
 
     }
