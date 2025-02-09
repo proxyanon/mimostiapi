@@ -87,15 +87,6 @@ module.exports = () => {
         }
     }
 
-    module.test = async (req, res, next) => {
-
-        console.log(req.file);
-        console.log(req.body);
-
-        res.json({ error : false, msg : 'Enviado' });
-
-    }
-
     module.upload = (req, res, next) => {
     
         const storage = multer.diskStorage({

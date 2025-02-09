@@ -8,6 +8,7 @@
  */
 
 const Security = require('./lib/modules/Security');
+const sec = new Security();
 
 // MAIN IMPORTS
 const express = require('express'),
@@ -32,7 +33,7 @@ const express = require('express'),
     { xss } = require('express-xss-sanitizer'), // XSS middleware
     { exec } = require('child_process'),
     multer = require('multer'),
-    md5 = require('md5'); // exec to start chrome
+    md5 = require('md5');
 
 app.set('view engine', 'ejs'); // SET VIEW ENGINE IN THIS CASE EJS
 app.set('views', path.join(__dirname, 'views')); // VIEWS PATH
@@ -80,14 +81,28 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     app.use(session(config.server.session)); // use session in server
     app.set('socket-io', io); // attach socket.io in server
 
+    /**
+     * @requires dev_route
+     */
+    const dev_route = require('./test/test')();
+
     // views routes
     app.use('/', routes.index);
     app.use('/app', routes.app);
+    app.use('/dev/test', dev_route);
 
     // UPLOAD IMAGES ROUTE
     //app.use('/api/v1/upload', routes.upload);
 
-    const uploadFile = (req, res, next) => {        
+    /**
+     * @async
+     * @const {Function} uploadFile
+     * @param {express.Request} req 
+     * @param {express.Response} res 
+     * @param {Function} next 
+     * @returns {Promise<express.Response>}
+     */
+    const uploadFile = async (req, res, next) => {
 
         try{
             const storage = multer.diskStorage({
@@ -110,13 +125,11 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
 
     }
 
-    app.post('/api/v1/upload', async (req, res, next) => {
+    app.post('/api/v1/upload', sec.middlewares.auth_check, sec.middlewares.csrf_check, async (req, res, next) => {
     
         try{
-            uploadFile()
+            await uploadFile()
         }catch(Error){
-            console.log(`[x] Error ao fazer upload do arquivo`)
-        }finally{
             return res.status(500).json({ error : true, msg : 'Ocorreu um error ao fazer upload do arquivo' })
         }
     

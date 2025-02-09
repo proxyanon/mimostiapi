@@ -3,8 +3,10 @@ const models = require('../modules/models');
 
 const Security = require('../modules/Security');
 const { xss, sanitize } = require('express-xss-sanitizer');
+const Utils = require('../modules/utils');
 
 const sec = new Security();
+const utils = new Utils(models.EstoqueMaterialProducao);
 const router = express.Router();
 
 const config = require('../config');
@@ -37,6 +39,11 @@ module.exports = () => {
                 model : models.ProdutosCor,
                 required : false,
                 attributes : ['id', 'nome']
+            },{
+                model : models.Unidade,
+                required : false,
+                attributes : ['id', 'nome'],
+                as : 'u'
             }],
             order : [['especificacao', 'ASC']]
         })
@@ -150,14 +157,114 @@ module.exports = () => {
 
     }
 
+    /**
+     * @async
+     * @property {Function} addEstoqueMaterialProducaoUnidade
+     * @param {express.Request} req 
+     * @param {express.Response} res 
+     * @param {Function} next 
+     * @returns {Promise<express.Response>}
+     */
+    module.addEstoqueMaterialProducaoUnidade = async (req, res, next) => {
+            
+            /**
+             * @var {any} results
+             */
+            let results = false;
+
+            if(!Object.keys(req).includes('body')){
+                if(req.body.length <= 0){
+                    return res.status(400).json({ error : true, msg : 'Formulário vazio' });
+                }
+            }else{
+                return res.status(400).json({ error : true, msg : 'Formulário vazio' });
+            }
+
+            try{
+                results = await utils.add_save(req.body, 'add');
+            }catch(err){
+                return res.status(500).json({ error : true, msg : `Ocorreu na execução da tarefa (${err})` });
+            }
+
+            if(!results){
+                return res.status(500).json({ error : true, msg : `Ocorreu na execução` });
+            }
+
+            try{
+                return res.status(results.code).json({ error : results.resp.error, msg : results.resp.msg });
+            }catch(err){
+                return res.status(400).json({ error : true, msg : `Malformated request (${err})` });
+            }
+    
+        }
+
+        module.saveEstoqueMaterialProducaoUnidade = async (req, res, next) => {
+            
+            /**
+             * @var {any} results
+             */
+            let results = false;
+
+            if(!Object.keys(req).includes('body')){
+                if(req.body.length <= 0){
+                    return res.status(400).json({ error : true, msg : 'Formulário vazio' });
+                }
+            }else{
+                return res.status(400).json({ error : true, msg : 'Formulário vazio' });
+            }
+
+            try{
+                results = await utils.add_save(req.body, 'save');
+            }catch(err){
+                return res.status(500).json({ error : true, msg : `Ocorreu na execução da tarefa (${err})` });
+            }
+
+            if(!results){
+                return res.status(500).json({ error : true, msg : `Ocorreu na execução` });
+            }
+
+            try{
+                return res.status(results.code).json({ error : results.resp.error, msg : results.resp.msg });
+            }catch(err){
+                return res.status(400).json({ error : true, msg : `Malformated request (${err})` });
+            }
+    
+        }
+
+        module.delEstoqueMaterialProducaoUnidade = async (req, res, next) => {
+            
+            /**
+             * @var {any} results
+             */
+            let results = false;
+
+            try{
+                results = await utils.del(req.params.id);
+            }catch(err){
+                return res.status(500).json({ error : true, msg : `Ocorreu na execução da tarefa (${err})` });
+            }
+
+            if(!results){
+                return res.status(500).json({ error : true, msg : `Ocorreu na execução` });
+            }
+
+            try{
+                return res.status(results.code).json({ error : results.resp.error, msg : results.resp.msg });
+            }catch(err){
+                return res.status(400).json({ error : true, msg : `Malformated request (${err})` });
+            }
+    
+        }
+
     router
         .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        .get('/search/:search', module.searchEstoqueMaterialProducao)
+        .get('/search/:search', sec.middlewares.sanitize_body, module.searchEstoqueMaterialProducao)
         .get('/:id?', module.getEstoqueMaterialProducao)
         .post('/add', xss(), module.addEstoqueMaterialProducao)
         .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveEstoqueMaterialProducao)
-        .delete('/del/:id', module.deleteEstoqueMaterialProducao);
+        .delete('/del/:id', module.deleteEstoqueMaterialProducao)
+        .post('/unidade/add', xss(), sec.middlewares.sanitize_body, module.addEstoqueMaterialProducaoUnidade);
 
     return router;
 

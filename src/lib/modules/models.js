@@ -15,7 +15,8 @@ const sequelize = require('sequelize'),
  CaixaTemp = require('../Models/CaixaTemp'),
  ContasPagar = require('../Models/ContasPagar'),
  ContasReceber = require('../Models/ContasReceber'),
- FormasPagamentos = require('../Models/FormasPagamento');
+ FormasPagamentos = require('../Models/FormasPagamento'),
+ Unidade = require('../Models/Unidade');
 
 ProdutosCategorias.belongsTo(ProdutosSecoes, { foreignKey : 'secao', allowNull : false });
 
@@ -27,6 +28,7 @@ Produtos.belongsTo(EstoqueProdutoFinal, { foreignKey : 'id', allowNull : false }
 ProdutosCategorias.belongsTo(Produtos, { foreignKey : 'id' });
 
 EstoqueMaterialProducao.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
+EstoqueMaterialProducao.belongsTo(Unidade, { foreignKey : 'id', as : 'u' });
 //EstoqueProdutoFinal.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
 EstoqueProdutoFinal.belongsTo(Produtos, { foreignKey : 'produto', as : 'produto_nome', allowNull : false });
 
@@ -42,6 +44,6 @@ ContasReceber.belongsTo(FormasPagamentos, { foreignKey : 'forma_pagamento', allo
 
 module.exports = {
 
-    Usuarios,Clientes,Fornecedores,Vendedores,PrestadoresServicos,Funcionarios,Produtos,ProdutosSecoes,ProdutosCategorias,ProdutosCor,EstoqueMaterialProducao,EstoqueProdutoFinal,Caixa,CaixaTemp,ContasPagar,ContasReceber,FormasPagamentos,sequelize
+    Usuarios,Clientes,Fornecedores,Vendedores,PrestadoresServicos,Funcionarios,Produtos,ProdutosSecoes,ProdutosCategorias,ProdutosCor,EstoqueMaterialProducao,EstoqueProdutoFinal,Caixa,CaixaTemp,ContasPagar,ContasReceber,FormasPagamentos,Unidade,sequelize
 
 }
