@@ -3,10 +3,11 @@ const models = require('../modules/models');
 
 const Security = require('../modules/Security');
 const { xss, sanitize } = require('express-xss-sanitizer');
-const Utils = require('../modules/utils');
+const { Crud, Utils } = require('../modules/crud');
 
 const sec = new Security();
-const utils = new Utils(models.EstoqueMaterialProducao);
+const crud = new Crud(models.EstoqueMaterialProducao);
+const utils = new Utils(false);
 const router = express.Router();
 
 const config = require('../config');
@@ -171,13 +172,16 @@ module.exports = () => {
              * @var {any} results
              */
             let results = false;
+            let check_body;
+            
+            try{
+                check_body = utils.check_body(req);
+            }catch(err){
+                return res.notAccept('Não foi possível checar os valores do formulário');
+            }
 
-            if(!Object.keys(req).includes('body')){
-                if(req.body.length <= 0){
-                    return res.status(400).json({ error : true, msg : 'Formulário vazio' });
-                }
-            }else{
-                return res.status(400).json({ error : true, msg : 'Formulário vazio' });
+            if(check_body.resp.error){
+                return res.notAccept('Não foi possível checar os valores do formulário');
             }
 
             try{
@@ -204,17 +208,20 @@ module.exports = () => {
              * @var {any} results
              */
             let results = false;
+            let check_body;
+            
+            try{
+                check_body = utils.check_body(req);
+            }catch(err){
+                return res.notAccept('Não foi possível checar os valores do formulário');
+            }
 
-            if(!Object.keys(req).includes('body')){
-                if(req.body.length <= 0){
-                    return res.status(400).json({ error : true, msg : 'Formulário vazio' });
-                }
-            }else{
-                return res.status(400).json({ error : true, msg : 'Formulário vazio' });
+            if(check_body.resp.error){
+                return res.notAccept('Não foi possível checar os valores do formulário');
             }
 
             try{
-                results = await utils.add_save(req.body, 'save');
+                results = await crud.save(req.params.id, req.body);
             }catch(err){
                 return res.status(500).json({ error : true, msg : `Ocorreu na execução da tarefa (${err})` });
             }
@@ -238,8 +245,10 @@ module.exports = () => {
              */
             let results = false;
 
+            
+
             try{
-                results = await utils.del(req.params.id);
+                results = await crud.delete(req.params.id);
             }catch(err){
                 return res.status(500).json({ error : true, msg : `Ocorreu na execução da tarefa (${err})` });
             }
@@ -264,7 +273,9 @@ module.exports = () => {
         .post('/add', xss(), module.addEstoqueMaterialProducao)
         .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveEstoqueMaterialProducao)
         .delete('/del/:id', module.deleteEstoqueMaterialProducao)
-        .post('/unidade/add', xss(), sec.middlewares.sanitize_body, module.addEstoqueMaterialProducaoUnidade);
+        .post('/unidade/add', xss(), sec.middlewares.sanitize_body, module.addEstoqueMaterialProducaoUnidade)
+        .put('/unidade/save/:id', xss(), sec.middlewares.sanitize_body, module.saveEstoqueMaterialProducaoUnidade)
+        .delete('/unidade/del/:id', xss(), sec.middlewares.sanitize_body, module.delEstoqueMaterialProducaoUnidade);
 
     return router;
 
