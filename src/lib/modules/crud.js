@@ -14,6 +14,7 @@ const sec = new Security();
 
 /**
  * @class
+ * @description - Essa classe fornece diversos métodos para tratar erros e fazer checagem de dados
  */
 class Utils {
 
@@ -96,6 +97,7 @@ class Utils {
 /**
  * 
  * @class
+ * @description - Essa clase automatiza o CRUD para os controladores
  */
 class Crud extends Utils {
 
@@ -179,6 +181,7 @@ class Crud extends Utils {
      * @method create
      * @param {express.Request.body} body
      * @returns {Object}
+     * @description - Essa função cria dados no banco de dados de uma tabela especificada no construtor
      */
     async create(body){
 
@@ -222,6 +225,14 @@ class Crud extends Utils {
 
     }
 
+    /**
+     * @async
+     * @method save
+     * @param {number} id 
+     * @param {express.Request.body} body 
+     * @returns {Object}
+     * @description - Essa função salva dados no banco em uma tabela especificada no construtor
+     */
     async save(id, body){
 
         let obj_save = {}
