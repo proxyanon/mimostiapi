@@ -1,4 +1,11 @@
 /**
+ * @author Daniel Victor Freire Feitosa
+ * @version 2.1.1
+ * @package
+ * @description - Esse pacote faz CRUD de uma forma de mais alto nível
+ */
+
+/**
  * @requires models
  * @requires express
  * @requires Security
@@ -29,8 +36,8 @@ class Utils {
     /**
      * @method check_int
      * @param {any} value
-     * @description - Verifica se realmente o valor é inteiro
      * @returns {boolean}
+     * @description - Verifica se realmente o valor é inteiro
      */
     check_int(value){
 
@@ -75,18 +82,20 @@ class Utils {
     }
 
     /**
-     * 
+     * @method check_body
      * @param {express.Request} req 
-     * @returns {boolean}
+     * @returns {Security.checkBody}
+     * @description - Esse método é um alías para o método estático Security.checkBody
      */
     check_body(req){
         return Security.checkBody(req);
     }
 
     /**
-     * @method check_fileds(fields)
-     * @param {Sequelize.rawAttributes} fields 
-     * @returns {boolean}
+     * @method check_fields
+     * @param {this.model.rawAttributes} fields 
+     * @returns {Security.checkFields}
+     * @description - Esse método é um alías para o método estático Security.checkFields
      */
     check_fields(fields){
         return Security.checkFields(fields);
@@ -109,35 +118,68 @@ class Crud extends Utils {
      * @returns {VoidFunction}
      */
     constructor(throwException, Model){
+        
         super(throwException);
+        
         this.model = Model;
-
+        this.fields = false;
+        
         try{
-            this.fields = this.model.rawAttributes;
+            this.fields = this.check_fields(this.model.rawAttributes);
         }catch(err){
             this.log_error(err);
-            return this.create_obj_return(true, `Não foi possível obter os atributos para este formulário (code: 2CV)`)
+            return this.create_obj_return(true, `Não foi possível obter os atributos para este formulário`, 38, 500)
+        }
+
+        if(!this.fields){
+            return this.create_obj_return(true, `Não foi possível obter os atributos para este formulário`, 38, 500)
         }
         
     }
 
     /**
-     * @method
+     * @method create_obj_return
      * @param {string} error 
      * @param {string} msg 
      * @param {number} code 
      * @param {number} status_code 
      * @returns {Object}
+     * @description - Cria um JSON para o retorno de resposta do express
      */
     create_obj_return(error, msg, code, status_code){
-        return { resp : { error, msg : `${msg} (code: ${code})` }, code : status_code}
+
+        if(typeof error != 'boolean' || typeof code == 'number' || typeof status_code == 'number'){
+            return { resp : { error, msg : 'Tipos de dados incompátiveis com suas definição (código do error: 1000)' }, code : 401 }
+        }
+
+        if(!this.check_int(int(code)) || !this.check_int(int(status_code))){
+            return { resp : { error, msg : 'Tipos de dados incompátiveis com suas definição (código do error: 1001)' }, code : 401 }
+        }
+
+        if(code <= 0 || status_code < 200){
+            return { resp : { error, msg : 'Tipos de dados incompátiveis com suas definição (código do error: 1002)' }, code : 401 }
+        }
+
+        try{
+            
+            if(code == 0 && status_code == 200){
+                return msg.length == '' || msg == null || msg == undefined || msg == ' ' ? { resp : { error }, code : status_code } : { resp : { error, msg : `${msg} (código do error: ${code})` }, code : status_code}
+            }else{
+                return { resp : { error, msg : `${msg} (código do error: ${code})` }, code : status_code}
+            }
+
+        }catch(err){
+            this.log_error(err);
+            return { resp : { error, msg : `Não foi possível criar uma resposta para a entradas do método (código do error: 1003)` }, code : 500 }
+        }
+
     }
 
     /**
      * @async
      * @method threat_body_fields
      * @param {express.Request.body} body 
-     * @returns {object}
+     * @returns {Object}
      */
     async threat_body_fields(body){
 
@@ -147,7 +189,7 @@ class Crud extends Utils {
             for(key in this.fields){
                 if(key != 'id'){
                     try{
-                        if(!body[key] && this.module.fields[key].allowNull != null){
+                        if(!body[key] && this.fields[key].allowNull != null){
                             return this.create_obj_return(true, `Campo(s) inválido(s) [${key}]`, 982, 401)
                         }else{
                             try{
@@ -325,14 +367,14 @@ class Crud extends Utils {
 
             try{
                 await record.destroy();
-                return { resp : { error : false }, code : 200 }
+                return this.create_obj_return(false, '', 0, 200);
             }catch(err){
                 this.log_error(err);
-                return { resp : { error : true, msg : `Erro ao excluir o registro` }, code : 401 }
+                return this.create_obj_return(true, `Erro ao excluir o registro`, 37, 401)
             }
 
         }else{
-            return { resp : { error : true, msg : `Não foi possível excluir o registro` }, code : 400 }
+            return this.create_obj_return(true, `Não foi possível excluir o registro`, 1024, 400);
         }
 
     }
@@ -340,7 +382,6 @@ class Crud extends Utils {
 }
 
 /**
- * @type {typeof Crud}
- * @type {typeof Utils}
+ * @type {typeof Crud, Utils}
  */
 module.exports = { Crud, Utils };
