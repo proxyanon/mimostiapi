@@ -58,9 +58,9 @@ class Utils {
     }
 
     /**
-     * @method log_error
-     * @param {str} err
-     * @param {str} msg
+     * @method log_error(arguments)
+     * @param {string} err
+     * @param {string} msg
      * @description - Checa se o você quer uma exeception ou simplesmente logar o erro de uma forma quiet sem parar o servidor
      */
     log_error(err, msg){
@@ -108,47 +108,66 @@ class Crud extends Utils {
      */
     constructor(throwException, Model){
         super(throwException);
-        this.model = Model; 
+        this.model = Model;
+
+        try{
+            this.fields = this.model.rawAttributes;
+        }catch(err){
+            this.log_error(err);
+            return this.create_obj_return(true, `Não foi possível obter os atributos para este formulário (code: 2CV)`)
+        }
+        
+    }
+
+    /**
+     * @method
+     * @param {string} error 
+     * @param {string} msg 
+     * @param {number} code 
+     * @param {number} status_code 
+     * @returns {Object}
+     */
+    create_obj_return(error, msg, code, status_code){
+        return { resp : { error, msg : `${msg} (code: ${code})` }, code : status_code}
     }
 
     /**
      * @async
      * @method threat_body_fields
-     * @param {models.sequelize.rawAttributes} fields 
      * @param {express.Request.body} body 
      * @returns {object}
      */
-    async threat_body_fields(fields, body){
+    async threat_body_fields(body){
 
         let record = false;
 
         try{
-            for(key in fields){
+            for(key in this.fields){
                 if(key != 'id'){
                     try{
                         if(!body[key] && this.module.fields[key].allowNull != null){
-                            return { resp : { error : true, msg : `Campo(s) inválido(s) [${key}] (code: 982)`}, code : 401}
+                            return this.create_obj_return(true, `Campo(s) inválido(s) [${key}]`, 982, 401)
                         }else{
                             try{
                                 record[key] = body[key]
                             }catch(err){
                                 this.log_error(err, key);
-                                return { resp : { error : true, msg : `Valor inválido para o campo ${key} (code: 22)` }, code : 401 }
+                                return this.create_obj_return(true, `Valor inválido para o campo ${key}`, 22, 401);
                             }
                         }
                     }catch(err){
                         this.log_error(err);
-                        return { resp : { error : true, msg : `Os campos não parecem ser compatíveis com o esperado (code: 1533)` }, code : 401 }
+                        return this.create_obj_return(true, 'Os campos não parecem ser compatíveis com o esperado', 1533, 401);
                     }
                 }
             }
         }catch(err){
             this.log_error(err);
-            return { resp : { error : true, msg : `Ocorreu um erro no sistema (code: 13)` }, code : 501 }
+            return this.create_obj_return(true, `Ocorreu um erro no sistema`, 13, 501);
         }
 
         if(!record){
-            return { resp : { error : true, msg : `Ouve um erro ao tratar os valores do formulário` }, code : 500 }
+            return this.create_obj_return(true, 'Ouve um erro ao tratar os valores do formulário', 123, 500);
         }
 
         return record;
@@ -164,118 +183,101 @@ class Crud extends Utils {
     async create(body){
 
         let obj_create = {}
-        let fields = {}
 
         try{
-            fields = this.model.rawAttributes;
+            this.fields = this.model.rawAttributes;
         }catch(err){
-            return { resp : { error : true, msg : `Não foi possível obter os atributos para este formulário (${err})` } }
+            this.log_error(err);
+            return this.create_obj_return(true, 'Não foi possível obter os atributos para este formulário', 899, 500);
         }
 
         try{
             if(!this.check_body(body)){
-                return { resp : { error : true, msg : 'Campos do formulário são inválido(s) ou está(ão) inválidos' }, code : 401 }
+                return this.create_obj_return(true, 'Campos do formulário são inválido(s) ou está(ão) inválidos', 676, 401);
             }
         }catch(err){
-            return { resp : { error : true, msg: `Erro ao verificar o formulário (${err})` }, code : 400 }
+            this.log_error(err);
+            return this.create_obj_return(true, 'Erro ao verificar o formulário', 409, 400);
         }
 
-        if(!this.check_fields(fields)){
-            return { resp : { error : true, msg: `Atributos do formulário estão vazios` }, code : 401 }
+        if(!this.check_fields(this.fields)){
+            return this.create_obj_return(true, 'Atributos do formulário estão vazios', 858, 401);
         }
 
         try{
-            obj_create = await this.threat_body_fields(fields, body);
+            obj_create = await this.threat_body_fields(body);
         }catch(err){
-            this.log_error(err)
-            return { resp : { error : true, msg: `Erro ao válidar o formulário (code: 2)` }, code : 401 }
+            this.log_error(err);
+            return this.create_obj_return(true, 'Erro ao válidar o formulário', 2, 401);
         }
 
         if(Object.keys(obj_create).length==0){
             this.log_error('Formulário vazio após o tratamento (code: 752)');
-            return { resp : { error : true, msg : 'Formulário após o tratamento ficou vazio tente novamente (code: 752)' }, code : 401 }
+            results = this.create_obj_return(true, 'Formulário após o tratamento ficou vazio tente novamente', 752, 401);
         }else{
-
-            let results = false;
-
-            try{
-                results = await record.save();
-            }catch(err){
-                this.log_error(err)
-                return { resp : { error : true, msg : `Erro ao salvar o registro` }, code : 401 }
-            }
-
-            return results ? { resp : { error : false, obj_create : obj_create }, code : 200 } : { resp : { error : true, msg : `Ocorreu um erro ao criar o registro` }, code : 501 }
-
+            results = results ? this.create_obj_return(true, record, 0, 200) : this.create_obj_return(true, `Ocorreu um erro ao criar o registro`, 778, 501)
         }
+
+        return results;
 
     }
 
     async save(id, body){
 
         let obj_save = {}
-        let fields = {}
 
         try{
 
             if(!this.check_int(id)){
-                return { resp : { error : true, msg : `A identificação da unidade é inválida (code: 54)` }, code: 401 };
+                return this.create_obj_return(true, `A identificação da unidade é inválida`, 69, 401 )
             }
 
         }catch(err){
-            return { resp : { error : true, msg : `Não foi possível obter os atributos para este formulário` }, code: 501 }
-        }
-
-        try{
-            fields = this.model.rawAttributes;
-        }catch(err){
             this.log_error(err);
-            return { resp : { error : true, msg : `Não foi possível obter os atributos para este formulário (${err})` } }
+            return this.create_obj_return(true, `Não foi possível obter os atributos para este formulário`, 911, 501)
         }
 
         try{
             if(!this.check_body(body)){
-                return { resp : { error : true, msg : 'Campos do formulário são inválido(s) ou está(ão) inválidos' }, code : 401 }
+                return this.create_obj_return(true, 'Campos do formulário são inválido(s) ou está(ão) inválidos', 299, 401)
             }
         }catch(err){
             this.log_error(err)
-            return { resp : { error : true, msg: `Erro ao verificar o formulário (code: 202)` }, code : 400 }
+            return this.create_obj_return(true, `Erro ao verificar o formulário`, 200, 400)
         }
 
         let record = false;
 
         try{
-            record = await this.threat_body_fields(fields, body);
+            record = await this.threat_body_fields(body);
         }catch(err){
             this.log_error(err)
-            return { resp : { error : true, msg: `Erro ao válidar o formulário (code: 2)` }, code : 401 }
+            return this.create_obj_return(true, `Erro ao válidar o formulário`, 2, 401)
         }
 
         try{
             record = await this.model.findByPk(int(id))
         }catch(err){
-            return { resp : { error : true, msg : 'Não foi possível encontrar o registro' }, code : 404 }
+            this.log_error(err);
+            return this.create_obj_return(true, 'Não foi possível encontrar o registro', 404, 404)
         }
 
         if(!record){
-            return { resp : { error : true, msg : 'Não foi possível encontrar o registro' }, code : 404 }
+            this.create_obj_return(true, 'Não foi possível encontrar o registro', 404, 404)
         }
 
-        if(Object.keys(obj_save).length==0){
-            return { resp : { error : true, msg : 'Campo(s) inválido(s)' }, code : 401 }
-        }else{
+        let results = false;
 
-            let results = false;
-
-            try{
-                results = await this.model.save(obj_save)
-            }catch(err){
-                return { resp : { error : true, msg : `Erro ao salvar o registro ${err}` }, code : 400 }
-            }
-
-            return results ? { resp : { error : false, record }, code : 200 } : { resp : { error : false, msg : 'Não foi possível salvar o registro' }, code : 501 }
-
+        try{
+            results = await this.model.save(obj_save)
+        }catch(err){
+            this.log_error(err);
+            this.create_obj_return(true, `Erro ao salvar o registro`, 100, 400)
         }
+
+        results = results ? this.create_obj_return(false, record, 0, 200) : this.create_obj_return(false, 'Não foi possível salvar o registro', 6969, 501)
+
+        return results;
 
     }
 
