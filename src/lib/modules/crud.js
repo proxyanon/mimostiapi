@@ -1,8 +1,11 @@
 /**
  * @author Daniel Victor Freire Feitosa
- * @version 2.1.1
- * @package
- * @description - Esse pacote faz CRUD de uma forma de mais alto nível
+ * @version 1.0.0
+ * @package crud.js
+ * @description - Esse pacote faz o CRUD de uma forma de mais alto nível
+ * @copyright All rigths reserved to Mimos tia Pi 2024-2025
+ * @name crud.js
+ * @access 
  */
 
 /**
@@ -21,21 +24,44 @@ const sec = new Security();
 
 /**
  * @class
- * @description - Essa classe fornece diversos métodos para tratar erros e fazer checagem de dados
+ * @classdesc - Essa classe fornece diversos métodos para tratar erros e fazer checagem de dados,
+ * verifica números para saber se são inteiros, faz log de erros no console levando em conta se
+ * você quer user verbose ou então pode disparar um evento throwException no paramêtro de mesmo nome
  */
 class Utils {
 
     /**
+     * @typedef {(number | string)} IntString
+     * @typedef {express.Request} Request
+     * @typedef {express.Response} Response
+     * @typedef {express.Request.body} RequestBody
+     * @typedef {express.Request.params} RequestParams
+     * @typedef {(express.Request.params.property | number)} RequestParamProperty
+     * @typedef {Security.checkFields} CheckFields
+     * @typedef {Utils.property} UtilsProperty
+     * @typedef {Security.CheckFields} SecurityCheckBody
+     * 
+     */
+
+    /**
+     * @this Crud
+     * @typedef {this.model.rawAttributes} Fields
+     * @typedef {ClassAccessorDecoratorContext.Utils.property} UtilsProperty
+     * 
      * @constructor
      * @param {boolean} throwException 
+     * @param {boolean} verbose
+     * @description - Construtor recebe os paramêtros de throException e verbose
      */
-    constructor(throwException = false){
+    
+    constructor(throwException = false, verbose = true){
         this.throwException = throwException;
+        this.verbose = verbose;
     }
 
     /**
      * @method check_int
-     * @param {any} value
+     * @param {IntString} value
      * @returns {boolean}
      * @description - Verifica se realmente o valor é inteiro
      */
@@ -66,13 +92,13 @@ class Utils {
     }
 
     /**
-     * @method log_error(arguments)
+     * @method log_error
      * @param {string} err
      * @param {string} msg
      * @description - Checa se o você quer uma exeception ou simplesmente logar o erro de uma forma quiet sem parar o servidor
      */
     log_error(err, msg){
-        if(!this.throwException){
+        if(!this.throwException && this.verbose){
             console.clear();
             console.warn(`${msg}\n\n`);
             console.error(`Erro -> ${err}\n`);
@@ -83,8 +109,8 @@ class Utils {
 
     /**
      * @method check_body
-     * @param {express.Request} req 
-     * @returns {Security.checkBody}
+     * @param {Request} req 
+     * @returns {SecurityCheckBody}
      * @description - Esse método é um alías para o método estático Security.checkBody
      */
     check_body(req){
@@ -93,8 +119,9 @@ class Utils {
 
     /**
      * @method check_fields
-     * @param {this.model.rawAttributes} fields 
-     * @returns {Security.checkFields}
+     * @this Crud
+     * @param {Fields} fields 
+     * @returns {CheckFields}
      * @description - Esse método é um alías para o método estático Security.checkFields
      */
     check_fields(fields){
@@ -113,13 +140,14 @@ class Crud extends Utils {
     /**
      * 
      * @constructor
+     * @param {UtilsProperty} throwException
+     * @param {UtilsProperty} verbose
      * @param {models.sequelize} Model
-     * @param {Utils.property} throwException
      * @returns {VoidFunction}
      */
-    constructor(throwException, Model){
+    constructor(throwException, verbose, Model){
         
-        super(throwException);
+        super(throwException, verbose);
         
         this.model = Model;
         this.fields = false;
@@ -141,8 +169,12 @@ class Crud extends Utils {
      * @method create_obj_return
      * @param {string} error 
      * @param {string} msg 
-     * @param {number} code 
+     * @param {number} code
      * @param {number} status_code 
+     * @todo $error -> true/false
+     * @todo $msg -> Mensagem caso ocrra um erro
+     * @todo $code -> Código do erro
+     * @todo $status_code -> STATUS_CODE de resposta
      * @returns {Object}
      * @description - Cria um JSON para o retorno de resposta do express
      */
@@ -178,7 +210,7 @@ class Crud extends Utils {
     /**
      * @async
      * @method threat_body_fields
-     * @param {express.Request.body} body 
+     * @param {RequestBody} body 
      * @returns {Object}
      */
     async threat_body_fields(body){
@@ -221,7 +253,7 @@ class Crud extends Utils {
     /**
      * @async
      * @method create
-     * @param {express.Request.body} body
+     * @param {RequestBody} body
      * @returns {Object}
      * @description - Essa função cria dados no banco de dados de uma tabela especificada no construtor
      */
@@ -271,7 +303,7 @@ class Crud extends Utils {
      * @async
      * @method save
      * @param {number} id 
-     * @param {express.Request.body} body 
+     * @param {RequestBody} body 
      * @returns {Object}
      * @description - Essa função salva dados no banco em uma tabela especificada no construtor
      */
@@ -337,8 +369,9 @@ class Crud extends Utils {
     /**
      * @async
      * @method delete
-     * @param {int} id 
+     * @param {RequestParamProperty} id 
      * @returns {Object}
+     * @description - Esse método deleta um registro, atenção é indicado que seja feito backup antes de qualquer uso do metódo
      */
     async delete(id){
 
@@ -346,12 +379,12 @@ class Crud extends Utils {
 
             if(!this.check_int(id)){
                 this.log_error('O ID não é um inteiro');
-                return { resp : { error : true, msg : `A identificação da unidade é inválida (code: 54)` }, code: 401 };
+                return this.create_obj_return(true, `A identificação da unidade é inválida`, 54, 401)
             }
 
         }catch(err){
             this.log_error(err);
-            return { resp : { error : true, msg : `Não foi possível obter os atributos para este formulário (code: 25)` }, code: 501 }
+            return this.create_obj_return(true, `Não foi possível obter os atributos para este formulário`, 25, 501);
         }
 
         let record = false;
@@ -360,7 +393,7 @@ class Crud extends Utils {
             record = await this.model.findByPk(id);
         }catch(err){
             this.log_error(err);
-            return { resp : { error : true, msg : `Registro não encontrado` }, code : 404 }
+            return this.create_obj_return(true, `Registro não encontrado`, 911, 404);
         }
 
         if(record){

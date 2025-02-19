@@ -6,8 +6,8 @@ const { xss, sanitize } = require('express-xss-sanitizer');
 const { Crud, Utils } = require('../modules/crud');
 
 const sec = new Security();
-const crud = new Crud(models.EstoqueMaterialProducao);
-const utils = new Utils(false);
+const crud = new Crud(false, true, models.EstoqueMaterialProducao);
+const utils = new Utils(false, true);
 const router = express.Router();
 
 const config = require('../config');
@@ -170,6 +170,7 @@ module.exports = () => {
             
             /**
              * @var {any} results
+             * @var {boolean} check_body
              */
             let results = false;
             let check_body;
@@ -185,19 +186,21 @@ module.exports = () => {
             }
 
             try{
-                results = await utils.add_save(req.body, 'add');
+                results = await utils.create(req.body);
             }catch(err){
-                return res.status(500).json({ error : true, msg : `Ocorreu na execução da tarefa (${err})` });
+                utils.log_error(err);
+                return crud.create_obj_return(true, `Ocorreu na execução da tarefa`, 9280, 500);
             }
 
             if(!results){
-                return res.status(500).json({ error : true, msg : `Ocorreu na execução` });
+                return crud.create_obj_return(true, `Ocorreu na execução`, 9281, 500);
             }
 
             try{
-                return res.status(results.code).json({ error : results.resp.error, msg : results.resp.msg });
+                return crud.create_obj_return(false, '', 0, 200);
             }catch(err){
-                return res.status(400).json({ error : true, msg : `Malformated request (${err})` });
+                crud.log_error(err);
+                return crud.create_obj_return(true, `Requisição mal formatada`, 9282, 400);
             }
     
         }
@@ -206,6 +209,7 @@ module.exports = () => {
             
             /**
              * @var {any} results
+             * @var {boolean} check_body
              */
             let results = false;
             let check_body;
@@ -213,6 +217,7 @@ module.exports = () => {
             try{
                 check_body = utils.check_body(req);
             }catch(err){
+                crud.log_error(err);
                 return res.notAccept('Não foi possível checar os valores do formulário');
             }
 
@@ -223,17 +228,19 @@ module.exports = () => {
             try{
                 results = await crud.save(req.params.id, req.body);
             }catch(err){
-                return res.status(500).json({ error : true, msg : `Ocorreu na execução da tarefa (${err})` });
+                crud.log_error(err);
+                return res.notAccept(`Ocorreu na execução da tarefa`);
             }
 
             if(!results){
-                return res.status(500).json({ error : true, msg : `Ocorreu na execução` });
+                return res.notAccept(`Ocorreu na execução`);
             }
 
             try{
-                return res.status(results.code).json({ error : results.resp.error, msg : results.resp.msg });
+                return crud.create_obj_return(false, '', 0, 200);
             }catch(err){
-                return res.status(400).json({ error : true, msg : `Malformated request (${err})` });
+                crud.log_error(err);
+                return res.badRequest('');
             }
     
         }
@@ -269,7 +276,7 @@ module.exports = () => {
         .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
         .get('/search/:search', sec.middlewares.sanitize_body, module.searchEstoqueMaterialProducao)
-        .get('/:id?', module.getEstoqueMaterialProducao)
+        .get('/:id?', xss(), module.getEstoqueMaterialProducao)
         .post('/add', xss(), module.addEstoqueMaterialProducao)
         .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveEstoqueMaterialProducao)
         .delete('/del/:id', module.deleteEstoqueMaterialProducao)

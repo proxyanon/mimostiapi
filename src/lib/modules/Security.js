@@ -187,7 +187,7 @@ class Security {
                 if(Security.checkFields(fields)){
                     return res.status(400).json({ error : true, msg, fields : Object.keys(fields) });
                 }else{
-                    return res.status(400).json({ error : true, msg });
+                    return res.status(400).json({ error : false, msg });
                 }
 
             }
