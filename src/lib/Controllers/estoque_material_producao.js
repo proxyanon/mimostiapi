@@ -143,6 +143,19 @@ module.exports = () => {
 
     }
 
+    /**
+     * @property {Function} deleteEstoqueMaterialProducao
+     * @param {express.Request} const
+     * @param {express.Response} res
+     * @returns {Promise<express.Response>}
+     * @async
+     * @method
+     * @public
+     * @version 1.0.0
+     * @description Deleta um estoque de material de produção
+     * @summary Deleta um estoque de material de produção
+     * @see {@link module:estoque_material_producao}
+     */
     module.deleteEstoqueMaterialProducao = async (req, res, next) => {
 
         const estoque_material_producao = await models.EstoqueMaterialProducao.findByPk(req.params.id);
@@ -158,6 +171,14 @@ module.exports = () => {
 
     }
 
+    module.getEstoqueMaterialProducaoUnidade = async (req, res, next) => {
+
+        results = req.params.id ? await crud.read(req.params.id) : await crud.read();
+
+        return results;
+
+    }
+
     /**
      * @async
      * @property {Function} addEstoqueMaterialProducaoUnidade
@@ -165,6 +186,16 @@ module.exports = () => {
      * @param {express.Response} res 
      * @param {Function} next 
      * @returns {Promise<express.Response>}
+     * @version 1.0.0
+     * @description Adiciona um estoque de material de produção a uma unidade
+     * @summary Adiciona um estoque de material de produção a uma unidade
+     * @see {@link module:estoque_material_producao}
+     * @public
+     * @method
+     * @example
+     * addEstoqueMaterialProducaoUnidade(req, res, next)
+     * @async
+     * @throws {Error} Se ocorrer um erro na execução da tarefa
      */
     module.addEstoqueMaterialProducaoUnidade = async (req, res, next) => {
             
@@ -189,18 +220,18 @@ module.exports = () => {
                 results = await utils.create(req.body);
             }catch(err){
                 utils.log_error(err);
-                return crud.create_obj_return(true, `Ocorreu na execução da tarefa`, 9280, 500);
+                return res.notAccept('Ocorreu na execução a tarefa');
             }
 
             if(!results){
-                return crud.create_obj_return(true, `Ocorreu na execução`, 9281, 500);
+                return res.notAccept('Ocorreu na execução');
             }
 
             try{
-                return crud.create_obj_return(false, '', 0, 200);
+                return res.json({ results, error : false });
             }catch(err){
                 crud.log_error(err);
-                return crud.create_obj_return(true, `Requisição mal formatada`, 9282, 400);
+                return res.notAccept('Requisição mal formatada');
             }
     
         }
@@ -208,7 +239,7 @@ module.exports = () => {
         module.saveEstoqueMaterialProducaoUnidade = async (req, res, next) => {
             
             /**
-             * @var {any} results
+             * @var {*} results
              * @var {boolean} check_body
              */
             let results = false;
@@ -245,6 +276,12 @@ module.exports = () => {
     
         }
 
+        /**
+         * @property {Function} delEstoqueMaterialProducaoUnidade
+         * @param {express.Request} req
+         * @param {express.Response} res
+         * @returns {Promise<express.Response>}
+         */
         module.delEstoqueMaterialProducaoUnidade = async (req, res, next) => {
             
             /**
@@ -273,16 +310,19 @@ module.exports = () => {
         }
 
     router
-        .use(sec.middlewares.auth_check)
+        //.use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        .get('/search/:search', sec.middlewares.sanitize_body, module.searchEstoqueMaterialProducao)
-        .get('/:id?', xss(), module.getEstoqueMaterialProducao)
-        .post('/add', xss(), module.addEstoqueMaterialProducao)
-        .put('/save/:id', xss(), sec.middlewares.sanitize_body, module.saveEstoqueMaterialProducao)
+        //.use(xss())
+        //.use(sec.middlewares.sanitize_body)
+        .get('/search/:search', module.searchEstoqueMaterialProducao)
+        .get('/:id?', module.getEstoqueMaterialProducao)
+        .get('/unidade/:id?', module.getEstoqueMaterialProducaoUnidade)
+        .put('/save/:id',  module.saveEstoqueMaterialProducao)
         .delete('/del/:id', module.deleteEstoqueMaterialProducao)
-        .post('/unidade/add', xss(), sec.middlewares.sanitize_body, module.addEstoqueMaterialProducaoUnidade)
-        .put('/unidade/save/:id', xss(), sec.middlewares.sanitize_body, module.saveEstoqueMaterialProducaoUnidade)
-        .delete('/unidade/del/:id', xss(), sec.middlewares.sanitize_body, module.delEstoqueMaterialProducaoUnidade);
+        .post('/unidade/add',  module.addEstoqueMaterialProducaoUnidade)
+        .put('/unidade/save/:id',  module.saveEstoqueMaterialProducaoUnidade)
+        .delete('/unidade/del/:id',  module.delEstoqueMaterialProducaoUnidade)
+        .post('/add', module.addEstoqueMaterialProducao);
 
     return router;
 
