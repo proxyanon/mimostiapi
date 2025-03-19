@@ -1,3 +1,40 @@
+/**
+ * @author Daniel Victor Freire
+ * @version 1.0.0
+ * @git github.com/proxyanon/mimostiapi
+ * @arguments {express.Request} req - Requisição HTTP
+ * @arguments {express.Response} res - Resposta HTTPS
+ * @arguments {Function} next - Próxima função
+ * @package src/lib/Controllers/estoque_material_producao
+ * @abstract Controlador de estoque de material de produção
+ * @description Controlador de estoque de material de produção
+ * @see {@link module:estoque_material_producao}
+ * @satisfies {RequisitosFuncionais} RF001 - Manter estoque de material de produção
+ * @access {@link module:estoque_material_producao}
+ * @type {Class}
+ * @implements {module:estoque_material_producao}
+ */
+
+
+/**
+ * @requires express - Módulo express
+ * @requires models - Módulo models
+ * @requires Security - Módulo Security
+ * @requires express-xss-sanitizer - Módulo express-xss-sanitizer
+ * @requires Crud - Módulo Crud
+ * @requires Utils - Módulo Utils
+ * @requires config - Módulo config
+ * 
+ * @constant {express} express - Módulo express
+ * @constant {models} models - Módulo models
+ * @constant {Security} sec - Módulo Security
+ * @constant {express-xss-sanitizer} xss - Módulo express-xss-sanitizer
+ * @constant {express-xss-sanitizer} sanitize - Módulo express-xss-sanitizer
+ * @constant {Crud} crud - Módulo Crud
+ * @constant {Utils} utils - Módulo Utils
+ * @constant {<express.Router>} router - Módulo Router
+ */
+
 const express = require('express');
 const models = require('../modules/models');
 
@@ -12,6 +49,33 @@ const router = express.Router();
 
 const config = require('../config');
 
+/**
+ * @module estoque_material_producao
+ * @namespace estoque_material_producao
+ * @version 1.0.0 - 2021
+ * @description Controlador de estoque de material de produção
+ * 
+ * @type {module:estoque_material_producao} - Controlador de estoque de material de produção
+ * 
+ * @typedef {Object} module:estoque_material_producao
+ * 
+ * @property {Object} fields - Campos do modelo
+ * @property {Function} searchEstoqueMaterialProducao - Pesquisa um estoque de material de produção
+ * @property {Function} getEstoqueMaterialProducao - Retorna um estoque de material de produção
+ * @property {Function} addEstoqueMaterialProducao - Adiciona um estoque de material de produção
+ * @property {Function} saveEstoqueMaterialProducao - Salva um estoque de material de produção
+ * @property {Function} deleteEstoqueMaterialProducao - Deleta um estoque de material de produção
+ * @property {Function} getEstoqueMaterialProducaoUnidade - Retorna um estoque de material de produção de uma unidade
+ * @property {Function} addEstoqueMaterialProducaoUnidade - Adiciona um estoque de material de produção a uma unidade
+ * @property {Function} saveEstoqueMaterialProducaoUnidade - Salva um estoque de material de produção de uma unidade
+ * @property {Function} delEstoqueMaterialProducaoUnidade - Deleta um estoque de material de produção de uma unidade
+ * 
+ * @param {express.Request} req - Requisição HTTP
+ * @param {express.Response} res - Resposta HTTP
+ * @param {Function} next - Próxima função
+ * 
+ * @returns {router} - Retorna um router
+ */
 module.exports = () => {
 
     var module = {};
