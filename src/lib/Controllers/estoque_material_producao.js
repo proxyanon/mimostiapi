@@ -1,6 +1,7 @@
 /**
  * @author Daniel Victor Freire
  * @version 1.0.0
+ * @copyright 2021-2025
  * @git github.com/proxyanon/mimostiapi
  * @arguments {express.Request} req - Requisição HTTP
  * @arguments {express.Response} res - Resposta HTTPS
