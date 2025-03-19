@@ -367,13 +367,13 @@ class Crud extends Utils {
 
     /**
      * @async {promise} - Retorna uma promessa de uma função assíncrona que lê dados no banco de dados de uma tabela especificada no construtor
-     * @method read - Lê dados no banco de dados de uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
+     * @method readByPK - Lê dados no banco de dados de uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      * @description - Essa função lê dados no banco de dados de uma tabela especificada no construtor
      * @param {IntString} id - Identificação da unidade a ser lida no banco de dados do express ou do express em si 
      * @example - const record = await this.read(1);
      * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      */
-    async byPK(id=false) {
+    async readByPK(id=false) {
 
         let hashId = id ? 'sim' : 'não';
 
