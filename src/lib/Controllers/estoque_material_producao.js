@@ -200,7 +200,7 @@ module.exports = () => {
     module.addEstoqueMaterialProducaoUnidade = async (req, res, next) => {
             
             /**
-             * @var {any} results
+             * @var {*} results
              * @var {boolean} check_body
              */
             let results = false;
@@ -285,7 +285,7 @@ module.exports = () => {
         module.delEstoqueMaterialProducaoUnidade = async (req, res, next) => {
             
             /**
-             * @var {any} results
+             * @var {*} results
              */
             let results = false;
 

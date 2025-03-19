@@ -293,6 +293,79 @@ class Crud extends Utils {
     }
 
     /**
+     * @async {promise} - Retorna uma promisse
+     * @method read - Lê dados no banco de dados de uma tabela especificada no construtor
+     * @description - Essa função lê dados no banco de dados de uma tabela especificada no construtor
+     * @param {Object} fields - Objeto com os dados
+     * @param {Object} orderby - Ordem dos dados
+     * @param {Array} includes - Inclusões
+     * @example - const record = await this.read(fields, orderby, includes);
+     * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
+     */
+    async read(fields={}, orderby={}, includes={}){
+
+        let record = false;
+
+        if(typeof fields != 'object' || typeof orderby != 'object' || typeof includes != 'object'){
+            return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 9091);
+        }
+
+        try{
+            Object.keys(fields).length <= 0 ? null : fields;
+            Object.keys(orderby).length <= 0 ? orderby={'id':'ASC'} : orderby;
+            Object.keys(includes).length <= 0 ? null : includes;
+        }catch(err){
+            this.log_error(err);
+            return this.create_obj_return(true, 'Ocorreu um erro ao verificar os parâmetros', 1, 6578);
+        }
+
+        if(fields == null || includes == null){
+            return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 6996);
+        }
+
+        try{
+            if(!Object.keys(includes).includes('model')){
+                return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 6996);
+            }else if(!Object.keys(includes).includes('attributes')){
+                return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 306);
+            }else if(Object.includes('as')){
+                includes.as = includes.as == includes.model ? includes.model : includes.as;
+            }
+        }catch(err){
+            this.log_error(err);
+            return this.create_obj_return(true, 'Ocorreu um erro ao verificar os parâmetros', 1, 2166);
+        }
+
+        try{
+        
+            if(Object.keys(fields).length > 0){
+                record = await this.model.findAll({ 
+                    where : fields,
+                    include : {
+                        model : includes.model,
+                        attributes : includes.attributes,
+                        as : includes.as
+                    },
+                    orderby 
+                });
+            }else{
+                record = await this.model.findAll({
+                    orderby
+                });
+            }
+        
+        }catch(err){
+            this.log_error(err);
+            return this.create_obj_return(true, 'Ocorreu um erro ao buscar os dados das unidades...', 1, 404);
+        }
+
+        const results = record ? this.create_obj_return(false, 'Sucess', 0, 200) : this.create_obj_return(true, 'Não foi possível encontra nenhum registro(s)', 888, 404);
+
+        return results;
+
+    }
+
+    /**
      * @async {promise} - Retorna uma promessa de uma função assíncrona que lê dados no banco de dados de uma tabela especificada no construtor
      * @method read - Lê dados no banco de dados de uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      * @description - Essa função lê dados no banco de dados de uma tabela especificada no construtor
@@ -300,7 +373,7 @@ class Crud extends Utils {
      * @example - const record = await this.read(1);
      * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      */
-    async read(id=false) {
+    async byPK(id=false) {
 
         let hashId = id ? 'sim' : 'não';
 
