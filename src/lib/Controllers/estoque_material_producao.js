@@ -1,39 +1,33 @@
 /**
  * @author Daniel Victor Freire
- * @version 1.0.0
- * @copyright 2021-2025
+ * @version 2.0.0 - 2025
+ * @since 2021-05-20
+ * @copyright Mimos Tia Pia 2025
  * @git github.com/proxyanon/mimostiapi
- * @arguments {express.Request} req - Requisição HTTP
- * @arguments {express.Response} res - Resposta HTTPS
- * @arguments {Function} next - Próxima função
  * @package src/lib/Controllers/estoque_material_producao
- * @abstract Controlador de estoque de material de produção
  * @description Controlador de estoque de material de produção
  * @see {@link module:estoque_material_producao}
- * @satisfies {RequisitosFuncionais} RF001 - Manter estoque de material de produção
- * @access {@link module:estoque_material_producao}
  * @type {Class}
  * @implements {module:estoque_material_producao}
  */
 
-
 /**
- * @requires express - Módulo express
- * @requires models - Módulo models
- * @requires Security - Módulo Security
- * @requires express-xss-sanitizer - Módulo express-xss-sanitizer
- * @requires Crud - Módulo Crud
- * @requires Utils - Módulo Utils
- * @requires config - Módulo config
+ * @requires express - Importação do módulo express	
+ * @requires models - Importação do módulo models
+ * @requires Security - Importação do módulo Security
+ * @requires express-xss-sanitizer - Importação do módulo express-xss-sanitizer
+ * @requires Crud - Importação do módulo Crud
+ * @requires Utils - Importação do módulo Utils
+ * @requires config - Importação do módulo config
  * 
- * @constant {express} express - Módulo express
- * @constant {models} models - Módulo models
- * @constant {Security} sec - Módulo Security
- * @constant {express-xss-sanitizer} xss - Módulo express-xss-sanitizer
- * @constant {express-xss-sanitizer} sanitize - Módulo express-xss-sanitizer
- * @constant {Crud} crud - Módulo Crud
- * @constant {Utils} utils - Módulo Utils
- * @constant {<express.Router>} router - Módulo Router
+ * @constant {express} express - Declaração da constante express
+ * @constant {models} models - Declaração da constante models
+ * @constant {Security} sec - Declaração da constante sec
+ * @constant {express-xss-sanitizer} xss - Declaração da constante xss
+ * @constant {express-xss-sanitizer} sanitize - Declaração da constante sanitize
+ * @constant {Crud} crud - Declaração da constante crud
+ * @constant {Utils} utils - Declaração da constante utils
+ * @constant {express.Router} router - Declaração da constante router
  */
 
 const express = require('express');
@@ -51,31 +45,24 @@ const router = express.Router();
 const config = require('../config');
 
 /**
- * @module estoque_material_producao
- * @namespace estoque_material_producao
- * @version 1.0.0 - 2021
- * @description Controlador de estoque de material de produção
+ * @module estoque_material_producao - Modelo para controlar estoque de material de produção
+ * @namespace estoque_material_producao  - Escopo do estoque de material de produção
  * 
- * @type {module:estoque_material_producao} - Controlador de estoque de material de produção
- * 
- * @typedef {Object} module:estoque_material_producao
+ * @type {module:estoque_material_producao} - Tipo do módulo
+ * @typedef {Object} module:estoque_material_producao - Definição do módulo
  * 
  * @property {Object} fields - Campos do modelo
- * @property {Function} searchEstoqueMaterialProducao - Pesquisa um estoque de material de produção
- * @property {Function} getEstoqueMaterialProducao - Retorna um estoque de material de produção
- * @property {Function} addEstoqueMaterialProducao - Adiciona um estoque de material de produção
- * @property {Function} saveEstoqueMaterialProducao - Salva um estoque de material de produção
- * @property {Function} deleteEstoqueMaterialProducao - Deleta um estoque de material de produção
- * @property {Function} getEstoqueMaterialProducaoUnidade - Retorna um estoque de material de produção de uma unidade
- * @property {Function} addEstoqueMaterialProducaoUnidade - Adiciona um estoque de material de produção a uma unidade
- * @property {Function} saveEstoqueMaterialProducaoUnidade - Salva um estoque de material de produção de uma unidade
- * @property {Function} delEstoqueMaterialProducaoUnidade - Deleta um estoque de material de produção de uma unidade
+ * @property {Function} searchEstoqueMaterialProducao - Pesquisa um registro do Estoque de material de Produção
+ * @property {Function} getEstoqueMaterialProducao - Retorna um registro do Estoque de material de Produção
+ * @property {Function} addEstoqueMaterialProducao - Adiciona um registro do estoque de material de Produção
+ * @property {Function} saveEstoqueMaterialProducao - Salva um registro do Estoque de material de Produção
+ * @property {Function} deleteEstoqueMaterialProducao - Deleta um registro do Estoque de Material de Produção
  * 
- * @param {express.Request} req - Requisição HTTP
- * @param {express.Response} res - Resposta HTTP
- * @param {Function} next - Próxima função
+ * @param {express.Request} req - Requisição HTTPS
+ * @param {express.Response} res - Resposta HTTPS
+ * @param {Function} next - Próxima função a ser executada
  * 
- * @returns {router} - Retorna um router
+ * @returns {express.Router} - Retorna um router
  */
 module.exports = () => {
 

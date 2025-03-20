@@ -211,15 +211,6 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     app.use('/api/v1/relatorios', routes.relatorios);
     app.use('/api/v1/etiquetas', routes.etiquetas);
 
-    const { Crud } = require('./modules/Crud');
-    const crud = new Crud();
-
-    app.use('/test', async (req, res, next) => { // LOGIN VIEW
-        
-        const data = await crud.select('usuarios', { where : { id : 1 } });
-
-    })
-
     if(config.isDev){
         
         app.get('/api/v1/teste', async (req, res, next) => {

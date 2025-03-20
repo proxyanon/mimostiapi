@@ -302,18 +302,22 @@ class Crud extends Utils {
      * @example - const record = await this.read(fields, orderby, includes);
      * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      */
-    async read(fields={}, orderby={}, includes={}){
+    async read(fields={}, orderby=[], includes={}){
 
         let record = false;
 
-        if(typeof fields != 'object' || typeof orderby != 'object' || typeof includes != 'object'){
+        if(typeof fields != 'object' || typeof includes != 'object'){
             return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 9091);
+        }
+
+        if(!Array.isArray(orderby)){
+            return this.create_obj_return(true, 'O parâmetro passado não é um array', 1, 6815);
         }
 
         try{
             Object.keys(fields).length <= 0 ? null : fields;
-            Object.keys(orderby).length <= 0 ? orderby={'id':'ASC'} : orderby;
             Object.keys(includes).length <= 0 ? null : includes;
+            orderby.length <= 0 ? orderby=[['id', 'ASC']] : orderby;
         }catch(err){
             this.log_error(err);
             return this.create_obj_return(true, 'Ocorreu um erro ao verificar os parâmetros', 1, 6578);
@@ -359,7 +363,14 @@ class Crud extends Utils {
             return this.create_obj_return(true, 'Ocorreu um erro ao buscar os dados das unidades...', 1, 404);
         }
 
-        const results = record ? this.create_obj_return(false, 'Sucess', 0, 200) : this.create_obj_return(true, 'Não foi possível encontra nenhum registro(s)', 888, 404);
+        const results = false;
+
+        try{
+            reults = record ? this.create_obj_return(false, 'Sucess', 0, 200) : this.create_obj_return(true, 'Não foi possível encontra nenhum registro(s)', 888, 404);
+        }catch(err){
+            this.log_error(err);
+            return this.create_obj_return(true, 'Ocorreu um erro ao verificar os dados', 1, 404);
+        }
 
         return results;
 
@@ -370,7 +381,7 @@ class Crud extends Utils {
      * @method readByPK - Lê dados no banco de dados de uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      * @description - Essa função lê dados no banco de dados de uma tabela especificada no construtor
      * @param {IntString} id - Identificação da unidade a ser lida no banco de dados do express ou do express em si 
-     * @example - const record = await this.read(1);
+     * @example - const record = await instance.readByPk.read(1);
      * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      */
     async readByPK(id=false) {
