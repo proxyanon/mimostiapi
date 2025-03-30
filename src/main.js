@@ -103,8 +103,23 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
      * @returns {Promise<express.Response>}
      */
     const uploadFile = async (req, res, next) => {
+        
+        /**
+         * @throws {Error} Erro se o arquivo não for encontrado
+         * @description - Função para fazer upload de arquivos para o servidor
+         */
 
         try{
+
+            /**
+             * @typedef {multer} multer
+             * 
+             * @constant {multer} - Multer class to handle file uploads
+             * @method.member
+             * @method {multer} diskStorage - Function to handle file storage
+             * @method {multer} fileFilter - Function to filter files
+             * @method {multer} cb - Function to handle file upload callback
+             */
             const storage = multer.diskStorage({
                 destination: function(req, file, cb) { 
                     fileFilter(req, file, cb)

@@ -90,6 +90,14 @@ module.exports = () => {
         const results = await models.EstoqueMaterialProducao.findAll({
             include : [{
                 model : models.ProdutosCor,
+                required : true,
+                attributes : ['id', 'nome']
+            },{
+                model : models.ProdutosSecoes,
+                required : false,
+                attributes : ['id', 'nome']
+            },{
+                model : models.ProdutosCategorias,
                 required : false,
                 attributes : ['id', 'nome']
             },{

@@ -3421,6 +3421,10 @@
                                     }
                                 }
 
+                                if(column_name == 'u'){
+                                    column_data = column_data;
+                                }
+
                                 if(column_name == 'contas_pagar' || column_name == 'contas_receber'){
                                     null
                                 }else{
@@ -3447,7 +3451,7 @@
                     let data = {};
 
                     try{
-                     
+
                         if(!document.querySelector(`#${params.field_name}-id`).value){
                             app_config.verbose ? console.error('id empty [prepareDelete()]', params) : '';
                         }

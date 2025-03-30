@@ -28,6 +28,8 @@ Produtos.belongsTo(EstoqueProdutoFinal, { foreignKey : 'id', allowNull : false }
 ProdutosCategorias.belongsTo(Produtos, { foreignKey : 'id' });
 
 EstoqueMaterialProducao.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
+EstoqueMaterialProducao.belongsTo(ProdutosSecoes, { foreignKey : 'cor', allowNull : false });
+EstoqueMaterialProducao.belongsTo(ProdutosCategorias, { foreignKey : 'cor', allowNull : false });
 EstoqueMaterialProducao.belongsTo(Unidade, { foreignKey : 'id', as : 'u' });
 //EstoqueProdutoFinal.belongsTo(ProdutosCor, { foreignKey : 'cor', allowNull : false });
 EstoqueProdutoFinal.belongsTo(Produtos, { foreignKey : 'produto', as : 'produto_nome', allowNull : false });
