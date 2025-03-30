@@ -1,38 +1,29 @@
 /**
  * @author Daniel Victor Freire Feitosa
  * @version 1.0.0
- * @since 2021-03-12
- * @name crud.js
- * @package lib/modules
- * @module {Crud, Utils} - Módulo de CRUD e Utils
+ * @package crud.js
  * @description - Esse pacote faz o CRUD de uma forma de mais alto nível
- * @requires {models, express, Security} - Módulos de modelos, express e segurança
- * @copyright 2021-2025
- * @license MIT
- * @see {@link https://github.com/proxyanon/mimostiapi} - GitHub do projeto Mimos tia Pi API
- * @example - const { Crud, Utils } = require('./lib/modules/crud');
+ * @copyright All rigths reserved to Mimos tia Pi 2024-2025
+ * @name crud.js
+ * @access 
  */
 
-// Importações de módulos e pacotes necessários para o funcionamento do módulo de CRUD e Utils
-
 /**
- * @constant {models} models - Importa os modelos do banco de dados para o módulo de CRUD e Utils
- * @constant {express} express - Importa o express para o módulo de CRUD e Utils
- * @constant {Security} Security - Importa a classe Security para o módulo de CRUD e Utils
+ * @requires models
+ * @requires express
+ * @requires Security
  */
-
-const models = require('./models'); // Importa os modelos do banco de dados para o módulo de CRUD e Utils
-const express = require('express'); // Importa o express para o módulo de CRUD e Utils
-const Security = require('./Security'); // Importa a classe Security para o módulo de CRUD e Utils
+const models = require('./models');
+const express = require('express');
+const Security = require('./Security');
 
 /**
- * @constant {Security} sec - Instância da classe Security
- * @description - Instância da classe Security
+ * @const {Security} sec
  */
-const sec = new Security(); // Instância da classe Security
+const sec = new Security();
 
 /**
- * @class Utils
+ * @class
  * @classdesc - Essa classe fornece diversos métodos para tratar erros e fazer checagem de dados,
  * verifica números para saber se são inteiros, faz log de erros no console levando em conta se
  * você quer user verbose ou então pode disparar um evento throwException no paramêtro de mesmo nome
@@ -40,32 +31,27 @@ const sec = new Security(); // Instância da classe Security
 class Utils {
 
     /**
-     * @typedef {(number | string)} IntString - Número ou string
-     * @typedef {express.Request} Request - Requisição do express
-     * @typedef {express.Response} Response - Resposta do express
-     * @typedef {express.Request.body} RequestBody - Corpo da requisição
-     * @typedef {express.Request.params} RequestParams - Parâmetros da requisição
-     * @typedef {(express.Request.params.property | number)} RequestParamProperty - Propriedade dos parâmetros da requisição
-     * @typedef {Security.checkFields} CheckFields - Checa os campos
-     * @typedef {Utils.property} UtilsProperty - Propriedades da classe Utils
-     * @typedef {Security.CheckFields} SecurityCheckBody - Checa o corpo da requisição
+     * @typedef {(number | string)} IntString
+     * @typedef {express.Request} Request
+     * @typedef {express.Response} Response
+     * @typedef {express.Request.body} RequestBody
+     * @typedef {express.Request.params} RequestParams
+     * @typedef {(express.Request.params.property | number)} RequestParamProperty
+     * @typedef {Security.checkFields} CheckFields
+     * @typedef {Utils.property} UtilsProperty
+     * @typedef {Security.CheckFields} SecurityCheckBody
      * 
      */
 
     /**
-     * @constructor - Construtor da classe Utils
-     * @this Crud - Acesso a classe Crud
+     * @this Crud
+     * @typedef {this.model.rawAttributes} Fields
+     * @typedef {ClassAccessorDecoratorContext.Utils.property} UtilsProperty
      * 
-     * @typedef {this.model.rawAttributes} Fields - Atributos da tabela
-     * @typedef {ClassAccessorDecoratorContext.Utils.property} UtilsProperty - Propriedades da classe Utils
-     * 
-     * @param {boolean} throwException - true/false
-     * @param {boolean} verbose - true/false
-     * 
+     * @constructor
+     * @param {boolean} throwException 
+     * @param {boolean} verbose
      * @description - Construtor recebe os paramêtros de throException e verbose
-     * @example - const utils = new Utils(true, false);
-     * 
-     * @returns {Utils} - Retorna uma instância de Utils
      */
     
     constructor(throwException = false, verbose = true){
@@ -74,15 +60,10 @@ class Utils {
     }
 
     /**
-     * @method check_int - Verifica se o valor é inteiro
+     * @method check_int
+     * @param {IntString} value
+     * @returns {boolean}
      * @description - Verifica se realmente o valor é inteiro
-     * @param {(number | string)} value - Valor a ser verificado
-     * @example - utils.check_int(1) // true
-     * @example - utils.check_int('1') // true
-     * @example - utils.check_int('1.0') // false
-     * @example - utils.check_int(1.0) // false
-     * @example - utils.check_int('1.0') // false
-     * @returns {boolean} - Retorna true se for inteiro e false se não for
      */
     check_int(value){
 
@@ -111,21 +92,12 @@ class Utils {
     }
 
     /**
-     * @method log_error - Loga o erro no console e retorna uma exceção ou não dependendo do valor de throwException e verbose no construtor da classe Utils
-     * @param {Error} err - Erro a ser logado no console e tratado de acordo com o valor de throwException e verbose no construtor da classe Utils
-     * @param {string} msg - Mensagem a ser logada no console e tratada de acordo com o valor de throwException e verbose no construtor da classe Utils
-     * 
+     * @method log_error
+     * @param {string} err
+     * @param {string} msg
      * @description - Checa se o você quer uma exeception ou simplesmente logar o erro de uma forma quiet sem parar o servidor
-     * 
-     * @example - utils.log_error('Erro ao fazer a requisição', 'Erro ao fazer a requisição')
-     * @example - utils.log_error('Erro ao fazer a requisição', 'Erro ao fazer a requisição', true)
-     * @example - utils.log_error('Erro ao fazer a requisição', 'Erro ao fazer a requisição', false)
-     * 
-     * @throws {Error} - Se throwException for true e verbose for true ele vai parar o servidor e mostrar o erro no console e no navegador do usuário que fez a requisição e se verbose for false ele vai mostrar o erro no console e não vai parar o servidor e se throwException for false ele vai mostrar o erro no console e não vai parar o servidor e se verbose for true ele vai mostrar o erro no console e não vai parar o servidor e se verbose for false ele vai mostrar o erro no console e não vai parar o servidor e se throwException for true ele vai parar o servidor e mostrar o erro no console e no navegador do usuário que fez a requisição e se throwException for false ele vai mostrar o erro no console e não vai parar o servidor e se verbose for true ele vai mostrar o erro no console e não vai parar o servidor e se verbose for false ele vai mostrar o erro no console e não vai parar o servidor
-     * @returns {void} - Retorna void (vazio)
      */
     log_error(err, msg){
-        console.error(err, msg);
         if(!this.throwException && this.verbose){
             console.clear();
             console.warn(`${msg}\n\n`);
@@ -136,24 +108,20 @@ class Utils {
     }
 
     /**
-     * @alias Security.checkBody - Checa o corpo da requisição
-     * @method check_body - Checa o corpo da requisição
-     * @description - Checa o corpo da requisição do express e retorna um objeto com os campos checados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @param {express.Request} req - Requisição do express
-     * @returns {SecurityCheckBody} - Retorna um objeto com os campos checados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
+     * @method check_body
+     * @param {Request} req 
+     * @returns {SecurityCheckBody}
+     * @description - Esse método é um alías para o método estático Security.checkBody
      */
     check_body(req){
         return Security.checkBody(req);
     }
 
     /**
-     * @alias Security.checkFields - Checa os campos da tabela do banco de dados para o formulário do express
-     * @method check_fields - Checa os campos da tabela do banco de dados para o formulário do express
-     * @this Crud - Acesso a classe Crud
-     * @param {Fields} fields - Atributos da tabela do banco de dados para o formulário do express
-     * @returns {CheckFields} - Retorna um objeto com os campos checados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @example - const fields = utils.check_fields(fields);
-     * @example - const fields = utils.check_fields(this.model.rawAttributes);
+     * @method check_fields
+     * @this Crud
+     * @param {Fields} fields 
+     * @returns {CheckFields}
      * @description - Esse método é um alías para o método estático Security.checkFields
      */
     check_fields(fields){
@@ -165,19 +133,16 @@ class Utils {
 /**
  * 
  * @class
- * @classdesc - Essa classe automatiza o CRUD para os controladores do express
- * @extends Utils
+ * @description - Essa clase automatiza o CRUD para os controladores
  */
 class Crud extends Utils {
 
     /**
      * 
-     * @constructor - Construtor da classe Crud que herda de Utils
-     * @this Crud - Acesso a classe Crud
-     * @param {UtilsProperty} throwException - true/false
-     * @param {UtilsProperty} verbose - true/false
-     * @param {models} Model - Modelo do banco de dados que será usado para o CRUD
-     * @returns {Crud} - Retorna uma instância de Crud
+     * @constructor
+     * @param {UtilsProperty} throwException
+     * @param {UtilsProperty} verbose
+     * @param {models} Model
      */
     constructor(throwException, verbose, Model){
         
@@ -200,13 +165,17 @@ class Crud extends Utils {
     }
 
     /**
-     * @method create_obj_return - Cria um objeto de retorno para o express com um JSON
+     * @method create_obj_return
+     * @param {boolean} error 
+     * @param {string} msg 
+     * @param {number} code
+     * @param {number} status_code 
+     * @todo $error -> true/false
+     * @todo $msg -> Mensagem caso ocrra um erro
+     * @todo $code -> Código do erro
+     * @todo $status_code -> STATUS_CODE de resposta
+     * @returns {Object}
      * @description - Cria um JSON para o retorno de resposta do express
-     * @param {boolean} error - true/false
-     * @param {string} msg - Mensagem de retorno
-     * @param {number} code - Código do erro
-     * @param {number} status_code  - STATUS_CODE de resposta
-     * @returns {Object} - Retorna um objeto com os valores passados
      */
     create_obj_return(error, msg, code, status_code){
 
@@ -238,13 +207,10 @@ class Crud extends Utils {
     }
 
     /**
-     * @async {promise} - Retorna uma promessa de uma função assíncrona que trata os campos do corpo da requisição do express e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @param {express.RequestBody} body - Corpo da requisição do express
-     * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @description - Essa função trata os campos do corpo da requisição do express e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @example - const record = await this.threat_body_fields(body);
-     * @example - const record = await this.threat_body_fields(req.body);
-     * @method threat_body_fields - Trata os campos do corpo da requisição
+     * @async
+     * @method threat_body_fields
+     * @param {express.RequestBody} body 
+     * @returns {Object}
      */
     async threat_body_fields(body){
 
@@ -292,99 +258,7 @@ class Crud extends Utils {
 
     }
 
-    /**
-     * @async {promise} - Retorna uma promisse
-     * @method read - Lê dados no banco de dados de uma tabela especificada no construtor
-     * @description - Essa função lê dados no banco de dados de uma tabela especificada no construtor
-     * @param {Object} fields - Objeto com os dados
-     * @param {Object} orderby - Ordem dos dados
-     * @param {Array} includes - Inclusões
-     * @example - const record = await this.read(fields, orderby, includes);
-     * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     */
-    async read(fields={}, orderby=[], includes={}){
-
-        let record = false;
-
-        if(typeof fields != 'object' || typeof includes != 'object'){
-            return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 9091);
-        }
-
-        if(!Array.isArray(orderby)){
-            return this.create_obj_return(true, 'O parâmetro passado não é um array', 1, 6815);
-        }
-
-        try{
-            Object.keys(fields).length <= 0 ? null : fields;
-            Object.keys(includes).length <= 0 ? null : includes;
-            orderby.length <= 0 ? orderby=[['id', 'ASC']] : orderby;
-        }catch(err){
-            this.log_error(err);
-            return this.create_obj_return(true, 'Ocorreu um erro ao verificar os parâmetros', 1, 6578);
-        }
-
-        if(fields == null || includes == null){
-            return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 6996);
-        }
-
-        try{
-            if(!Object.keys(includes).includes('model')){
-                return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 6996);
-            }else if(!Object.keys(includes).includes('attributes')){
-                return this.create_obj_return(true, 'Os parâmetros passados não são objetos', 1, 306);
-            }else if(Object.includes('as')){
-                includes.as = includes.as == includes.model ? includes.model : includes.as;
-            }
-        }catch(err){
-            this.log_error(err);
-            return this.create_obj_return(true, 'Ocorreu um erro ao verificar os parâmetros', 1, 2166);
-        }
-
-        try{
-        
-            if(Object.keys(fields).length > 0){
-                record = await this.model.findAll({ 
-                    where : fields,
-                    include : {
-                        model : includes.model,
-                        attributes : includes.attributes,
-                        as : includes.as
-                    },
-                    orderby 
-                });
-            }else{
-                record = await this.model.findAll({
-                    orderby
-                });
-            }
-        
-        }catch(err){
-            this.log_error(err);
-            return this.create_obj_return(true, 'Ocorreu um erro ao buscar os dados das unidades...', 1, 404);
-        }
-
-        const results = false;
-
-        try{
-            reults = record ? this.create_obj_return(false, 'Sucess', 0, 200) : this.create_obj_return(true, 'Não foi possível encontra nenhum registro(s)', 888, 404);
-        }catch(err){
-            this.log_error(err);
-            return this.create_obj_return(true, 'Ocorreu um erro ao verificar os dados', 1, 404);
-        }
-
-        return results;
-
-    }
-
-    /**
-     * @async {promise} - Retorna uma promessa de uma função assíncrona que lê dados no banco de dados de uma tabela especificada no construtor
-     * @method readByPK - Lê dados no banco de dados de uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @description - Essa função lê dados no banco de dados de uma tabela especificada no construtor
-     * @param {IntString} id - Identificação da unidade a ser lida no banco de dados do express ou do express em si 
-     * @example - const record = await instance.readByPk.read(1);
-     * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     */
-    async readByPK(id=false) {
+    async read(id=false) {
 
         let hashId = id ? 'sim' : 'não';
 
@@ -417,13 +291,11 @@ class Crud extends Utils {
     }
 
     /**
-     * @async {promise} - Retorna uma promessa de uma função assíncrona que cria dados no banco de dados de uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @method create - Cria dados no banco de dados de uma tabela especificada no construtor
+     * @async
+     * @method create
+     * @param {express.RequestBody} body
+     * @returns {Object}
      * @description - Essa função cria dados no banco de dados de uma tabela especificada no construtor
-     * @param {express.RequestBody} body - Corpo da requisição do express
-     * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @example - const record = await this.create(body);
-     * @example - const record = await this.create(req.body);
      */
     async create(body){
 
@@ -468,13 +340,12 @@ class Crud extends Utils {
     }
 
     /**
-     * @async {promise} - Retorna uma promessa de uma função assíncrona que atualiza dados no banco em uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express    * @method save - Salva dados no banco em uma tabela especificada no construtor
+     * @async
+     * @method save
+     * @param {number} id 
+     * @param {express.RequestBody} body 
+     * @returns {Object}
      * @description - Essa função salva dados no banco em uma tabela especificada no construtor
-     * @param {(number | express.RequestParamProperty)} id - Identificação da unidade a ser atualizada no banco de dados do express ou do express em si
-     * @param {(Object | express.RequestBody)} body - Corpo da requisição do express ou um objeto
-     * @example - const record = await this.save(1, body);
-     * @example - const record = await this.save(1, req.body);
-     * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      */
     async save(id, body){
 
@@ -536,12 +407,11 @@ class Crud extends Utils {
     }
 
     /**
-     * @async {promise} - Retorna uma promessa de uma função assíncrona que deleta um registro no banco de dados de uma tabela especificada no construtor e retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
-     * @method delete - Deleta um registro no banco de dados de uma tabela especificada no construtor
+     * @async
+     * @method delete
+     * @param {express.RequestParamProperty} id 
+     * @returns {Object}
      * @description - Esse método deleta um registro, atenção é indicado que seja feito backup antes de qualquer uso do metódo
-     * @param {(number | express.RequestParamProperty)} id - Identificação da unidade a ser deletada no banco de dados do express ou do express em si
-     * @example - const record = await this.delete(1);
-     * @returns {Object} - Retorna um objeto com os campos tratados ou um objeto de erro com a mensagem de erro e o código do erro e o status_code da resposta do express
      */
     async delete(id){
 
@@ -585,6 +455,6 @@ class Crud extends Utils {
 }
 
 /**
- * @type {typeof Crud, Utils} - Exporta a classe Crud e Utils para serem usadas em outros módulos do projeto Mimos tia Pi API
+ * @type {typeof Crud, Utils}
  */
-module.exports = { Crud, Utils }; // Exporta a classe Crud e Utils para serem usadas em outros módulos do projeto Mimos tia Pi API
+module.exports = { Crud, Utils };
