@@ -2,6 +2,43 @@ require('dotenv').config()
 
 const path = require('path');
 
+/**
+ * @const {config} module - Configurarações do servidor
+ * @description - Engloba toda a configuração do servidor incluido banco de dados, sockete mais coiasas criticas
+ * 
+ * @property {mysql} Object - Configuraçao do database
+ *   @property {mysql.host} str - Host of database
+ *   @property {mysql.user} str - User of database
+ *   @property {mysql.password} str - Password of database
+ *   @property {mysql.database} str - Database of database
+ * 
+ * @property {colors} Object - Configuraçao de cores
+ *   @property {colors.reset} str - Códificação de cor
+ *   @property {colors.bright} str - Códificação de cor
+ *   @property {colors.underline} str - Códificação de cor
+ *   @property {colors.fg} Object - Configuraçao de cores
+ *   @property {colors.fg.yellow} - Códificação de cor
+ *   @property {colors.fg.red} - Códificação de cor
+ *   @property {colors.fg.green} - Códificação de cor
+ * 
+ * @property {colors.bg} Object - Configuraçao de cores
+ *    @property {colors.bg.yellow} - Códificação de cor
+ *    @property {colors.bg.red} - Códificação de cor
+ *    @property {colors.bg.green} - Códificação de cor
+ *    @property {colors.bg.yellow} - Códificação de cor
+ *    @property {colors.bg.blue} - Códificação de cor
+ * 
+ * @property {server} Object - Configuraçao do server
+ *   @property {server.port} int - Port of server
+ *   @property {server.host} str - Host of server
+     @property {start_chrome} bool - If true, start chrome with mimostiapi.io
+ *   
+ *   @summary - SSL configurations - Check if server is using ssl 
+ *     @property {server.use_ssl} bool - Check if 
+ *     @property {server.ssl.key} str - Key of server
+ *     @property {server.ssl.cert} str - Cert of serverserver
+ *     @property {server.ssl.rejectUnauthorized}
+ */
 const config = module.exports = {
 
     mysql : {
@@ -34,7 +71,7 @@ const config = module.exports = {
 
     server : {
 
-        hostname : 'mimostiapi.io',
+        hostname: 'mimostiapi.io',
         port : 443,
         start_chrome : true,
         use_https : true,

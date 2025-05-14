@@ -13,7 +13,7 @@ const index = require('../Controllers/index')(),
     contas_pagar = require('../Controllers/contas_pagar')(),
     contas_receber = require('../Controllers/contas_receber')(),
     caixa = require('../Controllers/caixa')(),
-    etiquetas = require('../Controllers/etiquetas')()
+    etiquetas = require('../Controllers/etiquetas')(),
     relatorios = require('../Controllers/relatorios')(),
     upload = require('../Controllers/upload')();
 

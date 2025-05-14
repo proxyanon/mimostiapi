@@ -28,6 +28,9 @@ const sec = new Security();
  * verifica números para saber se são inteiros, faz log de erros no console levando em conta se
  * você quer user verbose ou então pode disparar um evento throwException no paramêtro de mesmo nome
  */
+
+/* The class `Utils` contains methods for checking integer values, logging errors, and delegating body
+and field checks to a `Security` class. */
 class Utils {
 
     /**
