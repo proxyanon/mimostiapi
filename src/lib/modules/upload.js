@@ -10,8 +10,7 @@ function upload(req, res, next){
     
         let sampleFile;
         let uploadPath;
-        let accepted_ext = config.uploads.accepted_ext;
-        let accepted_mime_types = config.uploads.accepted_mime_types;
+        const { accepted_ext, accepted_mime_types } = config.uploads;
 
         if(!Object.keys(req).includes('files')){
             return res.status(403).json({ error : true, msg : 'Nenhum arquivo foi carregado' });
@@ -29,7 +28,7 @@ function upload(req, res, next){
         //uploadPath = path.join(__dirname, '..', '..', 'public', 'files', Security.makeid(10) + '.png');
         uploadPath = path.join(config.uploads.upload_path, `${Security.makeid(10)}.png`);
 
-        console.log(uploadPath);
+        verbose ? console.log(`Upload Path: ${uploadPath}`) : null
 
         if(accepted_ext.includes(path.extname(sampleFile.name)) && accepted_mime_types.includes(sampleFile.mimetype)){
 

@@ -72,9 +72,9 @@ const config = module.exports = {
     server : {
 
         hostname: 'mimostiapi.io',
-        port : 443,
+        port : 80,
         start_chrome : true,
-        use_https : true,
+        use_https : false,
 
         https : {
             cert : path.join(__dirname, '../assets/newcert/test/mimostiapi.io.crt'),
