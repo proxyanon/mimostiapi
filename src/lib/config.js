@@ -46,7 +46,8 @@ const config = module.exports = {
         host : 'localhost',
         user : 'root',
         password : '',
-        database : 'mimostiapi'
+        database : 'mimostiapi',
+        port: 3306
 
     },
 
@@ -72,9 +73,9 @@ const config = module.exports = {
     server : {
 
         hostname: 'mimostiapi.io',
-        port : 80,
+        port : 443,
         start_chrome : true,
-        use_https : false,
+        use_https : true,
 
         https : {
             cert : path.join(__dirname, '../assets/newcert/test/mimostiapi.io.crt'),

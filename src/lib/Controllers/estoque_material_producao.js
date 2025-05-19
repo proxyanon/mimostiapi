@@ -93,14 +93,6 @@ module.exports = () => {
                 required : true,
                 attributes : ['id', 'nome']
             },{
-                model : models.ProdutosSecoes,
-                required : false,
-                attributes : ['id', 'nome']
-            },{
-                model : models.ProdutosCategorias,
-                required : false,
-                attributes : ['id', 'nome']
-            },{
                 model : models.Unidade,
                 required : false,
                 attributes : ['id', 'nome'],
