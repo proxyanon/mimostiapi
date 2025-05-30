@@ -1,3 +1,20 @@
+/**
+ * @author Daniel Victor Freire Feitosa
+ * @version 0.0.2
+ * @package config
+ * @file config.js
+ * @date 30/05/2025
+ * @since 2024
+ * @description - CRUD easily with crud.js automatize and coding in new layer of high level compared to only ORM, and get incress in produtivicty
+ * @access {private}
+ * @github https://github.com/proxyanon/mimostiapi
+ */
+
+/**
+ * @requires {dotenv} - import ambient vars
+ * @requires {path} - import pa th for koad certificates
+ * @description - Just imports 
+ */ 
 require('dotenv').config()
 
 const path = require('path');
@@ -31,7 +48,7 @@ const path = require('path');
  * @property {server} Object - Configuraçao do server
  *   @property {server.port} int - Port of server
  *   @property {server.host} str - Host of server
-     @property {start_chrome} bool - If true, start chrome with mimostiapi.io
+ *   @property {start_chrome} bool - If true, start chrome with mimostiapi.io
  *   
  *   @summary - SSL configurations - Check if server is using ssl 
  *     @property {server.use_ssl} bool - Check if 
@@ -123,8 +140,8 @@ const config = module.exports = {
             secret : 'MY-SUPER-SECRET-TOKEN'
         },
         csrf : {
-            required : false,
-            size : 35,
+            required : process.env.CSRF_REQUIRED | false,
+            size : process.env.CSRF_TOKEN_SIZE | 35,
             header : 'X-CSRF-TOKEN'.toLowerCase()
         }
     },

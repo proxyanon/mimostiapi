@@ -1,7 +1,7 @@
 /**
  * @author Daniel Victor Freire Feitosa
- * @version 1.0.0
- * @package crud.js
+ * @version 0.0.1
+ * @package crud
  * @description - Esse pacote faz o CRUD de uma forma de mais alto nível
  * @copyright All rigths reserved to Mimos tia Pi 2024-2025
  * @name crud.js
