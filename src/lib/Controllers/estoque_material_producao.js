@@ -1,5 +1,5 @@
 /**
- * @author Daniel Victor Freire
+ * @author Daniel Freire
  * @version 2.0.0 - 2025
  * @since 2021-05-20
  * @copyright Mimos Tia Pia 2025
