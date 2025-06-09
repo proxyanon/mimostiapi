@@ -18,6 +18,8 @@
 require('dotenv').config()
 
 const path = require('path');
+const autoBackup = require('../modules/autoBackup');
+const { dmy, hms  } = autoBackup.getDateTime();
 
 /**
  * @const {config} module - Configurarações do servidor
@@ -56,7 +58,12 @@ const path = require('path');
  *     @property {server.ssl.cert} str - Cert of serverserver
  *     @property {server.ssl.rejectUnauthorized}
  */
+
+const APP_VERSION = process.env.APP_VERSION || '2.0.3';
+
 const config = module.exports = {
+
+    version : APP_VERSION,
 
     mysql : {
 
@@ -64,8 +71,9 @@ const config = module.exports = {
         user : 'root',
         password : '',
         database : 'mimostiapi',
-        port: 3306
-
+        port: 3306,
+        backup_path : path.join(__dirname, '..', '.mariadb_bkp'),
+        backup_filename : `mimostiapi_${APP_VERSION}_backup_${dmy}_${hms}_${(new Date).toTimeString()}.sql`,
     },
 
     colors : {
@@ -162,7 +170,7 @@ const config = module.exports = {
     },
 
     logs : {
-        filename : 'mimostiapi.log'
+        filename : `mimos_backup_${dmy} - ${hMs}.log`
     },
 
     numeric : {

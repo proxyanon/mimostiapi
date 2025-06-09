@@ -256,12 +256,20 @@ module.exports = () => {
         doc.pipe(fs.createWriteStream(filename));
         
         let row_int = 0;
+        let loop_count = 0;
         
         results.forEach((row, i) => {
 
             console.log(`id: ${row.id}\nnome: ${row.nome}`);
 
             req.body.produtos.forEach(produto => {
+
+                if(loop_count == 13){
+                    row_int = 0;
+                    loop_count = 0;
+                }
+
+                loop_count += 1;
 
                 console.log('produto', produto);
 

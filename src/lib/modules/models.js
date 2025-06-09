@@ -1,22 +1,22 @@
 const sequelize = require('sequelize'),
- Usuarios = require('../Models/Usuarios'),
- Clientes = require('../Models/Clientes'),
- Fornecedores = require('../Models/Fornecedores'),
- Vendedores = require('../Models/Vendedores'),
- PrestadoresServicos = require('../Models/PrestadoresServicos'),
- Funcionarios = require('../Models/Funcionarios'),
- Produtos = require('../Models/Produtos'),
- ProdutosCategorias = require('../Models/ProdutosCategorias'),
- ProdutosSecoes = require('../Models/ProdutosSecoes'),
- ProdutosCor = require('../Models/ProdutosCor'),
- EstoqueMaterialProducao = require('../Models/EstoqueMaterialProducao'),
- EstoqueProdutoFinal = require('../Models/EstoqueProdutoFinal'),
- Caixa = require('../Models/Caixa'),
- CaixaTemp = require('../Models/CaixaTemp'),
- ContasPagar = require('../Models/ContasPagar'),
- ContasReceber = require('../Models/ContasReceber'),
- FormasPagamentos = require('../Models/FormasPagamento'),
- Unidade = require('../Models/Unidade');
+    Usuarios = require('../Models/Usuarios'),
+    Clientes = require('../Models/Clientes'),
+    Fornecedores = require('../Models/Fornecedores'),
+    Vendedores = require('../Models/Vendedores'),
+    PrestadoresServicos = require('../Models/PrestadoresServicos'),
+    Funcionarios = require('../Models/Funcionarios'),
+    Produtos = require('../Models/Produtos'),
+    ProdutosCategorias = require('../Models/ProdutosCategorias'),
+    ProdutosSecoes = require('../Models/ProdutosSecoes'),
+    ProdutosCor = require('../Models/ProdutosCor'),
+    EstoqueMaterialProducao = require('../Models/EstoqueMaterialProducao'),
+    EstoqueProdutoFinal = require('../Models/EstoqueProdutoFinal'),
+    Caixa = require('../Models/Caixa'),
+    CaixaTemp = require('../Models/CaixaTemp'),
+    ContasPagar = require('../Models/ContasPagar'),
+    ContasReceber = require('../Models/ContasReceber'),
+    FormasPagamentos = require('../Models/FormasPagamento'),
+    Unidade = require('../Models/Unidade');
 
 ProdutosCategorias.belongsTo(ProdutosSecoes, { foreignKey : 'secao', allowNull : false });
 
@@ -45,7 +45,5 @@ ContasReceber.belongsTo(Clientes, { foreignKey : 'cliente_id', allowNull : false
 ContasReceber.belongsTo(FormasPagamentos, { foreignKey : 'forma_pagamento', allowNull : false });
 
 module.exports = {
-
     Usuarios,Clientes,Fornecedores,Vendedores,PrestadoresServicos,Funcionarios,Produtos,ProdutosSecoes,ProdutosCategorias,ProdutosCor,EstoqueMaterialProducao,EstoqueProdutoFinal,Caixa,CaixaTemp,ContasPagar,ContasReceber,FormasPagamentos,Unidade,sequelize
-
 }

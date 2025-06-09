@@ -56,6 +56,7 @@ module.exports = () => {
                 required : false,
                 attributes : ['id', [models.sequelize.literal('entrada - saida'), 'estoque']]
             }],
+            
             order : [['nome', 'ASC']] 
         })
         
