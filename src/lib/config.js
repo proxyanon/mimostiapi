@@ -97,14 +97,14 @@ const config = module.exports = {
 
     server : {
 
-        hostname: 'mimostiapi.io',
-        port : 443,
-        start_chrome : true,
-        use_https : true,
+        hostname: process.env.SERVER_HOST || 'mimostiapi.io',
+        port : process.env.SERVER_PORT || 443,
+        start_chrome : process.env.SERVER_START_CHROME ||true,
+        use_https : process.env.SERVER_USE_HTTPS ||true,
 
         https : {
-            cert : path.join(__dirname, '../assets/newcert/test/mimostiapi.io.crt'),
-            key : path.join(__dirname, '../assets/newcert/test/mimostiapi.io.key')
+            cert : null || path.join(__dirname, '../assets/newcert/test/mimostiapi.io.crt'),
+            key : null || path.join(__dirname, '../assets/newcert/test/mimostiapi.io.key')
             //cert : path.join(__dirname, '../assets/server.crt'),
             //key : path.join(__dirname, '../assets/server.key')
         },
@@ -117,20 +117,20 @@ const config = module.exports = {
             level : 2
         }],
 
-        trust_proxy : 1,
+        trust_proxy : process.env.TRUSTY_PROXY || 1,
         
         session : {
-            secret : 'session',
-            proxy : true,
+            secret : process.env.SESSION_SECRET || 'session',
+            proxy : process.env.SESSION_USE_PROXY || true,
             cookie : {
-                secure : true,
-                maxAge : 60000 * 60 * 24 // 24 horas
+                secure : process.env.SESSION_SECURE_HEADER || true,
+                maxAge : process.env.SESSION_COOKIE_MAX_AGE || 60000 * 60 * 24 // 24 horas
             },
-            resave : false,
-            saveUninitialized : true,
+            resave : process.env.SESSION_RESAVE_SESSION || false,
+            saveUninitialized : process.env.SESSION_SAVE_AFK || true,
         },
 
-        throwException : false
+        throwException : process.env.THROW_EXCEPTIONS || false
 
     },
 
@@ -138,19 +138,19 @@ const config = module.exports = {
         name : process.env.SESSION_NAME || 'session',
         keys : [process.env.SESSION_SECRET] || ['MY-SUPER-SECRET-TOKEN'],
         secure : process.env.SESSION_SECURE || true,
-        httpOnly : true,
-        overwrite : false,
+        httpOnly : process.env.SESSION_COOKIE_HTTPONLY || true,
+        overwrite : process.env.SESSION_SECURE_OVERWRITE || false,
         maxAge : process.env.SESSION_MAX_AGR || 24 * 60 * 60 * 1000 // 1dia
     },
 
     tokens : {
         jwt : {
-            secret : 'MY-SUPER-SECRET-TOKEN'
+            secret : process.env.JWT_SECRET || 'MY-SUPER-SECRET-TOKEN'
         },
         csrf : {
-            required : process.env.CSRF_REQUIRED | false,
-            size : process.env.CSRF_TOKEN_SIZE | 35,
-            header : 'X-CSRF-TOKEN'.toLowerCase()
+            required : process.env.JWT_CSRF_REQUIRED | false,
+            size : process.env.JWT_CSRF_TOKEN_SIZE | 35,
+            header : process.env.JWT_HEAEDER_NAME || 'X-CSRF-TOKEN'.toLowerCase()
         }
     },
 
@@ -159,25 +159,25 @@ const config = module.exports = {
         accepted_ext : ['.png', '.jpg', '.jpeg'],
         accepted_mime_types : ['image/jpeg', 'image/png', 'image/jpg'],
         upload_path : path.join(__dirname, '..', 'public', 'files'),
-        max_file_size : 1024 * 1024 * 5,
-        max_files : 1
+        max_file_size : process.env.UPDLOADS_MAXSIZE || 1024 * 1024 * 5,
+        max_files : process.env.UPLOADS_MAX_FILES || 1
 
     },
 
     install_deps : {
-        run_app_after_check : false,
-        auto_install : true
+        run_app_after_check : process.env.INSTALL_DEPS || false,
+        auto_install : process.env.INSTALL_DEPS_FORCE || true
     },
 
     logs : {
-        filename : `mimos_backup_${dmy}_${hMs}_${(new Date).toString()}.log`
+        filename : process.env.LOGS_FILENAME_PATTERN || `mimos_backup_${dmy}_${hMs}_${(new Date).toString()}.log`
     },
 
     numeric : {
         max_float_digits : 2
     },
 
-    isDev : true,
-    verbose : true
+    isDev : process.env.IS_DEV || true,
+    verbose : process.env.VERBOSE || true
 
 }
