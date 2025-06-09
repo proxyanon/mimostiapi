@@ -15,7 +15,7 @@
  * @requires {path} - import pa th for koad certificates
  * @description - Just imports 
  */ 
-require('dotenv').config()
+require('dotenv').config();
 
 const path = require('path');
 const autoBackup = require('../modules/autoBackup');
@@ -63,17 +63,17 @@ const APP_VERSION = process.env.APP_VERSION || '2.0.3';
 
 const config = module.exports = {
 
-    version : APP_VERSION,
+    version : APP_VERSION || '2.0.3',
 
     mysql : {
 
-        host : 'localhost',
-        user : 'root',
-        password : '',
-        database : 'mimostiapi',
-        port: 3306,
-        backup_path : path.join(__dirname, '..', '.mariadb_bkp'),
-        backup_filename : `mimostiapi_${APP_VERSION}_backup_${dmy}_${hms}_${(new Date).toTimeString()}.sql`,
+        host : process.env.DB_HOST || 'localhost',
+        user : process.env.DB_USER || 'root',
+        password : process.env.DB_PASS || '',
+        database : process.env.DB_NAME|| 'mimostiapi',
+        port: process.env.DB_PORT || 3306,
+        backup_path : process.env.DB_BACKUP_PATH || path.join(__dirname, '..', '.mariadb_bkp'),
+        backup_filename : process.env.DB_BACKUP_FILE || `mimostiapi_${APP_VERSION}_backup_${dmy}_${hms}_${(new Date).toTimeString()}.sql`,
     },
 
     colors : {
@@ -135,12 +135,12 @@ const config = module.exports = {
     },
 
     session : {
-        name : 'session',
-        keys : ['MY-SUPER-SECRET-TOKEN'],
-        secure : true,
+        name : process.env.SESSION_NAME || 'session',
+        keys : [process.env.SESSION_SECRET] || ['MY-SUPER-SECRET-TOKEN'],
+        secure : process.env.SESSION_SECURE || true,
         httpOnly : true,
         overwrite : false,
-        maxAge : 24 * 60 * 60 * 1000 // 1dia
+        maxAge : process.env.SESSION_MAX_AGR || 24 * 60 * 60 * 1000 // 1dia
     },
 
     tokens : {
@@ -170,7 +170,7 @@ const config = module.exports = {
     },
 
     logs : {
-        filename : `mimos_backup_${dmy} - ${hMs}.log`
+        filename : `mimos_backup_${dmy}_${hMs}_${(new Date).toString()}.log`
     },
 
     numeric : {
