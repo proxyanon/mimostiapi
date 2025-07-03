@@ -66,7 +66,7 @@ const config = require('../config');
  */
 module.exports = () => {
 
-    var module = {};
+    let module = {};
 
     module.fields = models.EstoqueMaterialProducao.rawAttributes
 
@@ -101,11 +101,7 @@ module.exports = () => {
             order : [['especificacao', 'ASC']]
         })
 
-        if(results){
-            res.json({ error : false, results, fields : Object.keys(module.fields) })
-        }else{
-            res.serverError('Nada encontrado', module.fields);
-        }
+        return results ? res.json({ error : false, results, fields : Object.keys(module.fields) }) : res.serverError('Nada encontrado', module.fields);
 
     }
 
@@ -117,10 +113,7 @@ module.exports = () => {
 
         req.body = sanitize(req.body);
 
-        if(!Security.checkBody(req.body, module.fields)){
-            config.verbose || config.isDev ? console.log(Object.keys(req.body), Object.keys(module.fields)) : '';
-            return res.block(`[${models.EstoqueMaterialProducao.tableName.toUpperCase()}] FormulÃ¡rio nÃ£o aceito`);
-        }
+        (!Security.checkBody(req.body, module.fields) && (config.verbose || config.isDev)) ? Security.logInfo(`${Object.keys(req.body)}, ${Object.keys(module.fields)}`) : ''
 
         for(key in module.fields){
             if(key != 'id'){
@@ -238,16 +231,15 @@ module.exports = () => {
      * @param {express.Response} res 
      * @param {Function} next 
      * @returns {Promise<express.Response>}
-     * @version 1.0.0
-     * @description Adiciona um estoque de material de produção a uma unidade
-     * @summary Adiciona um estoque de material de produção a uma unidade
+     * @version 2.1.6
+     * @description - Adiciona um estoque de material de produção a uma unidade
+     * @summary - Adiciona um estoque de material de produção a uma unidade
      * @see {@link module:estoque_material_producao}
      * @public
      * @method
-     * @example
-     * addEstoqueMaterialProducaoUnidade(req, res, next)
+     * @example - instanceClass.addEstoqueMaterialProducaoUnidade(req, res, next)
      * @async
-     * @throws {Error} Se ocorrer um erro na execução da tarefa
+     * @throws {Error|Exception} Se ocorrer um erro na execução da tarefa
      */
     module.addEstoqueMaterialProducaoUnidade = async (req, res, next) => {
             
@@ -255,36 +247,19 @@ module.exports = () => {
              * @var {*} results
              * @var {boolean} check_body
              */
-            let results = false;
+            let results = undefined;
             let check_body;
             
-            try{
-                check_body = utils.check_body(req);
-            }catch(err){
-                return res.notAccept('Não foi possível checar os valores do formulário');
-            }
+            try{ check_body = utils.check_body(req); }catch(err){ return res.notAccept('Não foi possível checar os valores do formulário'); }
 
-            if(check_body.resp.error){
-                return res.notAccept('Não foi possível checar os valores do formulário');
-            }
+            if(check_body.resp.error){ utils.log_error(err); return res.notAccept('Não foi possível checar os valores do formulário'); }
 
-            try{
-                results = await utils.create(req.body);
-            }catch(err){
-                utils.log_error(err);
-                return res.notAccept('Ocorreu na execução a tarefa');
-            }
+            try{ results = await utils.create(req.body); }catch(err){ utils.log_error(err); return res.notAccept('Ocorreu na execução a tarefa'); }
 
-            if(!results){
-                return res.notAccept('Ocorreu na execução');
-            }
+            results = results || res.notAccept('Ocorreu na execução') / results;
 
-            try{
-                return res.json({ results, error : false });
-            }catch(err){
-                crud.log_error(err);
-                return res.notAccept('Requisição mal formatada');
-            }
+            try{ return res.json({ results, error : false });
+            }catch(err){ crud.log_error(err); return res.notAccept('Requisição mal formatada'); }
     
         }
 
@@ -362,19 +337,27 @@ module.exports = () => {
         }
 
     router
-        //.use(sec.middlewares.auth_check)
+        /** Middleares used
+        * - check authentication
+        * - set various types of response templates an threat something more
+        * 
+        **/
+        .use(sec.middlewares.auth_check)
         .use(sec.responses.setResponses)
-        //.use(xss())
-        //.use(sec.middlewares.sanitize_body)
-        .get('/search/:search', module.searchEstoqueMaterialProducao)
-        .get('/:id?', module.getEstoqueMaterialProducao)
+        //.use(xss()) // prevent XSS obvisously
+        //.use(sec.middlewares.sanitize_body) // sanitize na DATA de payloads POST ou PUT
+        // somente rotas do CRUD
+        .get('/:id?', module.getEstoqueMaterialProducao) // get data saved on databae
+        .post('/add', module.addEstoqueMaterialProducao) // add data saved to databae
+        .put('/save/:id',  module.saveEstoqueMaterialProducao) // save data saved on databae
+        .delete('/del/:id', module.deleteEstoqueMaterialProducao) // del data saved from databae
+        // somente rotas para criação de widgtes
         .get('/unidade/:id?', module.getEstoqueMaterialProducaoUnidade)
-        .put('/save/:id',  module.saveEstoqueMaterialProducao)
-        .delete('/del/:id', module.deleteEstoqueMaterialProducao)
         .post('/unidade/add',  module.addEstoqueMaterialProducaoUnidade)
         .put('/unidade/save/:id',  module.saveEstoqueMaterialProducaoUnidade)
         .delete('/unidade/del/:id',  module.delEstoqueMaterialProducaoUnidade)
-        .post('/add', module.addEstoqueMaterialProducao);
+        // rota da pesquisa
+        .get('/search/:search', module.searchEstoqueMaterialProducao);
 
     return router;
 

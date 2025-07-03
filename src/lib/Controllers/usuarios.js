@@ -1,7 +1,32 @@
+/**
+ * @author Daniel Freire
+ * @version 2.1.7 - 2025
+ * @date 2023-04-02
+ * @since 2021-05-20
+ * @copyright Mimos Tia Pia 2025
+ * @git github.com/proxyanon/mimostiapi
+ * @branch {master:main}
+ * @package C:/Users/daniel/desktop/git/src/lib/Controllers/estoque_material_producao
+ * @description Controlador de estoque de material de produção
+ * @see {@link module:estoque_material_producao}
+ * @type {Function}
+ */
+
+/**
+ * @requires {express}
+ * @requires {../modules/models}
+ * @requires {bcrypt}
+ * @requires {../module/Security}
+ * @requires {../config}
+ * @typedef {Security} - Criando type hint do tipo Security
+ * @const Security {sec} - Instância da lib Security.js
+ * @const express.Router {router} - Cria o router para criação de endpoints
+ * @const Function {xss, sanitize} - Funções para camada de sec
+ * 
+ * */
 const express = require('express');
 const models = require('../modules/models');
 const bcrypt = require('bcrypt');
-
 
 const Security = require('../modules/Security');
 const config = require('../config');
@@ -40,7 +65,7 @@ module.exports = () => {
             return res.block(`[${models.Usuarios.tableName.toUpperCase()}] Formulário não aceito`);
         }
 
-        for(key in module.fields){
+        for(let key in module.fields){
             if(key != 'id'){
                 if(!req.body[key]){
                     return res.status(401).json({ error : true, msg : 'Campos inválido(s)' })
@@ -74,7 +99,7 @@ module.exports = () => {
         
         if(usuario){
             
-            for(key in module.fields){
+            for(let key in module.fields){
                 if(key != 'id' && req.body[key]){
                     usuario[key] = req.body[key]
                 }

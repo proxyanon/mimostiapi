@@ -119,6 +119,21 @@ dist
 # TernJS port file
 .tern-port
 
+# Idea directory
+.idea/
+
+# Clean directory
+clean/
+
+# Junie directory
+.junie/
+
+# Ecosystem config js
+ecosystem.config.js
+
+# Database structure file
+*.sql
+
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 

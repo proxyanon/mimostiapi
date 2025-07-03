@@ -55,7 +55,7 @@ let server = null;
 try{
     server = config.server.use_https ? https_.createServer({ cert : fs.readFileSync(config.server.https.cert), key : fs.readFileSync(config.server.https.key), rejectUnauthorized : true }, app) : http_.createServer(app); // Server HTTP or HTTPS
 }catch(err){
-    throw err;
+    throw new Exception(err);
 }
 
 const io = new Server(server); // socket.io service attached
@@ -116,17 +116,17 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
              * 
              * @constant {multer} - Multer class to handle file uploads
              * @method.member
-             * @method {multer} diskStorage - Function to handle file storage
+             * @method {multer} {DiskStorage || Function} to handle file storage
              * @method {multer} fileFilter - Function to filter files
              * @method {multer} cb - Function to handle file upload callback
              */
             const storage = multer.diskStorage({
                 destination: function(req, file, cb) { 
-                    fileFilter(req, file, cb)
+                    this.fileFilter(req, file, cb)
                     cb(null, path.join(__dirname, 'public', 'files'))
                 },
                 filename: function(req, file, cb){
-                    fileFilter(req, file, cb)
+                    this.fileFilter(req, file, cb)
                     cb(null, md5(file.originalname) + path.extname(file.originalname))
                 }
             })
@@ -172,7 +172,7 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     
         }
     
-        multer({ storage, limits : config.uploads.max_file_size, fileFilter }).single('foto')(req, res, error => { 
+        multer({ storage, limits : config.uploads.max_file_size, fileFilter, }).single('foto')(req, res, error => {
         
             if(!req.file){
                 return res.json({ error : false, filename : 'defaultProduct.png' });
@@ -373,3 +373,71 @@ const scanner = new BarcodeScanner({}); // Barcode scanner class
     });
 
 })();
+
+// Configuração de armazenamento do multer
+const uploadStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'public', 'files'));
+    },
+    filename: (req, file, cb) => {
+        cb(null, md5(file.originalname) + path.extname(file.originalname));
+    }
+});
+
+// Filtro dos arquivos para upload
+function fileFilter(req, file, cb) {
+    if (!config.uploads.accepted_ext.includes(path.extname(file.originalname))) {
+        return cb(new Error("Tipo de arquivo inválido"));
+    }
+    if (!config.uploads.accepted_mime_types.includes(file.mimetype)) {
+        return cb(new Error("Tipo de arquivo inválido"));
+    }
+    cb(null, true);
+}
+
+const upload = multer({
+    storage: uploadStorage,
+    limits: { fileSize: config.uploads.max_file_size },
+    fileFilter
+}).single('foto');
+
+// Middleware de upload
+async function uploadFile(req, res, next) {
+    upload(req, res, async (error) => {
+        if (error) {
+            if (config.server.throwException) {
+                return next(new Error("Erro ao fazer upload do arquivo: " + error.message));
+            }
+            return res.status(400).json({ error: true, msg: error.message });
+        }
+
+        if (!req.file) {
+            return res.json({ error: false, filename: 'defaultProduct.png' });
+        }
+
+        try {
+            const uploadedFileChecksum = md5(fs.readFileSync(req.file.path));
+            const filesPath = path.join(__dirname, 'public', 'files');
+            const files = fs.readdirSync(filesPath);
+
+            const fileExists = files.some(file => {
+                const fileData = fs.readFileSync(path.join(filesPath, file));
+                return md5(fileData) === uploadedFileChecksum;
+            });
+
+            let msg = fileExists ? 'O arquivo já existe' : undefined;
+
+            return res.json({ error: false, filename: req.file.filename, ...(msg && { msg }) });
+        } catch (err) {
+            return res.status(500).json({ error: true, msg: 'Erro ao verificar arquivos existentes' });
+        }
+    });
+}
+
+// Rota para upload
+app.post(
+    '/api/v1/upload',
+    sec.middlewares.auth_check,
+    sec.middlewares.csrf_check,
+    uploadFile
+);

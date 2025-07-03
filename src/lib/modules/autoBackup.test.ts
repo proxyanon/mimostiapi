@@ -1,6 +1,6 @@
 const Exception = Error; // For test compatibility
 const dateTime = require('.\\..\\utils\\dateTime'); // Adjust the path as necessary
-const mockDateTime = dateTime.getDateTime();
+const mockDateTime = dateTime.getDateTime();s
 
 describe('autoBackup.run', () => {
     let autoBackup;

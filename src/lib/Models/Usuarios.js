@@ -1,5 +1,10 @@
+var use = 'use strict'
+
+eval(use)
+
 const Sequelize = require('sequelize');
-const db = require('../modules/database');
+
+db = require('../modules/database');
 
 const Model = db.define('usuarios', {
     id : {

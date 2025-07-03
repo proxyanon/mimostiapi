@@ -18,18 +18,18 @@
 require('dotenv').config();
 
 const path = require('path');
-const autoBackup = require('../modules/autoBackup');
-const { dmy, hms  } = autoBackup.getDateTime();
+const autoBackup = require('./modules/autoBackup');
+const { dmy, hms } = autoBackup.getDateTime();
 
 /**
  * @const {config} module - Configurarações do servidor
  * @description - Engloba toda a configuração do servidor incluido banco de dados, sockete mais coiasas criticas
  * 
  * @property {mysql} Object - Configuraçao do database
- *   @property {mysql.host} str - Host of database
- *   @property {mysql.user} str - User of database
- *   @property {mysql.password} str - Password of database
- *   @property {mysql.database} str - Database of database
+ *   @property || @param {mysql.host} str - Host of database
+ *   @property || @param {mysql.user} str - User of database
+ *   @property || @param {mysql.password} str - Password of database
+ *   @property || @param {mysql.database} str - Database of database
  * 
  * @property {colors} Object - Configuraçao de cores
  *   @property {colors.reset} str - Códificação de cor
@@ -59,11 +59,11 @@ const { dmy, hms  } = autoBackup.getDateTime();
  *     @property {server.ssl.rejectUnauthorized}
  */
 
-const APP_VERSION = process.env.APP_VERSION || '2.0.3';
+const APP_VERSION = process.env.MIMOS_VERSION || '2.1.7';
 
 const config = module.exports = {
 
-    version : APP_VERSION || '2.0.3',
+    version : APP_VERSION,
 
     mysql : {
 
@@ -170,7 +170,7 @@ const config = module.exports = {
     },
 
     logs : {
-        filename : process.env.LOGS_FILENAME_PATTERN || `mimos_backup_${dmy}_${hMs}_${(new Date).toString()}.log`
+        filename : process.env.LOGS_FILENAME_PATTERN || `mimos_backup_${dmy}_${hms}_${(new Date).toString()}.log`
     },
 
     numeric : {
