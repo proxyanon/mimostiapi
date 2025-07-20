@@ -132,7 +132,7 @@ clean/
 ecosystem.config.js
 
 # Database structure file
-*.sql
+.sql
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
