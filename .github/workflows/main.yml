@@ -1,0 +1,146 @@
+name: Copilot build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x86
+            ext: exe
+            out: win32.exe
+          - os: windows-latest
+            arch: x64
+            ext: exe
+            out: win64.exe
+          - os: windows-latest
+            arch: x86
+            ext: msi
+            out: winPackagerInstallerOption32.msi
+          - os: windows-latest
+            arch: x64
+            ext: msi
+            out: winPackagerInstallerOption64.msi
+          - os: ubuntu-latest
+            arch: armxi86
+            ext: deb
+            out: linux_armxi86.deb
+          - os: ubuntu-latest
+            arch: arm64
+            ext: deb
+            out: linux_arm64.deb
+          - os: ubuntu-latest
+            arch: armi86
+            ext: deb
+            out: linux_armi86.deb
+          - os: ubuntu-latest
+            arch: x86
+            ext: deb
+            out: linux_x86.deb
+          - os: ubuntu-latest
+            arch: x64
+            ext: deb
+            out: linux_x64.deb
+          - os: ubuntu-latest
+            arch: i386
+            ext: deb
+            out: linux32.deb
+          - os: ubuntu-latest
+            arch: amd64
+            ext: deb
+            out: linux64.deb
+
+    name: Build ${{ matrix.out }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install build dependencies (adjust as needed)
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # For CMake-based native builds (if needed)
+      - name: Install CMake
+        if: ${{ matrix.os == 'windows-latest' || matrix.os == 'ubuntu-latest' }}
+        uses: jwlawson/actions-setup-cmake@v2
+
+      # (Adjust this step to actual build commands, e.g. npm run build, cmake, make, etc.)
+      - name: Build
+        run: |
+          echo "Building for ${{ matrix.arch }}"
+          # Example for npm project:
+          # npm install
+          # npm run build -- --arch=${{ matrix.arch }}
+          # Example for CMake project:
+          # cmake -B build -DCMAKE_BUILD_TYPE=Release
+          # cmake --build build --config Release
+          # Place build output in ./${{ matrix.out }}
+          echo "Dummy file for ${{ matrix.out }}" > ${{ matrix.out }}
+
+      - name: Archive Build Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.out }}
+          path: ${{ matrix.out }}
+
+  release:
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Auto Build Release ${{ github.run_number }}"
+          tag_name: "auto-release-${{ github.run_number }}"
+          body: |
+            Automated build and release from PR merged into main.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Assets
+        run: |
+          for file in ./artifacts/*/*; do
+            gh release upload ${{ steps.create_release.outputs.tag_name }} "$file"
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare summary and download links
+        id: summary
+        run: |
+          echo "Auto Build Release ${{ github.run_number }}" > summary.txt
+          echo "" >> summary.txt
+          echo "Download links:" >> summary.txt
+          for file in ./artifacts/*/*; do
+            fname=$(basename "$file")
+            echo "https://github.com/${{ github.repository }}/releases/download/${{ steps.create_release.outputs.tag_name }}/$fname" >> summary.txt
+          done
+
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "Build & Release Notification: ${{ github.repository }}"
+          to: ${{ secrets.GMAIL_TO }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+          body: |
+            $(cat summary.txt)
